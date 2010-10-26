@@ -23,13 +23,5 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 2
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = http://ct-svr-01:8080/tfs/Production
-		SccProjectUniqueName0 = Atdl4net\\Atdl4net.csproj
-		SccProjectName0 = Atdl4net
-		SccLocalPath0 = Atdl4net
-		SccLocalPath1 = .
 	EndGlobalSection
 EndGlobal

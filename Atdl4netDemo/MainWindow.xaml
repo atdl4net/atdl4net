@@ -1,0 +1,45 @@
+﻿<Window x:Class="Atdl4netDemo.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:atdl4net="clr-namespace:Atdl4net.Wpf;assembly=Atdl4net"
+        Title="Atdl4net Demo" SizeToContent="WidthAndHeight">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Border Grid.Row="0" Grid.ColumnSpan="2" BorderBrush="#80444444" BorderThickness="1" CornerRadius="2" Margin="5" Background="#FFEEEEEE">
+            <StackPanel Orientation="Horizontal">
+                <Label Margin="5">Enter full path of FIXatdl file:</Label>
+                <TextBox Name="filePathTextBox" Width="400" Margin="5"/>
+                <Button Click="loadFileButtonClick" Width="60" Margin="5">Load</Button>
+                <Label Margin="5">Select strategy:</Label>
+                <ComboBox Name="strategySelectionComboBox" SelectionChanged="strategySelectionComboBoxSelectionChanged" 
+                          MinWidth="100" Margin="5" IsEnabled="False"/>
+            </StackPanel>
+        </Border>
+        <Border Grid.Row="1" Grid.ColumnSpan="2" BorderBrush="#80444444" BorderThickness="1" CornerRadius="2" Margin="5" Background="#FFEEEEEE">
+            <WrapPanel Orientation="Horizontal" MaxWidth="890" HorizontalAlignment="Left">
+                <CheckBox Name="amendModeCheckBox" Margin="9">Amend Mode</CheckBox>
+                <Label Margin="5">Enter FIX message to use:</Label>
+                <TextBox Name="fixMessageTextBox" Width="555" Margin="5" IsEnabled="{Binding ElementName=amendModeCheckBox,Path=IsChecked}"/>
+                <Button Name="loadFixButton" Width="25" Margin="0,5,0,5" FontFamily="Wingdings" FontSize="16" Click="loadFixButtonClick"
+                        IsEnabled="{Binding ElementName=amendModeCheckBox,Path=IsChecked}"></Button>
+                <TextBlock Margin="10,0,5,5">Tip: You can use '|' instead of SOH if preferred.    (Select a strategy first from the drop-down above, then click the square button to load your FIX content.)</TextBlock>
+            </WrapPanel>
+        </Border>
+        <atdl4net:AtdlControl Name="atdlControl" Grid.Row="2" Grid.Column="0"/>
+        <Border Grid.Row="3" Grid.ColumnSpan="2" BorderBrush="#80444444" BorderThickness="1" CornerRadius="2" Margin="5" Background="#FFEEEEEE">
+            <StackPanel Orientation="Horizontal">
+                <Button Name="getFixButton" Width="80" Margin="5" Click="getFixButtonClick">Get FIX</Button>
+                <TextBox Name="outputFixMessage" Width="755" Margin="5"/>
+            </StackPanel>            
+        </Border>
+    </Grid>
+</Window>

@@ -28,6 +28,10 @@ using Atdl4net.Xml.Serialization;
 using System.IO;
 using System.Xml.Linq;
 
+#if !NET_40
+using System.Xml;
+#endif
+
 namespace Atdl4net.Xml
 {
     public class StrategiesReader: INotifyStrategyLoad
