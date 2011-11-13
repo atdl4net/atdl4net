@@ -69,7 +69,9 @@ namespace Atdl4net.Model.Elements
 
         string WireValue { get; set; }
 
-        bool IsNumeric { get; }
+        bool IsFloat { get; }
+
+        bool IsInteger { get; }
 
         void Reset();
     }

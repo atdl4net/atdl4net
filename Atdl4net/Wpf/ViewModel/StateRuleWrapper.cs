@@ -74,7 +74,7 @@ namespace Atdl4net.Wpf.ViewModel
         public void RefreshState()
         {
             if (_underlyingStateRule.Visible != null)
-                _owningControl.Visible = _edit.CurrentState ? (bool)_underlyingStateRule.Visible : !(bool)_underlyingStateRule.Visible;
+                _owningControl.IsVisible = _edit.CurrentState ? (bool)_underlyingStateRule.Visible : !(bool)_underlyingStateRule.Visible;
 
             if (_underlyingStateRule.Enabled != null)
                 _owningControl.Enabled = _edit.CurrentState ? (bool)_underlyingStateRule.Enabled : !(bool)_underlyingStateRule.Enabled;

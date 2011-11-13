@@ -279,9 +279,14 @@ namespace Atdl4net.Wpf.View
 //                    writer.WriteAttribute(WpfXmlWriterAttribute.Margin, "2,0,2,0");
 
                     if (!string.IsNullOrEmpty(forControl))
+                    {
                         writer.WriteAttribute(WpfXmlWriterAttribute.Target, string.Format("{0}Binding ElementName={1}{2}", "{", CleanName(forControl), "}"));
+                        writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, string.Format("{0}Binding Path=Controls[{1}].Enabled{2}", "{", CleanName(forControl), "}"));
+                        writer.WriteAttribute(WpfXmlWriterAttribute.Visibility, string.Format("{0}Binding Path=Controls[{1}].Visibility{2}", "{", CleanName(forControl), "}"));
+                    }
 
                     writer.WriteAttribute(WpfXmlWriterAttribute.Content, label);
+
                 }
             }
         }

@@ -53,11 +53,17 @@ namespace Atdl4net.Model.Controls
 
                 return state;
             }
-            else if (sourceControl is IStringControl && targetParameter.IsNumeric)
+            else if (sourceControl is IStringControl && targetParameter.IsFloat)
             {
                 object value = sourceControl.GetValue();
 
                 return value != null ? (decimal?)System.Convert.ToDecimal(value, CultureInfo.CurrentCulture) : null;
+            }
+            else if (sourceControl is IStringControl && targetParameter.IsInteger)
+            {
+                object value = sourceControl.GetValue();
+
+                return value != null ? (int?)System.Convert.ToInt32(value, CultureInfo.CurrentCulture) : null;
             }
             else
                 return sourceControl.GetValue();
@@ -76,10 +82,15 @@ namespace Atdl4net.Model.Controls
 
                 return (value as EnumState)[control.CheckedEnumRef];
             }
-            else if (sourceParameter.IsNumeric && targetControl is IStringControl)
+            else if (sourceParameter.IsFloat && targetControl is IStringControl)
             {
                 if (value != null)
                     return value is decimal ? ((decimal)value).ToString("#.#########", CultureInfo.CurrentCulture) : value.ToString();
+            }
+            else if (sourceParameter.IsInteger && targetControl is IStringControl)
+            {
+                if (value != null)
+                    return value is int ? ((int)value).ToString(CultureInfo.CurrentCulture) : value.ToString();
             }
 
             return value;

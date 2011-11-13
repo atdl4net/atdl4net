@@ -37,9 +37,12 @@ namespace Atdl4net.Wpf.ViewModel
         {
             _underlyingEdit = underlyingEdit;
 
-            _edits = new ViewModelEditCollection(underlyingEdit.Edits);
+            if (underlyingEdit.Edits.Count > 0)
+            {
+                _edits = new ViewModelEditCollection(underlyingEdit.Edits);
 
-            _edits.StateChanged += new EventHandler<StateChangedEventArgs>(OnEditsStateChanged);
+                _edits.StateChanged += new EventHandler<StateChangedEventArgs>(OnEditsStateChanged);
+            }
         }
 
         public bool CurrentState { get { return _underlyingEdit.CurrentState; } }
@@ -91,7 +94,7 @@ namespace Atdl4net.Wpf.ViewModel
         // TODO: Provide a means to unbind (probably through dispose)
         void IBindable<ViewModelControlCollection>.Bind(ViewModelControlCollection target)
         {
-            if (_edits.Count > 0)
+            if (_edits != null && _edits.Count > 0)
             {
                 (_edits as IBindable<ViewModelControlCollection>).Bind(target);
             }

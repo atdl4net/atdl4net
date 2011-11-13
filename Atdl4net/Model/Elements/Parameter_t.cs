@@ -128,9 +128,14 @@ namespace Atdl4net.Model.Elements
                 return ControlValue;
         }
 
-        public bool IsNumeric
+        public bool IsFloat
         {
-            get { return (Value is Int_t || Value is Float_t || Value is NonZeroPositiveInteger || Value is NonNegativeInteger); }
+            get { return (Value is Float_t); }
+        }
+
+        public bool IsInteger
+        {
+            get { return (Value is Int_t || Value is NonZeroPositiveInteger || Value is NonNegativeInteger); }
         }
 
         public void Reset()

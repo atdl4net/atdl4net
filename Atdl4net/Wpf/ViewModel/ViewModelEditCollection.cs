@@ -44,7 +44,7 @@ namespace Atdl4net.Wpf.ViewModel
 
                 wrapper.StateChanged  += new EventHandler<StateChangedEventArgs>(OnMemberStateChanged);
 
-                Add(new EditWrapper(item));
+                Add(wrapper);
             }
         }
 

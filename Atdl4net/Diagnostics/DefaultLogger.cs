@@ -40,7 +40,7 @@ namespace Atdl4net.Diagnostics
         /// <param name="message">Message to write.</param>
         public void Debug(string message)
         {
-            // System.Diagnostics.Debug.WriteLine(message);
+             System.Diagnostics.Debug.WriteLine(message);
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace Atdl4net.Diagnostics
         /// <param name="args">One or more arguments to be inserted into the formatted message.</param>
         public void DebugFormat(string format, params object[] args)
         {
-            // System.Diagnostics.Debug.WriteLine(string.Format(format, args));
+             System.Diagnostics.Debug.WriteLine(string.Format(format, args));
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Atdl4net.Diagnostics
         /// <param name="args">Argument to be inserted into the formatted message.</param>
         public void DebugFormat(string format, object arg)
         {
-            // System.Diagnostics.Debug.WriteLine(string.Format(format, arg));
+             System.Diagnostics.Debug.WriteLine(string.Format(format, arg));
         }
 
         #endregion

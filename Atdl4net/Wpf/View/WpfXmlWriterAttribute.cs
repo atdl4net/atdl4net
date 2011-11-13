@@ -50,6 +50,7 @@ namespace Atdl4net.Wpf.View
         Target,
         Text,
         Time,
+        Visibility,
         Width
     }
 }

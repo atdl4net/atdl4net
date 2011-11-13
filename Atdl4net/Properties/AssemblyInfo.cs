@@ -29,7 +29,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Cornerstone Technology Ltd")]
 [assembly: AssemblyProduct("Atdl4net")]
-[assembly: AssemblyCopyright("Copyright © 2010, Cornerstone Technology Ltd")]
+[assembly: AssemblyCopyright("Copyright © 2010-2011, Cornerstone Technology Ltd")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

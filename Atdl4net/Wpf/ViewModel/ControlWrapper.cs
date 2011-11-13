@@ -26,6 +26,7 @@ using Atdl4net.Model.Enumerations;
 using Atdl4net.Utility;
 using System;
 using System.ComponentModel;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace Atdl4net.Wpf.ViewModel
@@ -99,6 +100,7 @@ namespace Atdl4net.Wpf.ViewModel
 
                     UnderlyingControl.SetValue(value);
 
+                    NotifyPropertyChanged("Value");
                     NotifyValueChanged(oldValue, value);
                 }
             }
@@ -123,22 +125,27 @@ namespace Atdl4net.Wpf.ViewModel
         public virtual void Reset()
         {
             Enabled = true;
-            Visible = true;
+            IsVisible = true;
         }
 
-        public bool Visible
+        public bool IsVisible
         {
             get { return _visible; }
-
             set
             {
                 if (_visible != value)
                 {
                     _visible = value;
 
-                    NotifyPropertyChanged("Visible");
+                    Visibility = value ? Visibility.Visible : Visibility.Collapsed;
                 }
             }
+        }
+
+        public Visibility Visibility
+        {
+            get { return _visible ? Visibility.Visible : Visibility.Collapsed; }
+            set { NotifyPropertyChanged("Visibility"); }
         }
 
         public bool Enabled
