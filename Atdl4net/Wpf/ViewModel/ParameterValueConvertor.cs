@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -9,7 +9,7 @@
 //      This file is part of Atdl4net.
 //
 //      Atdl4net is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public 
-//      License as published by the Free Software Foundation, version 3.
+//      License as published by the Free Software Foundation, either version 2.1 of the License, or (at your option) any later version.
 // 
 //      Atdl4net is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
 //      of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
@@ -18,22 +18,23 @@
 //      http://www.gnu.org/licenses/.
 //
 #endregion
-
-using Atdl4net.Diagnostics;
+using System;
 using Atdl4net.Model.Controls;
 using Atdl4net.Model.Elements;
 using Atdl4net.Model.Types;
-using System;
+using Common.Logging;
 
 namespace Atdl4net.Wpf.ViewModel
 {
     public class ParameterValueConvertor
     {
+        private static readonly ILog _log = LogManager.GetLogger("ViewModel");
+
         public static object Convert(Control_t control, object value, string targetType)
         {
             object result = null;
 
-            Logger.DebugFormat("Converting value '{0}' to target type '{1}'.", value, targetType);
+            _log.DebugFormat("Converting value '{0}' to target type '{1}'.", value, targetType);
 
             switch (targetType)
             {
@@ -103,7 +104,7 @@ namespace Atdl4net.Wpf.ViewModel
                     break;
             }
 
-            Logger.DebugFormat("Converted '{0}' to '{1}' ({2}).", 
+            _log.DebugFormat("Converted '{0}' to '{1}' ({2}).", 
                 value, result, result != null ? result.GetType().FullName : "null");
 
             return result;

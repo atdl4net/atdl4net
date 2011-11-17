@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -9,7 +9,7 @@
 //      This file is part of Atdl4net.
 //
 //      Atdl4net is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public 
-//      License as published by the Free Software Foundation, version 3.
+//      License as published by the Free Software Foundation, either version 2.1 of the License, or (at your option) any later version.
 // 
 //      Atdl4net is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
 //      of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
@@ -18,16 +18,15 @@
 //      http://www.gnu.org/licenses/.
 //
 #endregion
+using System;
+using System.Linq;
 using Atdl4net.Diagnostics;
 using Atdl4net.Diagnostics.Exceptions;
 using Atdl4net.Model.Collections;
 using Atdl4net.Model.Enumerations;
 using Atdl4net.Resources;
 using Atdl4net.Utility;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
+using Common.Logging;
 using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 
 namespace Atdl4net.Model.Elements
@@ -64,6 +63,8 @@ namespace Atdl4net.Model.Elements
     /// </summary>
     public class Edit_t<T> : IEdit_t<T>, IResolvable<Strategy_t, T>, IKeyedObject where T : class, IValueProvider
     {
+        private static readonly ILog _log = LogManager.GetLogger("EditEvaluation");
+
         private bool _currentState;
         private T _fieldSource;
         private T _field2Source;
@@ -74,7 +75,7 @@ namespace Atdl4net.Model.Elements
         {
             (this as IKeyedObject).RefKey = RefKeyGenerator.GetNextKey(typeof(Edit_t));
 
-            Logger.DebugFormat("New Edit_t created as Edit[{0}].", (this as IKeyedObject).RefKey);
+            _log.DebugFormat("New Edit_t created as Edit[{0}].", (this as IKeyedObject).RefKey);
         }
 
         #region IEdit_t Members
@@ -131,7 +132,7 @@ namespace Atdl4net.Model.Elements
 
         public void Evaluate()
         {
-            Logger.DebugFormat("Evaluating Edit[{0}]; current state = {1}.",
+            _log.DebugFormat("Evaluating Edit[{0}]; current state = {1}.",
                 (this as IKeyedObject).RefKey, _currentState);
 
             if (Operator != null)
@@ -150,7 +151,7 @@ namespace Atdl4net.Model.Elements
             else
                 throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.MissingOperatorsOnEdit);
 
-            Logger.DebugFormat("Evaluation of Edit[{0}] yielded {1}.",
+            _log.DebugFormat("Evaluation of Edit[{0}] yielded {1}.",
                 (this as IKeyedObject).RefKey, _currentState);
         }
 
@@ -158,7 +159,7 @@ namespace Atdl4net.Model.Elements
 
         private bool EvaluateExists()
         {
-            Logger.DebugFormat("Evaluating Edit[{0}] with Operator = '{1}'; field value = '{2}'.",
+            _log.DebugFormat("Evaluating Edit[{0}] with Operator = '{1}'; field value = '{2}'.",
                 (this as IKeyedObject).RefKey, Operator.ToString(), FieldValue);
 
             bool result = false;
@@ -175,7 +176,7 @@ namespace Atdl4net.Model.Elements
 
         private bool EvaluateComparison()
         {
-            Logger.DebugFormat("Evaluating Edit[{0}] with Operator = '{1}'; field value = '{2}', Value = '{3}', field2 value = '{4}'.",
+            _log.DebugFormat("Evaluating Edit[{0}] with Operator = '{1}'; field value = '{2}', Value = '{3}', field2 value = '{4}'.",
                 (this as IKeyedObject).RefKey, Operator.ToString(), FieldValue, Value, Field2 != null ? Field2Value : "N/A");
 
             IComparable operand1 = FieldValue as IComparable;

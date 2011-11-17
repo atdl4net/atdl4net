@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -9,7 +9,7 @@
 //      This file is part of Atdl4net.
 //
 //      Atdl4net is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public 
-//      License as published by the Free Software Foundation, version 3.
+//      License as published by the Free Software Foundation, either version 2.1 of the License, or (at your option) any later version.
 // 
 //      Atdl4net is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
 //      of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
@@ -25,6 +25,7 @@ using Atdl4net.Model.Collections;
 using Atdl4net.Model.Enumerations;
 using Atdl4net.Resources;
 using Atdl4net.Utility;
+using Common.Logging;
 
 namespace Atdl4net.Model.Elements
 {
@@ -33,6 +34,8 @@ namespace Atdl4net.Model.Elements
     /// </summary>
     public class EditRef_t<T> : IEdit_t<T>, IResolvable<Strategy_t, T>, IKeyedObject where T : class, IValueProvider
     {
+        private static readonly ILog _log = LogManager.GetLogger("Model");
+
         private Edit_t<T> _referencedEdit;
 
         public EditRef_t(string id)
@@ -41,7 +44,7 @@ namespace Atdl4net.Model.Elements
 
             (this as IKeyedObject).RefKey = RefKeyGenerator.GetNextKey(typeof(EditRef_t<T>));
 
-            Logger.DebugFormat("New EditRef_t created as EditRef[{0}], Id='{1}'.", (this as IKeyedObject).RefKey, id);
+            _log.DebugFormat("New EditRef_t created as EditRef[{0}], Id='{1}'.", (this as IKeyedObject).RefKey, id);
         }
 
         /// <summary>
@@ -116,7 +119,7 @@ namespace Atdl4net.Model.Elements
             {
                 _referencedEdit = strategy.Edits.Clone<T>(Id);
 
-                Logger.DebugFormat("EditRef[{0}], Id='{1}' linked to new Edit[{2}] resolved from Strategy[{3}].",
+                _log.DebugFormat("EditRef[{0}], Id='{1}' linked to new Edit[{2}] resolved from Strategy[{3}].",
                     (this as IKeyedObject).RefKey, Id, (_referencedEdit as IKeyedObject).RefKey, (strategy as IKeyedObject).RefKey);
             }
             else
@@ -127,7 +130,7 @@ namespace Atdl4net.Model.Elements
                 {
                     _referencedEdit = strategies.Edits.Clone<T>(Id);
 
-                    Logger.DebugFormat("EditRef[{0}], Id='{1}' linked to new Edit[{2}] resolved from Strategies level.",
+                    _log.DebugFormat("EditRef[{0}], Id='{1}' linked to new Edit[{2}] resolved from Strategies level.",
                         (this as IKeyedObject).RefKey, Id, (_referencedEdit as IKeyedObject).RefKey);
                 }
                 else

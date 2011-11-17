@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -9,7 +9,7 @@
 //      This file is part of Atdl4net.
 //
 //      Atdl4net is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public 
-//      License as published by the Free Software Foundation, version 3.
+//      License as published by the Free Software Foundation, either version 2.1 of the License, or (at your option) any later version.
 // 
 //      Atdl4net is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
 //      of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
@@ -18,7 +18,6 @@
 //      http://www.gnu.org/licenses/.
 //
 #endregion
-
 using Atdl4net.Diagnostics;
 using Atdl4net.Diagnostics.Exceptions;
 using Atdl4net.Model.Elements;
@@ -27,6 +26,7 @@ using Atdl4net.Resources;
 using Atdl4net.Xml.Serialization;
 using System.IO;
 using System.Xml.Linq;
+using Common.Logging;
 
 #if !NET_40
 using System.Xml;
@@ -36,24 +36,26 @@ namespace Atdl4net.Xml
 {
     public class StrategiesReader: INotifyStrategyLoad
     {
+        private static readonly ILog _log = LogManager.GetLogger("Deserialization");
+
         public Strategies_t Load(FileInfo file)
         {
             string strategyFilePath = file.FullName;
 
-            Logger.DebugFormat("Attempting to load strategies from file '{0}'.", strategyFilePath);
+            _log.DebugFormat("Attempting to load strategies from file '{0}'.", strategyFilePath);
 
             XDocument document = XDocument.Load(strategyFilePath, LoadOptions.SetLineInfo | LoadOptions.PreserveWhitespace);
 
             Strategies_t strategies = LoadStrategies(document);
 
-            Logger.DebugFormat("{0} strategies loaded from file '{1}'.", strategies.Strategies.Count, strategyFilePath);
+            _log.DebugFormat("{0} strategies loaded from file '{1}'.", strategies.Strategies.Count, strategyFilePath);
 
             return strategies;
         }
 
         public Strategies_t Load(Stream stream)
         {
-            Logger.Debug("Attempting to load strategies from stream.");
+            _log.Debug("Attempting to load strategies from stream.");
 
             XDocument document;
 #if NET_40
@@ -66,7 +68,7 @@ namespace Atdl4net.Xml
 #endif
             Strategies_t strategies = LoadStrategies(document);
 
-            Logger.DebugFormat("{0} strategies loaded from stream.", strategies.Strategies.Count);
+            _log.DebugFormat("{0} strategies loaded from stream.", strategies.Strategies.Count);
 
             return strategies;
         }

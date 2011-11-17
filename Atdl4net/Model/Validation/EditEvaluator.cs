@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -9,7 +9,7 @@
 //      This file is part of Atdl4net.
 //
 //      Atdl4net is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public 
-//      License as published by the Free Software Foundation, version 3.
+//      License as published by the Free Software Foundation, either version 2.1 of the License, or (at your option) any later version.
 // 
 //      Atdl4net is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
 //      of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
@@ -18,13 +18,13 @@
 //      http://www.gnu.org/licenses/.
 //
 #endregion
-
+using System;
 using Atdl4net.Diagnostics;
 using Atdl4net.Model.Collections;
 using Atdl4net.Model.Elements;
 using Atdl4net.Resources;
 using Atdl4net.Utility;
-using System;
+using Common.Logging;
 using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 
 namespace Atdl4net.Model.Validation
@@ -32,6 +32,8 @@ namespace Atdl4net.Model.Validation
     // TODO: Implement IDisposable
     public class EditEvaluator<T> : IResolvable<Strategy_t, T>, IKeyedObject where T : class, IValueProvider
     {
+        private static readonly ILog _log = LogManager.GetLogger("EditEvaluation");
+
         private const string ObjectDescription = "collection of Edits";
 
         private Edit_t<T> _edit;
@@ -61,7 +63,7 @@ namespace Atdl4net.Model.Validation
 
                 _editRef = value;
 
-                Logger.DebugFormat("EditRef[{0}] associated with EditEvaluator[{1}].",
+                _log.DebugFormat("EditRef[{0}] associated with EditEvaluator[{1}].",
                     (value as IKeyedObject).RefKey, (this as IKeyedObject).RefKey);
             }
         }
@@ -77,7 +79,7 @@ namespace Atdl4net.Model.Validation
 
                 _edit = value;
 
-                Logger.DebugFormat("Edit[{0}] associated with EditEvaluator[{1}].",
+                _log.DebugFormat("Edit[{0}] associated with EditEvaluator[{1}].",
                     (value as IKeyedObject).RefKey, (this as IKeyedObject).RefKey);
             }
         }

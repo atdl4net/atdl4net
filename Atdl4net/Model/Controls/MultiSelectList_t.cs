@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -9,7 +9,7 @@
 //      This file is part of Atdl4net.
 //
 //      Atdl4net is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public 
-//      License as published by the Free Software Foundation, version 3.
+//      License as published by the Free Software Foundation, either version 2.1 of the License, or (at your option) any later version.
 // 
 //      Atdl4net is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
 //      of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
@@ -22,11 +22,14 @@ using Atdl4net.Diagnostics;
 using Atdl4net.Model.Collections;
 using Atdl4net.Model.Elements;
 using Atdl4net.Model.Types;
+using Common.Logging;
 
 namespace Atdl4net.Model.Controls
 {
     public class MultiSelectList_t : Control_t, IListControl
     {
+        private static readonly ILog _log = LogManager.GetLogger("Model");
+
         /// <summary>
         /// Initialises a new instance of the <see cref="Atdl4net.Model.Controls.MultiSelectList_t">MultiSelectList_t</see> class using the supplied ID.
         /// </summary>
@@ -34,7 +37,7 @@ namespace Atdl4net.Model.Controls
         public MultiSelectList_t(string id)
             : base(id)
         {
-            Logger.DebugFormat("New {0} created as Control[{1}] Id='{2}'.", typeof(MultiSelectList_t).Name, (this as IKeyedObject).RefKey, id);
+            _log.DebugFormat("New {0} created as Control[{1}] Id='{2}'.", typeof(MultiSelectList_t).Name, (this as IKeyedObject).RefKey, id);
 
             ListItems = new ListItemCollection();
         }

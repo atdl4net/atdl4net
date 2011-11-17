@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -9,7 +9,7 @@
 //      This file is part of Atdl4net.
 //
 //      Atdl4net is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public 
-//      License as published by the Free Software Foundation, version 3.
+//      License as published by the Free Software Foundation, either version 2.1 of the License, or (at your option) any later version.
 // 
 //      Atdl4net is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
 //      of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
@@ -18,30 +18,28 @@
 //      http://www.gnu.org/licenses/.
 //
 #endregion
-using Atdl4net.Diagnostics;
+using System;
+using System.ComponentModel;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
+using System.IO;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Markup;
+using System.Xml;
 using Atdl4net.Model.Elements;
 using Atdl4net.Utility;
 using Atdl4net.Wpf.View;
 using Atdl4net.Wpf.ViewModel;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel.Composition.Hosting;
-using System.ComponentModel.Composition;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
-using System.Text;
-using System.Windows.Controls;
-using System.Windows.Markup;
-using System.Windows;
-using System.Xml;
-using System;
+using Common.Logging;
 
 namespace Atdl4net.Wpf
 {
-    /// <summary>Cool <see cref="AtdlControl">sdsdsd</see></summary>
     public partial class AtdlControl : UserControl, INotifyPropertyChanged
     {
+        private static readonly ILog _log = LogManager.GetLogger("AtdlControl");
+
         public static readonly DependencyProperty DataEntryModeProperty =
             DependencyProperty.Register("DataEntryMode", typeof(DataEntryMode), typeof(AtdlControl), new FrameworkPropertyMetadata(DataEntryMode.Create));
         public static readonly DependencyProperty IsRenderingDisabledProperty =
@@ -57,10 +55,6 @@ namespace Atdl4net.Wpf
         public AtdlControl()
         {
             InitializeComponent();
-
-            CompositionContainer defaultLoggerContainer = new CompositionContainer(new TypeCatalog(typeof(Atdl4net.Diagnostics.DefaultLogger)));
-
-            defaultLoggerContainer.ComposeParts(new Logger());
 
             Application.Current.Resources[ComboBoxSizerKey] = new WpfComboBoxSizer() { ExampleComboBox = new ComboBox(), InitialComboWidth = 28 };
         }

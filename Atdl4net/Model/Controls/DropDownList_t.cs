@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
 // This software is released under both commercial and open-source licenses.
 // If you received this software under the commercial license, the terms of that license can be found in the
 // Commercial.txt file in the Licenses folder.  If you received this software under the open-source license,
@@ -20,11 +20,14 @@ using Atdl4net.Diagnostics;
 using Atdl4net.Model.Collections;
 using Atdl4net.Model.Elements;
 using Atdl4net.Model.Types;
+using Common.Logging;
 
 namespace Atdl4net.Model.Controls
 {
     public class DropDownList_t : Control_t, IListControl
     {
+        private static readonly ILog _log = LogManager.GetLogger("Model");
+
         /// <summary>
         /// Initialises a new instance of the <see cref="Atdl4net.Model.Controls.DropDownList_t">DropDownList_t</see> class using the supplied ID.
         /// </summary>
@@ -32,7 +35,7 @@ namespace Atdl4net.Model.Controls
         public DropDownList_t(string id)
             : base(id)
         {
-            Logger.DebugFormat("New {0} created as Control[{1}] Id='{2}'.", typeof(DropDownList_t).Name, (this as IKeyedObject).RefKey, id);
+            _log.DebugFormat("New {0} created as Control[{1}] Id='{2}'.", typeof(DropDownList_t).Name, (this as IKeyedObject).RefKey, id);
 
             ListItems = new ListItemCollection();
         }

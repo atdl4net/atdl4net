@@ -32,6 +32,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Common.Logging, Version=2.0.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\VS2008-3.5\Dependencies\Common.Logging.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -41,7 +45,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition, Version=2010.2.11.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Dependencies\System.ComponentModel.Composition.dll</HintPath>
+      <HintPath>..\VS2008-3.5\Dependencies\System.ComponentModel.Composition.dll</HintPath>
     </Reference>
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -55,8 +59,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include=".\Diagnostics\DefaultLogger.cs">
-    </Compile>
     <Compile Include=".\Diagnostics\ExceptionInfo.cs">
     </Compile>
     <Compile Include=".\Diagnostics\Exceptions\Atdl4netException.cs">
@@ -77,11 +79,7 @@
     </Compile>
     <Compile Include=".\Diagnostics\Exceptions\ValidationException.cs">
     </Compile>
-    <Compile Include=".\Diagnostics\IExternalLogger.cs">
-    </Compile>
     <Compile Include=".\Diagnostics\IKeyedObject.cs">
-    </Compile>
-    <Compile Include=".\Diagnostics\Logger.cs">
     </Compile>
     <Compile Include=".\Diagnostics\RefKeyGenerator.cs">
     </Compile>

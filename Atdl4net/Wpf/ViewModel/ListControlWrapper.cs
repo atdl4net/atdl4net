@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -9,7 +9,7 @@
 //      This file is part of Atdl4net.
 //
 //      Atdl4net is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public 
-//      License as published by the Free Software Foundation, version 3.
+//      License as published by the Free Software Foundation, either version 2.1 of the License, or (at your option) any later version.
 // 
 //      Atdl4net is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
 //      of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
@@ -18,17 +18,18 @@
 //      http://www.gnu.org/licenses/.
 //
 #endregion
-
-using Atdl4net.Diagnostics;
 using Atdl4net.Model.Controls;
 using Atdl4net.Model.Elements;
 using Atdl4net.Model.Types;
 using Atdl4net.Utility;
+using Common.Logging;
 
 namespace Atdl4net.Wpf.ViewModel
 {
     public class ListControlWrapper : ControlWrapper
     {
+        private static readonly ILog _log = LogManager.GetLogger("ViewModel");
+
         private string _controlText; // Used to support EditableDropDownList
         private ViewModelListItemCollection _listItems;
 
@@ -52,9 +53,10 @@ namespace Atdl4net.Wpf.ViewModel
         {
             get 
             {
-                EnumState state = (EnumState)Value;
 
-                if (state.NonEnumValue !=null)
+                EnumState state = Value as EnumState;
+
+                if (state == null || state.NonEnumValue != null)
                     return null;
                 
                 return state.GetFirstSelectedEnumId(); 
@@ -62,16 +64,19 @@ namespace Atdl4net.Wpf.ViewModel
 
             set
             {
-                EnumState newState = (EnumState)Value;
+                EnumState newState = Value as EnumState;
 
-                newState.ClearAll();
+                if (newState != null)
+                {
+                    newState.ClearAll();
 
-                if (value != null)
-                    newState[value] = true;
-                else
-                    newState.NonEnumValue = string.Empty;
+                    if (value != null)
+                        newState[value] = true;
+                    else
+                        newState.NonEnumValue = string.Empty;
 
-                Value = newState;
+                    Value = newState;
+                }
             }
         }
 
@@ -120,7 +125,7 @@ namespace Atdl4net.Wpf.ViewModel
                     else
                         newState = (EnumState)value;
 
-                    Logger.DebugFormat("ControlWrapper for Control {0} value updated to {1}",
+                    _log.DebugFormat("ControlWrapper for Control {0} value updated to {1}",
                         Id, newState.ToString());
 
                     if (!UnderlyingControl.GetValue().Equals(newState))

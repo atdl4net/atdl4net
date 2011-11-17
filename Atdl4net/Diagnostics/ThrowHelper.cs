@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -9,7 +9,7 @@
 //      This file is part of Atdl4net.
 //
 //      Atdl4net is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public 
-//      License as published by the Free Software Foundation, version 3.
+//      License as published by the Free Software Foundation, either version 2.1 of the License, or (at your option) any later version.
 // 
 //      Atdl4net is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
 //      of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
@@ -21,6 +21,7 @@
 
 using System;
 using System.Reflection;
+using Common.Logging;
 
 namespace Atdl4net.Diagnostics
 {
@@ -29,6 +30,8 @@ namespace Atdl4net.Diagnostics
     /// </summary>
     public class ThrowHelper
     {
+        private static readonly ILog _log = LogManager.GetLogger("ExceptionManagement");
+
         private ThrowHelper() { }
 
         /// <summary>
@@ -40,7 +43,11 @@ namespace Atdl4net.Diagnostics
         /// <returns>A new exception of the specified type.</returns>
         public static T New<T>(object source, string message) where T : System.Exception
         {
-            return CreateException<T>(source, message, null);
+            T ex = CreateException<T>(source, message, null);
+
+            _log.Error("Exception created by ThrowHelper", ex);
+
+            return ex;
         }
 
         /// <summary>
@@ -53,7 +60,11 @@ namespace Atdl4net.Diagnostics
         /// <returns>A new exception of the specified type.</returns>
         public static T New<T>(object source, Exception innerException, string message) where T : System.Exception
         {
-            return CreateException<T>(source, message, innerException, null);
+            T ex = CreateException<T>(source, message, innerException, null);
+
+            _log.Error("Exception created by ThrowHelper", ex);
+
+            return ex;
         }
 
         /// <summary>
@@ -66,7 +77,11 @@ namespace Atdl4net.Diagnostics
         /// <returns>A new exception of the specified type.</returns>
         public static T New<T>(object source, string format, params object[] args) where T : System.Exception
         {
-            return CreateException<T>(source, string.Format(format, args), null);
+            T ex = CreateException<T>(source, string.Format(format, args), null);
+
+            _log.Error("Exception created by ThrowHelper", ex);
+
+            return ex;
         }
 
         /// <summary>
@@ -80,7 +95,11 @@ namespace Atdl4net.Diagnostics
         /// <returns>A new exception of the specified type.</returns>
         public static T New<T>(object source, Exception innerException, string format, params object[] args) where T : System.Exception
         {
-            return CreateException<T>(source, string.Format(format, args), innerException, null);
+            T ex = CreateException<T>(source, string.Format(format, args), innerException, null);
+
+            _log.Error("Exception created by ThrowHelper", ex);
+
+            return ex;
         }
 
         /// <summary>
@@ -93,7 +112,11 @@ namespace Atdl4net.Diagnostics
         /// <returns>A new exception of the specified type.</returns>
         public static T New<T>(object source, ExceptionInfo info, string message) where T : System.Exception
         {
-            return CreateException<T>(source, message, info);
+            T ex = CreateException<T>(source, message, info);
+
+            _log.Error("Exception created by ThrowHelper", ex);
+
+            return ex;
         }
 
         /// <summary>
@@ -107,7 +130,11 @@ namespace Atdl4net.Diagnostics
         /// <returns>A new exception of the specified type.</returns>
         public static T New<T>(object source, Exception innerException, ExceptionInfo info, string message) where T : System.Exception
         {
-            return CreateException<T>(source, message, innerException, info);
+            T ex = CreateException<T>(source, message, innerException, info);
+
+            _log.Error("Exception created by ThrowHelper", ex);
+
+            return ex;
         }
 
         /// <summary>
@@ -121,7 +148,11 @@ namespace Atdl4net.Diagnostics
         /// <returns>A new exception of the specified type.</returns>
         public static T New<T>(object source, ExceptionInfo info, string format, params object[] args) where T : System.Exception
         {
-            return CreateException<T>(source, string.Format(format, args), info);
+            T ex = CreateException<T>(source, string.Format(format, args), info);
+
+            _log.Error("Exception created by ThrowHelper", ex);
+
+            return ex;
         }
 
         /// <summary>
@@ -136,7 +167,11 @@ namespace Atdl4net.Diagnostics
         /// <returns>A new exception of the specified type.</returns>
         public static T New<T>(object source, Exception innerException, ExceptionInfo info, string format, params object[] args) where T : System.Exception
         {
-            return CreateException<T>(source, string.Format(format, args), innerException, info);
+            T ex = CreateException<T>(source, string.Format(format, args), innerException, info);
+
+            _log.Error("Exception created by ThrowHelper", ex);
+
+            return ex;
         }
 
         /// <summary>
@@ -150,7 +185,11 @@ namespace Atdl4net.Diagnostics
         /// <returns>A new exception of the specified type.</returns>
         public static Exception Rethrow(object source, Exception ex, string format, object arg)
         {
-            return Rethrow(source, ex, null, format, arg);
+            Exception newException = Rethrow(source, ex, null, format, arg);
+
+            _log.Error("Exception rethrown by ThrowHelper", newException);
+
+            return newException;
         }
 
         /// <summary>

@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -9,7 +9,7 @@
 //      This file is part of Atdl4net.
 //
 //      Atdl4net is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public 
-//      License as published by the Free Software Foundation, version 3.
+//      License as published by the Free Software Foundation, either version 2.1 of the License, or (at your option) any later version.
 // 
 //      Atdl4net is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
 //      of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
@@ -18,16 +18,19 @@
 //      http://www.gnu.org/licenses/.
 //
 #endregion
+using System.Collections.ObjectModel;
 using Atdl4net.Diagnostics;
 using Atdl4net.Model.Elements;
 using Atdl4net.Utility;
-using System.Collections.ObjectModel;
+using Common.Logging;
 
 namespace Atdl4net.Model.Collections
 {
     public class StateRuleCollection : Collection<StateRule_t>
     {
-        Control_t _owner;
+        private static readonly ILog _log = LogManager.GetLogger("StateRules");
+
+        private Control_t _owner;
 
         public StateRuleCollection(Control_t owner)
         {
@@ -40,7 +43,7 @@ namespace Atdl4net.Model.Collections
 
             base.Add(item);
 
-            Logger.DebugFormat("StateRule[{0}] added to StateRules for Control[{1}] Id={2}.",
+            _log.DebugFormat("StateRule[{0}] added to StateRules for Control[{1}] Id={2}.",
                 (item as IKeyedObject).RefKey, (_owner as IKeyedObject).RefKey, _owner.Id);
         }
 

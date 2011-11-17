@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -9,7 +9,7 @@
 //      This file is part of Atdl4net.
 //
 //      Atdl4net is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public 
-//      License as published by the Free Software Foundation, version 3.
+//      License as published by the Free Software Foundation, either version 2.1 of the License, or (at your option) any later version.
 // 
 //      Atdl4net is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
 //      of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
@@ -27,21 +27,24 @@ using Atdl4net.Diagnostics;
 using Atdl4net.Diagnostics.Exceptions;
 using Atdl4net.Resources;
 using Atdl4net.Utility;
+using Common.Logging;
 using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 
 namespace Atdl4net.Xml.Serialization
 {
     public class ElementFactory : INotifyClassDeserialized
     {
+        private static readonly ILog _log = LogManager.GetLogger("Deserialization");
+
         private const string ExceptionContext = "ElementFactory";
 
-        private Type _notifyCreationOfType;
-        private ElementDefinition _elementDefinition;
-        private Dictionary<string, object> _elementValueCache = new Dictionary<string, object>();
+        private readonly Type _notifyCreationOfType;
+        private readonly ElementDefinition _elementDefinition;
+        private readonly Dictionary<string, object> _elementValueCache = new Dictionary<string, object>();
 
         public ElementFactory(ElementDefinition elementDefinition, Type notifyCreationOfType)
         {
-            Logger.DebugFormat("ElementFactory created; root ElementName='{0}'.", elementDefinition.ElementName);
+            _log.DebugFormat("ElementFactory created; root ElementName='{0}'.", elementDefinition.ElementName);
 
             _elementDefinition = elementDefinition;
             _notifyCreationOfType = notifyCreationOfType;
@@ -49,14 +52,14 @@ namespace Atdl4net.Xml.Serialization
 
         public object DeserializeElement(XElement element)
         {
-            Logger.DebugFormat("DeserializeElement called; first 50 characters of XML='{0}'.", element.ToString().Substring(0, 50));
+            _log.DebugFormat("DeserializeElement called; first 50 characters of XML='{0}'.", element.ToString().Substring(0, 50));
 
             return CreateObject(_elementDefinition, element, null);
         }
 
         private object CreateObject(ElementDefinition definition, XElement sourceElement, object parentObject)
         {
-            // Logger.DebugFormat("CreateObject(ElementDefinition, XElement) called; ElementName='{0}.'", definition.ElementName);
+            _log.DebugFormat("CreateObject(ElementDefinition, XElement) called; ElementName='{0}.'", definition.ElementName);
 
             Type[] constructorParameterTypes;
             object[] constructorParameterValues;
@@ -101,7 +104,7 @@ namespace Atdl4net.Xml.Serialization
         /// </ul></exception>
         private object CreateObject(GenericTypeElementDefinition genericTypeDefinition, XElement sourceElement, object parentObject)
         {
-            // Logger.DebugFormat("CreateObject(GenericTypeElementDefinition, XElement) called; ElementName='{0}'.", genericTypeDefinition.ElementName);
+            _log.DebugFormat("CreateObject(GenericTypeElementDefinition, XElement) called; ElementName='{0}'.", genericTypeDefinition.ElementName);
 
             object[] constructorParameterValues;
             Type[] constructorParameterTypes;
@@ -151,7 +154,7 @@ namespace Atdl4net.Xml.Serialization
 
         private object CreateObject(MultiTypeElementDefinition multiTypeDefinition, XElement sourceElement, object parentObject)
         {
-            // Logger.DebugFormat("CreateObject(MultiTypeElementDefinition, XElement) called; ElementName='{0}'.", multiTypeDefinition.ElementName);
+            _log.DebugFormat("CreateObject(MultiTypeElementDefinition, XElement) called; ElementName='{0}'.", multiTypeDefinition.ElementName);
 
             object[] constructorParameterValues;
             Type[] constructorParameterTypes;
@@ -205,7 +208,7 @@ namespace Atdl4net.Xml.Serialization
 
         private static object CreateRawObject(Type outerType, Type[] innerTypes, Type[] argTypes, params object[] args)
         {
-            // Logger.DebugFormat("CreateObject(Type, Type[], Type[], params object[]) called (creating generic type); Outer type={0}.", outerType.FullName);
+            _log.DebugFormat("CreateObject(Type, Type[], Type[], params object[]) called (creating generic type); Outer type={0}.", outerType.FullName);
 
             Type specificType = outerType.MakeGenericType(innerTypes);
 
@@ -219,7 +222,7 @@ namespace Atdl4net.Xml.Serialization
 
         private static object CreateRawObject(Type targetType, Type[] argTypes, params object[] args)
         {
-            // Logger.DebugFormat("CreateObject(Type, Type[], params object[]) called; Type={0}.", targetType.FullName);
+            _log.DebugFormat("CreateObject(Type, Type[], params object[]) called; Type={0}.", targetType.FullName);
 
             ConstructorInfo classConstructor = targetType.GetConstructor(argTypes);
 
@@ -232,7 +235,7 @@ namespace Atdl4net.Xml.Serialization
         private void GetConstructorParameters(ElementDefinition elementDefinition, XElement sourceElement, object parentObject,
             out Type[] constructorParameterTypes, out object[] constructorParameterValues)
         {
-            // Logger.DebugFormat("GetConstructorParameters called; ElementName='{0}'.", elementDefinition.ElementName);
+            _log.DebugFormat("GetConstructorParameters called; ElementName='{0}'.", elementDefinition.ElementName);
 
             if (elementDefinition.ConstructorParameters != null)
             {
@@ -273,7 +276,7 @@ namespace Atdl4net.Xml.Serialization
 
         private void ProcessAttributes(Type targetType, ElementAttribute[] attributeDefinitions, IEnumerable<XAttribute> attributes, object target)
         {
-            // Logger.DebugFormat("ProcessAttributes called; Target type={0}.", targetType.FullName);
+            _log.DebugFormat("ProcessAttributes called; Target type={0}.", targetType.FullName);
 
             foreach (ElementAttribute attrDefn in attributeDefinitions)
             {
@@ -330,7 +333,7 @@ namespace Atdl4net.Xml.Serialization
 
         private void ProcessChildren(ElementDefinition definition, XElement sourceElement, object target)
         {
-            // Logger.DebugFormat("ProcessChildren called; ElementName='{0}'", definition.ElementName);
+            _log.DebugFormat("ProcessChildren called; ElementName='{0}'", definition.ElementName);
 
             // We have to reflect the target type as we can't rely on the Definition to contain it (e.g. MultiTypeElementDefinition).
             Type targetType = target.GetType();
@@ -393,7 +396,7 @@ namespace Atdl4net.Xml.Serialization
 
         private void ProcessChildProperty(ChildElementDefinition childDefinition, PropertyInfo property, Type targetType, object target, object childObject)
         {
-            // Logger.DebugFormat("ProcessChildProperty called; ElementName='{0}', Property={1}.", childDefinition.ElementDefinition.ElementName, property.Name);
+            _log.DebugFormat("ProcessChildProperty called; ElementName='{0}', Property={1}.", childDefinition.ElementDefinition.ElementName, property.Name);
 
             string containerMethod;
 
@@ -434,7 +437,7 @@ namespace Atdl4net.Xml.Serialization
 
         private static object ReadAttribute(IEnumerable<XAttribute> attributes, XName attributeName, Type type)
         {
-            // Logger.DebugFormat("ReadAttribute(IEnumerable<XAttribute>, XName, Type) called; Attribute name='{0}'", attributeName);
+            _log.DebugFormat("ReadAttribute(IEnumerable<XAttribute>, XName, Type) called; Attribute name='{0}'", attributeName);
 
             XAttribute attribute = attributes.FirstOrDefault(a => a.Name == attributeName);
 
@@ -469,7 +472,7 @@ namespace Atdl4net.Xml.Serialization
 
         private static object ReadAttribute(IEnumerable<XAttribute> attributes, XName attributeName, Type enumType, Dictionary<string, Enum> enumValues)
         {
-            // Logger.DebugFormat("ReadAttribute(IEnumerable<XAttribute>, XName, Type, Dictionary<string, Enum>) called; Attribute name='{0}'", attributeName);
+            _log.DebugFormat("ReadAttribute(IEnumerable<XAttribute>, XName, Type, Dictionary<string, Enum>) called; Attribute name='{0}'", attributeName);
 
             XAttribute attribute = attributes.FirstOrDefault(a => a.Name == attributeName);
 
@@ -484,7 +487,7 @@ namespace Atdl4net.Xml.Serialization
 
         private static void SetPropertyValue(PropertyInfo property, object target, object value)
         {
-            // Logger.DebugFormat("SetPropertyValue called; Target object type={0}, property={1}, value='{2}'.", target.GetType().FullName, property.Name, value);
+            _log.DebugFormat("SetPropertyValue called; Target object type={0}, property={1}, value='{2}'.", target.GetType().FullName, property.Name, value);
 
             try
             {

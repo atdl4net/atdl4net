@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -9,7 +9,7 @@
 //      This file is part of Atdl4net.
 //
 //      Atdl4net is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public 
-//      License as published by the Free Software Foundation, version 3.
+//      License as published by the Free Software Foundation, either version 2.1 of the License, or (at your option) any later version.
 // 
 //      Atdl4net is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
 //      of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
@@ -18,16 +18,18 @@
 //      http://www.gnu.org/licenses/.
 //
 #endregion
-
 using Atdl4net.Diagnostics;
 using Atdl4net.Fix;
 using Atdl4net.Model.Collections;
 using Atdl4net.Utility;
+using Common.Logging;
 
 namespace Atdl4net.Model.Elements
 {
     public class Strategy_t : IParentable<Strategies_t>, IKeyedObject
     {
+        private static readonly ILog _log = LogManager.GetLogger("Model");
+
         private readonly ParameterCollection _parameters = new ParameterCollection();
         private ReadOnlyControlCollection _controls;
         private EditCollection _edits = new EditCollection();
@@ -42,7 +44,7 @@ namespace Atdl4net.Model.Elements
         {
             (this as IKeyedObject).RefKey = RefKeyGenerator.GetNextKey(typeof(Strategy_t));
 
-            Logger.DebugFormat("New Strategy_t created as Strategy[{0}].", (this as IKeyedObject).RefKey);
+            _log.DebugFormat("New Strategy_t created as Strategy[{0}].", (this as IKeyedObject).RefKey);
         }
 
         public ReadOnlyControlCollection Controls
@@ -96,7 +98,7 @@ namespace Atdl4net.Model.Elements
             get { return _name; }
             set
             {
-                Logger.DebugFormat("Strategy[{0}] Name='{1}'.", (this as IKeyedObject).RefKey, value);
+                _log.DebugFormat("Strategy[{0}] Name='{1}'.", (this as IKeyedObject).RefKey, value);
 
                 _name = value;
             }
