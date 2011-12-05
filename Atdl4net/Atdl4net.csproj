@@ -19,16 +19,19 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET_40</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>
+    </DocumentationFile>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;NET_40</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
@@ -68,10 +71,6 @@
     </Compile>
     <Compile Include=".\Diagnostics\Exceptions\ValidationException.cs">
     </Compile>
-    <Compile Include=".\Diagnostics\IKeyedObject.cs">
-    </Compile>
-    <Compile Include=".\Diagnostics\RefKeyGenerator.cs">
-    </Compile>
     <Compile Include=".\Diagnostics\ThrowHelper.cs">
     </Compile>
     <Compile Include=".\Fix\FixField.cs">
@@ -98,7 +97,9 @@
     </Compile>
     <Compile Include=".\Model\Collections\FixTagValuesCollection.cs">
     </Compile>
-    <Compile Include=".\Model\Collections\IDictionary.cs">
+    <Compile Include="Diagnostics\Exceptions\InconsistentStrategyException.cs" />
+    <Compile Include="Fix\FixDateTimeFormat.cs" />
+    <Compile Include="Model\Collections\ISimpleDictionary.cs">
     </Compile>
     <Compile Include=".\Model\Collections\ListItemCollection.cs">
     </Compile>
@@ -134,27 +135,16 @@
     </Compile>
     <Compile Include=".\Model\Controls\HiddenField_t.cs">
     </Compile>
-    <Compile Include=".\Model\Controls\IBooleanControl.cs">
+    <Compile Include="Model\Controls\Support\BinaryControlBase.cs" />
+    <Compile Include="Model\Controls\Support\IControlVisitor.cs" />
+    <Compile Include="Model\Controls\Support\IParameterConvertible.cs" />
+    <Compile Include="Model\Controls\Support\ListControlBase.cs">
     </Compile>
-    <Compile Include=".\Model\Controls\IDateTimeControl.cs">
-    </Compile>
-    <Compile Include=".\Model\Controls\IDecimalControl.cs">
-    </Compile>
-    <Compile Include=".\Model\Controls\IListControl.cs">
-    </Compile>
-    <Compile Include=".\Model\Controls\InitValue.cs">
-    </Compile>
-    <Compile Include=".\Model\Controls\IObjectControl.cs">
-    </Compile>
-    <Compile Include=".\Model\Controls\IOrientableControl.cs">
-    </Compile>
-    <Compile Include=".\Model\Controls\IStringControl.cs">
+    <Compile Include="Model\Controls\Support\IOrientableControl.cs">
     </Compile>
     <Compile Include=".\Model\Controls\Label_t.cs">
     </Compile>
     <Compile Include=".\Model\Controls\MultiSelectList_t.cs">
-    </Compile>
-    <Compile Include=".\Model\Controls\ParameterValueConverter.cs">
     </Compile>
     <Compile Include=".\Model\Controls\RadioButtonList_t.cs">
     </Compile>
@@ -180,11 +170,13 @@
     </Compile>
     <Compile Include=".\Model\Elements\EnumPair_t.cs">
     </Compile>
-    <Compile Include=".\Model\Elements\IEdit_t.cs">
+    <Compile Include="Model\Controls\Support\NumericControlBase.cs" />
+    <Compile Include="Model\Controls\Support\TextControlBase.cs" />
+    <Compile Include="Model\Elements\Support\IEdit.cs">
     </Compile>
-    <Compile Include=".\Model\Elements\IParameter_t.cs">
+    <Compile Include="Model\Elements\Support\IParameter.cs">
     </Compile>
-    <Compile Include=".\Model\Elements\IStrategyPanel.cs">
+    <Compile Include="Model\Elements\Support\IStrategyPanel.cs">
     </Compile>
     <Compile Include=".\Model\Elements\ListItem_t.cs">
     </Compile>
@@ -236,7 +228,11 @@
     </Compile>
     <Compile Include=".\Model\Types\Amt_t.cs">
     </Compile>
-    <Compile Include=".\Model\Types\AtdlTypeName.cs">
+    <Compile Include="Model\Atdl.cs" />
+    <Compile Include="Model\Controls\Support\AtdlControlName.cs" />
+    <Compile Include="Model\Reference\IsoLanguageCode.cs" />
+    <Compile Include="Model\Types\Support\AtdlReferenceType.cs" />
+    <Compile Include="Model\Types\Support\AtdlTypeName.cs">
     </Compile>
     <Compile Include=".\Model\Types\Boolean_t.cs">
     </Compile>
@@ -246,11 +242,7 @@
     </Compile>
     <Compile Include=".\Model\Types\Data_t.cs">
     </Compile>
-    <Compile Include=".\Model\Types\EnumableReferenceType.cs">
-    </Compile>
-    <Compile Include=".\Model\Types\EnumableValueType.cs">
-    </Compile>
-    <Compile Include=".\Model\Types\EnumState.cs">
+    <Compile Include="Model\Controls\Support\EnumState.cs">
     </Compile>
     <Compile Include=".\Model\Types\Exchange_t.cs">
     </Compile>
@@ -258,7 +250,8 @@
     </Compile>
     <Compile Include=".\Model\Types\Int_t.cs">
     </Compile>
-    <Compile Include=".\Model\Types\IParameterType.cs">
+    <Compile Include="Model\Types\Support\EnumTypeBase.cs" />
+    <Compile Include="Model\Types\Support\IParameterType.cs">
     </Compile>
     <Compile Include=".\Model\Types\Language_t.cs">
     </Compile>
@@ -266,7 +259,7 @@
     </Compile>
     <Compile Include=".\Model\Types\LocalMktDate_t.cs">
     </Compile>
-    <Compile Include=".\Model\Types\MonthYear.cs">
+    <Compile Include="Model\Types\Support\MonthYear.cs">
     </Compile>
     <Compile Include=".\Model\Types\MonthYear_t.cs">
     </Compile>
@@ -274,13 +267,9 @@
     </Compile>
     <Compile Include=".\Model\Types\MultipleStringValue_t.cs">
     </Compile>
-    <Compile Include=".\Model\Types\NonEnumableReferenceType.cs">
+    <Compile Include="Model\Types\Support\NonNegativeIntegerTypeBase.cs">
     </Compile>
-    <Compile Include=".\Model\Types\NonEnumableValueType.cs">
-    </Compile>
-    <Compile Include=".\Model\Types\NonNegativeInteger.cs">
-    </Compile>
-    <Compile Include=".\Model\Types\NonZeroPositiveInteger.cs">
+    <Compile Include="Model\Types\Support\NonZeroPositiveIntegerTypeBase.cs">
     </Compile>
     <Compile Include=".\Model\Types\NumInGroup_t.cs">
     </Compile>
@@ -298,19 +287,15 @@
     </Compile>
     <Compile Include=".\Model\Types\TagNum_t.cs">
     </Compile>
-    <Compile Include=".\Model\Types\Tenor.cs">
+    <Compile Include="Model\Types\Support\Tenor.cs">
     </Compile>
-    <Compile Include=".\Model\Types\Tenor_t.cs">
-    </Compile>
-    <Compile Include=".\Model\Types\TZDateTime.cs">
+    <Compile Include="Model\Types\Tenor_t.cs">
     </Compile>
     <Compile Include=".\Model\Types\TZTimeOnly_t.cs">
     </Compile>
     <Compile Include=".\Model\Types\TZTimestamp_t.cs">
     </Compile>
     <Compile Include=".\Model\Types\UTCDateOnly_t.cs">
-    </Compile>
-    <Compile Include=".\Model\Types\UTCDateTime.cs">
     </Compile>
     <Compile Include=".\Model\Types\UTCTimeOnly_t.cs">
     </Compile>
@@ -364,7 +349,7 @@
     </Compile>
     <Compile Include=".\Utility\StringExtensions.cs">
     </Compile>
-    <Compile Include=".\Utility\ValueConverter.cs">
+    <Compile Include="Xml\Serialization\ValueConverter.cs">
     </Compile>
     <Compile Include=".\Wpf\AtdlControl.xaml.cs">
       <DependentUpon>AtdlControl.xaml</DependentUpon>
@@ -380,8 +365,6 @@
     <Compile Include=".\Wpf\ViewModel\ListControlWrapper.cs">
     </Compile>
     <Compile Include=".\Wpf\ViewModel\ListItemWrapper.cs">
-    </Compile>
-    <Compile Include=".\Wpf\ViewModel\ParameterValueConvertor.cs">
     </Compile>
     <Compile Include=".\Wpf\ViewModel\RadioButtonGroupManager.cs">
     </Compile>
@@ -509,7 +492,12 @@
     </Compile>
     <Compile Include=".\Xml\StrategiesReader.cs">
     </Compile>
+    <Compile Include="Model\Types\Country_t.cs" />
+    <Compile Include="Model\Types\Support\DateTimeTypeBase.cs" />
+    <Compile Include="Model\Types\Support\AtdlValueType.cs" />
+    <Compile Include="Model\Validation\IValueProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Model\Types\Support\IControlConvertible.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include=".\Wpf\AtdlControl.Resources.xaml">
@@ -558,6 +546,30 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>InternalErrors.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="Deserialization.sequencediagram.layout">
+      <DependentUpon>Deserialization.sequencediagram</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FromUiListControlToParameter.sequencediagram.layout">
+      <DependentUpon>FromUiListControlToParameter.sequencediagram</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FromUiToParameter.sequencediagram.layout">
+      <DependentUpon>FromUiToParameter.sequencediagram</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ListControls.sequencediagram.layout">
+      <DependentUpon>ListControls.sequencediagram</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="StateRules.sequencediagram.layout">
+      <DependentUpon>StateRules.sequencediagram</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="AtdlParameterTypes.cd" />
+    <None Include="Deserialization.sequencediagram" />
+    <None Include="FromUiListControlToParameter.sequencediagram" />
+    <None Include="FromUiToParameter.sequencediagram" />
+    <None Include="ListControls.sequencediagram" />
+    <None Include="Parameters.cd" />
+    <None Include="StateRules.sequencediagram" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

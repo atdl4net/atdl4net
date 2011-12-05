@@ -27,6 +27,7 @@ namespace Atdl4net.Diagnostics.Exceptions
     /// The exception that is thrown when a value fails validation, either through a constraint on a parameter or throw a
     /// StrategyEdit validation rule.
     /// </summary>
+    [Serializable]
     public class ValidationException : Atdl4netException
     {
         /// <summary>

@@ -20,28 +20,19 @@
 #endregion
 
 using System;
+using System.Linq;
 
-namespace Atdl4net.Model.Types
+namespace Atdl4net.Model.Types.Support
 {
-    public abstract class TZDateTime : NonEnumableValueType<DateTimeOffset>
+    /// <summary>
+    /// Minimal interface that objects can support in order to make available a current value.
+    /// </summary>
+    public interface IValueProvider
     {
-        public System.DateTimeOffset? MaxValue { get; set; }
-        public System.DateTimeOffset? MinValue { get; set; }
-
-
-        protected override DateTimeOffset? ValidateValue(DateTimeOffset? value)
-        {
-            return value;
-        }
-
-        protected override DateTimeOffset? ConvertFromString(string value)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override string ConvertToString(DateTimeOffset? value)
-        {
-            throw new NotImplementedException();
-        }
+        /// <summary>
+        /// Gets the current value of this object.
+        /// </summary>
+        /// <returns>Object's current value.</returns>
+        object GetCurrentValue();
     }
 }

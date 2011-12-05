@@ -18,8 +18,8 @@
 //      http://www.gnu.org/licenses/.
 //
 #endregion
+
 using System.Collections.ObjectModel;
-using Atdl4net.Diagnostics;
 using Atdl4net.Model.Elements;
 using Atdl4net.Utility;
 using Common.Logging;
@@ -28,9 +28,9 @@ namespace Atdl4net.Model.Collections
 {
     public class StateRuleCollection : Collection<StateRule_t>
     {
-        private static readonly ILog _log = LogManager.GetLogger("StateRules");
+        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Collections");
 
-        private Control_t _owner;
+        private readonly Control_t _owner;
 
         public StateRuleCollection(Control_t owner)
         {
@@ -43,13 +43,15 @@ namespace Atdl4net.Model.Collections
 
             base.Add(item);
 
-            _log.DebugFormat("StateRule[{0}] added to StateRules for Control[{1}] Id={2}.",
-                (item as IKeyedObject).RefKey, (_owner as IKeyedObject).RefKey, _owner.Id);
+            _log.Debug(m=>m("StateRule_t {0} added to StateRules for control Id {1}", item.ToString(), _owner.Id));
         }
 
         public void EvaluateAll()
         {
-            foreach (StateRule_t rule in Items)
+            if (this.Items.Count > 0)
+                _log.Debug(m => m("Evaluating all {0} StateRule_t instances for control Id {1}", Items.Count,  _owner.Id));
+
+            foreach (StateRule_t rule in this.Items)
                 rule.Evaluate();
         }
 
@@ -59,7 +61,7 @@ namespace Atdl4net.Model.Collections
         /// <param name="strategy"></param>
         public void ResolveAll(Strategy_t strategy)
         {
-            foreach (StateRule_t rule in Items)
+            foreach (StateRule_t rule in this.Items)
                 (rule as IResolvable<Strategy_t, Control_t>).Resolve(strategy, strategy.Controls);
         }
     }

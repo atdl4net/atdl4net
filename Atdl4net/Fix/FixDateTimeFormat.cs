@@ -19,47 +19,36 @@
 //
 #endregion
 
-using Atdl4net.Fix;
-using Atdl4net.Model.Collections;
-using Atdl4net.Utility;
+using System;
+using System.Linq;
 
-namespace Atdl4net.Model.Controls
+namespace Atdl4net.Fix
 {
     /// <summary>
-    /// 
+    /// Provides definitions of the different date and time formats supported by FIX in .NET DateTime.ToString()-
+    /// compatible format.
     /// </summary>
-    /// <remarks>
-    /// 
-    /// </remarks>
-    public class InitValue<T>
+    public static class FixDateTimeFormat
     {
-        private FixField? _fixField;
-        private T _initValue;
+        /// <summary>Date and time (no milliseconds).</summary>
+        public readonly static string FixDateTime = "yyyyMMdd-HH:mm:ss";
 
-        public InitValue(string value)
-        {
-            if (value != null)
-            {
-                if (value.StartsWith("FIX_"))
-                    _fixField = value.ParseAsEnum<FixField>();
-                else
-                    _initValue = ValueConverter.ConvertTo<T>(value);
-            }
-        }
+        /// <summary>Date and time (with milliseconds).</summary>
+        public readonly static string FixDateTimeMs = "yyyyMMdd-HH:mm:ss.fff";
 
-        public T GetValue(FixTagValuesCollection inputValues)
-        {
-            if (_fixField != null)
-            {
-                string value;
+        /// <summary>Time only (no milliseconds).</summary>
+        public readonly static string FixTimeOnly = "HH:mm:ss";
 
-                if (inputValues !=null && inputValues.TryGetValue((FixTag)_fixField, out value))
-                    return ValueConverter.ConvertTo<T>(value);
-                else
-                    return default(T);
-            }
-            else
-                return _initValue;
-        }
+        /// <summary>Time only (with milliseconds).</summary>
+        public readonly static string FixTimeOnlyMs = "HH:mm:ss.fff";
+
+        /// <summary>Date only.</summary>
+        public readonly static string FixDateOnly = "yyyyMMdd";
+
+        /// <summary>Date and time with appended time zone information.</summary>
+        public readonly static string FixDateTimeWithTz = "yyyyMMdd-HH:mm:ssK";
+
+        /// <summary>Date and time with appended time zone information.</summary>
+        public readonly static string FixTimeOnlyWithTz = "HH:mm:ssK";
     }
 }

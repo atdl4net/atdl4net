@@ -19,11 +19,10 @@
 //
 #endregion
 
-using Atdl4net.Model.Elements;
-using Atdl4net.Resources;
 using System;
 using System.Globalization;
-using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
+using Atdl4net.Diagnostics;
+using Atdl4net.Resources;
 
 namespace Atdl4net.Model.Types
 {
@@ -44,45 +43,64 @@ namespace Atdl4net.Model.Types
         /// </summary>
         public bool? MultiplyBy100 { get; set; }
 
-        public override void SetWireValue(IParameter_t hostParameter, string value)
+        /// <summary>
+        /// Validates the supplied value in terms of the parameters constraints (e.g., MinValue, MaxValue, etc.).
+        /// </summary>
+        /// <param name="value">Value to validate, may be null in which case no validation is applied.</param>
+        /// <returns>Value passed in is returned if it is valid; otherwise an appropriate exception is thrown.</returns>
+        protected override decimal? ValidateValue(decimal? value)
         {
-            base.SetWireValue(hostParameter, value);
+            if (value != null)
+            {
+                decimal wireValue = (MultiplyBy100 != true) ? (decimal)value / 100 : (decimal)value;
 
-            if (MultiplyBy100 == true)
-                Value = Value / 100;
+                if (MaxValue != null && wireValue > MaxValue)
+                    throw ThrowHelper.New<ArgumentOutOfRangeException>(this, ErrorMessages.MaxValueExceeded, wireValue, MaxValue);
+
+                if (MinValue != null && wireValue < MinValue)
+                    throw ThrowHelper.New<ArgumentOutOfRangeException>(this, ErrorMessages.MinValueExceeded, wireValue, MinValue);
+            }
+
+            return value;
         }
 
-        public override object ControlValue
+        /// <summary>
+        /// Converts the supplied value from string format (as might be used on the FIX wire) into the type of the type
+        /// parameter for this type.  This implementation adjusts for the fact that percentage values are typically
+        /// shown as whole numbers (5, 10, 15) on the user interface but sent over the FIX wire as decimals (0.05, 0.1, 0.15).
+        /// </summary>
+        /// <param name="value">Type to convert from string; cannot be null as empty fields are invalid in FIX.</param>
+        /// <returns>Value converted from a string.</returns>
+        protected override decimal? ConvertFromWireValueFormat(string value)
         {
-            get
-            {
-                if (ConstValue != null)
-                    return ConstValue * 100;
-                else
-                    return Value * 100;
-            }
-            set
-            {
-                if (ConstValue != null)
-                    throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.AttemptToSetConstValueParameter, ConstValue);
+            decimal? decimalValue = base.ConvertFromWireValueFormat(value);
 
-                Value = value != null ? (decimal?)value / 100 : null;
-            }
+            return (MultiplyBy100 != true) ? (decimal)decimalValue : (decimal)decimalValue * 100;
         }
 
-        protected override string ConvertToString(decimal? value)
+        /// <summary>
+        /// Converts the supplied value to a string, as might be used on the FIX wire.  If the supplied value is
+        /// null, this means the field is not to be included in the outgoing FIX message.  This implementation adjusts for the 
+        /// fact that percentage values are typically shown as whole numbers (5, 10, 15) on the user interface but sent over 
+        /// the FIX wire as decimals (0.05, 0.1, 0.15).
+        /// </summary>
+        /// <param name="value">Value to convert, may be null.</param>
+        /// <returns>If input value is not null, returns value converted to a string; null otherwise.</returns>
+        protected override string ConvertToWireValueFormat(decimal? value)
         {
             if (value == null)
                 return null;
 
-            decimal adjustedValue = (MultiplyBy100 == true) ? (decimal)value * 100 : (decimal)value;
+            decimal adjustedValue = (MultiplyBy100 != true) ? (decimal)value / 100 : (decimal)value;
 
             if (Precision == null)
                 return adjustedValue.ToString(CultureInfo.InvariantCulture);
+            else
+            {
+                string format = string.Format("F{0}", Precision);
 
-            string format = string.Format("F{0}", Precision);
-
-            return adjustedValue.ToString(format, CultureInfo.InvariantCulture);
+                return adjustedValue.ToString(format, CultureInfo.InvariantCulture);
+            }
         }
     }
 }

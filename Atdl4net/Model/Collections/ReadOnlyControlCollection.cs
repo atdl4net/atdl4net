@@ -19,21 +19,24 @@
 //
 #endregion
 
-using Atdl4net.Diagnostics.Exceptions;
-using Atdl4net.Model.Controls;
-using Atdl4net.Model.Elements;
-using Atdl4net.Resources;
-using Atdl4net.Utility;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using Atdl4net.Diagnostics.Exceptions;
+using Atdl4net.Model.Elements;
+using Atdl4net.Model.Elements.Support;
+using Atdl4net.Resources;
+using Atdl4net.Utility;
+using Common.Logging;
 using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 
 namespace Atdl4net.Model.Collections
 {
-    public class ReadOnlyControlCollection : IParentable<Strategy_t>, IEnumerable<Control_t>, IDictionary<Control_t>
+    public class ReadOnlyControlCollection : IParentable<Strategy_t>, IEnumerable<Control_t>, ISimpleDictionary<Control_t>
     {
+        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Collections");
+
         private Strategy_t _owner;
         private readonly Dictionary<string, Control_t> _controls = new Dictionary<string, Control_t>();
 
@@ -128,13 +131,16 @@ namespace Atdl4net.Model.Collections
                 {
                     control.LoadDefault();
 
-                    if (control.ParameterRef != null && parameters[control.ParameterRef].ControlValue != null)
+                    if (control.ParameterRef != null)
                     {
-                        IParameter_t sourceParameter = parameters[control.ParameterRef];
+                        if (!parameters.Contains(control.ParameterRef))
+                            throw ThrowHelper.New<ReferencedObjectNotFoundException>(this, ErrorMessages.UnresolvedParameterRefError, control.ParameterRef);
 
-                        object value = ParameterValueConverter.Convert(sourceParameter, control);
+                        IParameter parameter = parameters[control.ParameterRef];
 
-                        control.SetValue(value);
+                        _log.Debug(m=>m("Updating control {0} value from parameter {1}", control.Id, parameter.Name));
+
+                        control.SetValueFromParameter(parameter);
                     }
                 }
                 catch (KeyNotFoundException ex)
@@ -151,26 +157,27 @@ namespace Atdl4net.Model.Collections
         {
             foreach (Control_t control in this)
             {
+
                 try
                 {
                     if (control.ParameterRef != null)
                     {
-                        IParameter_t targetParameter = parameters[control.ParameterRef];
+                        IParameter targetParameter = parameters[control.ParameterRef];
 
-                        targetParameter.ControlValue = ParameterValueConverter.Convert(control, targetParameter);
+                        targetParameter.SetValueFromControl(control);
                     }
                 }
                 catch (FormatException ex)
                 {
-                    IParameter_t targetParameter = parameters[control.ParameterRef];
+                    IParameter targetParameter = parameters[control.ParameterRef];
 
-                    throw ThrowHelper.New<InvalidCastException>(this, ex, ErrorMessages.DataConversionError, control.GetValue(), targetParameter.Type, targetParameter.Name);
+                    throw ThrowHelper.New<InvalidCastException>(this, ex, ErrorMessages.DataConversionError, control.GetCurrentValue(), targetParameter.Type, targetParameter.Name);
                 }
                 catch (InvalidCastException ex)
                 {
-                    IParameter_t targetParameter = parameters[control.ParameterRef];
+                    IParameter targetParameter = parameters[control.ParameterRef];
 
-                    throw ThrowHelper.New<InvalidCastException>(this, ex, ErrorMessages.DataConversionError, control.GetValue(), targetParameter.Type, targetParameter.Name);
+                    throw ThrowHelper.New<InvalidCastException>(this, ex, ErrorMessages.DataConversionError, control.GetCurrentValue(), targetParameter.Type, targetParameter.Name);
                 }
                 catch (KeyNotFoundException ex)
                 {
@@ -181,6 +188,9 @@ namespace Atdl4net.Model.Collections
 
         #region IParentable<Strategy_t> Members
 
+        /// <summary>
+        /// Gets/sets the parent/owner of this control collection.
+        /// </summary>
         Strategy_t IParentable<Strategy_t>.Parent
         {
             get { return _owner; }

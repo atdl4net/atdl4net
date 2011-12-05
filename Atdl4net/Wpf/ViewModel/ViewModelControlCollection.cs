@@ -53,7 +53,7 @@ namespace Atdl4net.Wpf.ViewModel
         #endregion
 #endif
 
-        private Strategy_t _underlyingStrategy;
+        private readonly Strategy_t _underlyingStrategy;
 
         public ViewModelControlCollection(Strategy_t strategy, DataEntryMode mode)
         {

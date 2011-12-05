@@ -49,6 +49,7 @@ namespace Atdl4net.Utility
                 return false;
 
             methodInfo.Invoke(visitor, new object[] { target });
+
             return true;
         }
 

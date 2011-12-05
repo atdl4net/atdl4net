@@ -19,16 +19,30 @@
 //
 #endregion
 
+using System;
 using Atdl4net.Diagnostics;
-using Atdl4net.Model.Elements;
+using Atdl4net.Model.Controls.Support;
 using Atdl4net.Model.Enumerations;
 using Common.Logging;
 
 namespace Atdl4net.Model.Controls
 {
-    public class SingleSpinner_t : Control_t, IDecimalControl
+    /// <summary>
+    /// Represents the SingleSpinner_t control element within FIXatdl.
+    /// </summary>
+    public class SingleSpinner_t : NumericControlBase
     {
-        private static readonly ILog _log = LogManager.GetLogger("Model");
+        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Controls");
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="SingleSpinner_t"/> using the supplied ID.
+        /// </summary>
+        /// <param name="id">ID for this control.</param>
+        public SingleSpinner_t(string id)
+            : base(id)
+        {
+            _log.Debug(m => m("New SingleSpinner_t created as control {0}", id));
+        }
 
         /// <summary>Limits the granularity of a spinner control. Useful in spinner objects to enforce odd-lot and sub-penny
         ///  restrictions.  Applicable when xsi:type is SingleSpinner_t or Slider_t.</summary>
@@ -36,43 +50,5 @@ namespace Atdl4net.Model.Controls
 
         /// <summary>For single spinner control, defines how to determine the increment. Applicable when xsi:type is SingleSpinner_t.</summary>
         public IncrementPolicy_t? IncrementPolicy { get; set; }
-
-        /// <summary>
-        /// Initialises a new instance of the <see cref="Atdl4net.Model.Controls.SingleSpinner_t">SingleSpinner_t</see> class using the supplied ID.
-        /// </summary>
-        /// <param name="id">ID for this control.</param>
-        public SingleSpinner_t(string id)
-            : base(id)
-        {
-            _log.DebugFormat("New {0} created as Control[{1}] Id='{2}'.", typeof(SingleSpinner_t).Name, (this as IKeyedObject).RefKey, id);
-        }
-
-        public override void LoadDefault()
-        {
-            if (InitValue != null)
-                Value = InitValue;
-        }
-
-        #region IDecimalControl Members
-
-        public decimal? Value { get; set; }
-
-        /// <summary>The value used to pre-populate the GUI component when the order entry screen is initially rendered.</summary>
-        public decimal? InitValue { get; set; }
-
-        #endregion
-
-        public override object GetValue()
-        {
-            return Value;
-        }
-
-        public override void SetValue(object newValue)
-        {
-            if (object.Equals(newValue, Control_t.NullValue))
-                Value = null;
-            else
-                Value = (decimal?)newValue;
-        }
     }
 }

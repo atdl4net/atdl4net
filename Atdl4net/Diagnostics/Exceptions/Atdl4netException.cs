@@ -24,6 +24,7 @@ using System;
 namespace Atdl4net.Diagnostics.Exceptions
 {
     /// <summary>Provides a base exception class for all Atdl4net custom exceptions.</summary>
+    [Serializable]
     public class Atdl4netException : System.Exception
     {
         /// <summary>Initializes a new instance of the Atdl4netException class with a specified error message.</summary>

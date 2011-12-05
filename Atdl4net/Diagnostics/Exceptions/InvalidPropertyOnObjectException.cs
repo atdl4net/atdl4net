@@ -27,12 +27,13 @@ namespace Atdl4net.Diagnostics.Exceptions
     /// The exception that is thrown when deserializing a FIXatdl file or stream, indicating that a property has been supplied for a given object,
     /// but that object does not support that property.
     /// </summary>
+    [Serializable]
     public class InvalidPropertyOnObjectException : Atdl4netException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="InvalidPropertyOnObjectException"/> class.
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="message">The message.</param>
         public InvalidPropertyOnObjectException(string message)
             : base(message)
         {
@@ -47,6 +48,5 @@ namespace Atdl4net.Diagnostics.Exceptions
             : base(message, innerException)
         {
         }
-
     }
 }

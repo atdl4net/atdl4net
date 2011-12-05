@@ -19,21 +19,27 @@
 //
 #endregion
 
+using System;
+using Atdl4net.Model;
 using Atdl4net.Model.Elements;
 using Atdl4net.Utility;
-using System;
+using Common.Logging;
 
 namespace Atdl4net.Wpf.ViewModel
 {
     public class StateRuleWrapper : IBindable<ViewModelControlCollection>
     {
-        private StateRule_t _underlyingStateRule;
-        private ControlWrapper _owningControl;
-        private EditWrapper _edit;
+        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Wpf.ViewModel");
+
+        private object _previousValue;
+        private readonly StateRule_t _underlyingStateRule;
+        private readonly ControlWrapper _owningControlWrapper;
+        private readonly EditWrapper _edit;
 
         public StateRuleWrapper(ControlWrapper owningControl, StateRule_t stateRule)
         {
-            _owningControl = owningControl;
+
+            _owningControlWrapper = owningControl;
             _underlyingStateRule = stateRule;
 
             if (stateRule.Edit != null)
@@ -47,6 +53,13 @@ namespace Atdl4net.Wpf.ViewModel
 
         /// <param name="sender"></param>
         /// <param name="e"></param>
+        private void OnEditStateChanged(object sender, StateChangedEventArgs e)
+        {
+            _log.Debug(m => m("StateRuleWrapper.OnEditStateChanged invoked; new Edit_t state = {0}", _edit.CurrentState));
+
+            RefreshState();
+        }
+
         /// <remarks>From the spec: "... the action of a flow-control rule is performed when the condition it describes is true. This differs 
         /// from validation rules, where the action of “raising an error” occurs when the condition is false."
         /// 
@@ -61,23 +74,44 @@ namespace Atdl4net.Wpf.ViewModel
         /// iv.	 A StateRule that changes the value of a control to “{NULL}” when its condition becomes true will cause the control’s value to
         /// revert back to its previous non-{NULL} value or its initial value."
         /// </remarks>
-        private void OnEditStateChanged(object sender, StateChangedEventArgs e)
+        public void RefreshState()
         {
-            RefreshState();
+            _log.Debug(m => m("Refreshing state for StateRule_t {0}", _underlyingStateRule.ToString()));
+
+            if (_underlyingStateRule.Visible != null)
+            {
+                bool visible = _edit.CurrentState ? (bool)_underlyingStateRule.Visible : !(bool)_underlyingStateRule.Visible;
+
+                _log.Debug(m => m("Updating control's visible state to {0}", visible.ToString().ToLower()));
+
+                _owningControlWrapper.IsVisible = visible;
+            }
+
+            if (_underlyingStateRule.Enabled != null)
+            {
+                bool enabled = _edit.CurrentState ? (bool)_underlyingStateRule.Enabled : !(bool)_underlyingStateRule.Enabled;
+
+                _log.Debug(m => m("Updating control's enabled state to {0}", enabled.ToString().ToLower()));
+
+                _owningControlWrapper.Enabled = enabled;
+            }
 
             if (_underlyingStateRule.Value != null)
             {
-                _owningControl.Value = _underlyingStateRule.Value;
+                if (_edit.CurrentState)
+                {
+                    _log.Debug(m => m("Updating control's value from '{0}' to '{1}'", _owningControlWrapper.UiValue, _underlyingStateRule.Value));
+
+                    _previousValue = _owningControlWrapper.UiValue;
+                    _owningControlWrapper.UiValue = _underlyingStateRule.Value;
+                }
+                else if (_underlyingStateRule.Value == Atdl.NullValue)
+                {
+                    _log.Debug(m => m("Returning control's value to '{1}' (from '{0}')", _previousValue, _owningControlWrapper.UiValue));
+
+                    _owningControlWrapper.UiValue = _previousValue;
+                }
             }
-        }
-
-        public void RefreshState()
-        {
-            if (_underlyingStateRule.Visible != null)
-                _owningControl.IsVisible = _edit.CurrentState ? (bool)_underlyingStateRule.Visible : !(bool)_underlyingStateRule.Visible;
-
-            if (_underlyingStateRule.Enabled != null)
-                _owningControl.Enabled = _edit.CurrentState ? (bool)_underlyingStateRule.Enabled : !(bool)_underlyingStateRule.Enabled;
         }
 
         #region IBindable<ViewControlCollection> Members

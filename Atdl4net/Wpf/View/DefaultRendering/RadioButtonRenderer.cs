@@ -21,7 +21,6 @@
 
 using Atdl4net.Model.Controls;
 using System.ComponentModel.Composition;
-using System.ComponentModel.Composition.Primitives;
 
 namespace Atdl4net.Wpf.View.DefaultRendering
 {
@@ -43,11 +42,16 @@ namespace Atdl4net.Wpf.View.DefaultRendering
 
                 if (!string.IsNullOrEmpty(control.Id))
                     writer.WriteAttribute(WpfXmlWriterAttribute.Name, id);
+
+                // For .NET 4.0 we can rely on GroupName, but for .NET 3.5 we have to provide our own mechanism to 
+                // ensure that only one radio button is enabled at a time
 #if NET_40
                 if (!string.IsNullOrEmpty(control.RadioGroup))
                     writer.WriteAttribute(WpfXmlWriterAttribute.GroupName, WpfControlRenderer.CleanName(control.RadioGroup));
 #endif
-                writer.WriteAttribute(WpfXmlWriterAttribute.IsChecked, string.Format("{0}Binding Path=Controls[{1}].Value{2}", "{", id, "}"));
+                writer.WriteAttribute(WpfXmlWriterAttribute.IsChecked, string.Format("{0}Binding Path=Controls[{1}].UiValue{2}", "{", id, "}"));
+                writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, string.Format("{0}Binding Path=Controls[{1}].Enabled{2}", "{", id, "}"));
+                writer.WriteAttribute(WpfXmlWriterAttribute.Visibility, string.Format("{0}Binding Path=Controls[{1}].Visibility{2}", "{", id, "}"));
             }
         }
     }

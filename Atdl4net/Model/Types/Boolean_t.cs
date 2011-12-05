@@ -19,16 +19,20 @@
 //
 #endregion
 
-using Atdl4net.Resources;
 using System;
+using Atdl4net.Model.Collections;
+using Atdl4net.Model.Controls.Support;
+using Atdl4net.Model.Elements.Support;
+using Atdl4net.Model.Types.Support;
+using Atdl4net.Resources;
 using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 
 namespace Atdl4net.Model.Types
 {
     /// <summary>
-    /// 'char field containing one of two values: "Y" = True/Yes; "N" = False/No.'
+    /// Represents a char field containing one of two values: "Y" = True/Yes; "N" = False/No.'
     /// </summary>
-    public class Boolean_t : NonEnumableValueType<bool>
+    public class Boolean_t : AtdlValueType<bool>, IControlConvertible
     {
         private const string DefaultTrueValue = "Y";
         private const string DefaultFalseValue = "N";
@@ -61,34 +65,123 @@ namespace Atdl4net.Model.Types
         /// </summary>
         public string TrueWireValue { get; set; }
 
+        #region AtdlValueType<T> Overrides
+
+        /// <summary>
+        /// Validates the supplied value in terms of the parameters constraints.  This method does nothing because
+        /// is not possible for a boolean value to be invalid.
+        /// </summary>
+        /// <param name="value">Value to validate, may be null in which case no validation is applied.</param>
+        /// <returns>Value passed in.</returns>
         protected override bool? ValidateValue(bool? value)
         {
             return value;
         }
 
-        protected override bool? ConvertFromString(string value)
+        /// <summary>
+        /// Converts the supplied value from string format (as might be used on the FIX wire) into the type of the type
+        /// parameter for this type.
+        /// </summary>
+        /// <param name="value">Type to convert from string; cannot be null as empty fields are invalid in FIX.</param>
+        /// <returns>Value converted from a string.</returns>
+        protected override bool? ConvertFromWireValueFormat(string value)
         {
             string trueValue = (TrueWireValue != null) ? TrueWireValue : DefaultTrueValue;
             string falseValue = (FalseWireValue != null) ? FalseWireValue : DefaultFalseValue;
 
             bool? result = null;
 
-            if (value != null)
-            {
-                if (value == trueValue)
-                    result = true;
-                else if (value == falseValue)
-                    result = false;
-                else
-                    throw ThrowHelper.New<ArgumentException>(this, ErrorMessages.InvalidBooleanValue, value, trueValue, falseValue);
-            }
+            if (value == trueValue)
+                result = true;
+            else if (value == falseValue)
+                result = false;
+            else
+                throw ThrowHelper.New<ArgumentException>(this, ErrorMessages.InvalidBooleanValue, value, trueValue, falseValue);
 
             return result;
         }
 
-        protected override string ConvertToString(bool? value)
+        /// <summary>
+        /// Converts the supplied value to a string, as might be used on the FIX wire.
+        /// </summary>
+        /// <param name="value">Value to convert, may be null.</param>
+        /// <returns>If input value is not null, returns value converted to a string; null otherwise.</returns>
+        protected override string ConvertToWireValueFormat(bool? value)
         {
-            return (bool)value ? (TrueWireValue ?? DefaultTrueValue) : (FalseWireValue ?? DefaultFalseValue);
+            if (value == null)
+                return null;
+
+            bool actualValue = (bool)value;
+
+            if ((actualValue && TrueWireValue == Atdl.NullValue) || (!actualValue && FalseWireValue == Atdl.NullValue))
+                return null;
+
+            return actualValue ? (TrueWireValue ?? DefaultTrueValue) : (FalseWireValue ?? DefaultFalseValue);
         }
+
+        /// <summary>
+        /// Converts the supplied value to the type parameter type (T?) for this class.
+        /// </summary>
+        /// <param name="hostParameter"><see cref="IParameter"/> that hosts this value.</param>
+        /// <param name="value">Value to convert, may be null.</param>
+        /// <returns>If input value is not null, returns value converted to T?; null otherwise.</returns>
+        protected override bool? ConvertToNativeType(IParameter hostParameter, IParameterConvertible value)
+        {
+            return value.ToBoolean(hostParameter);
+        }
+
+        #endregion
+
+        #region IControlConvertible Members
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent nullable boolean value.
+        /// </summary>
+        /// <returns>One of true, false or null which is equivalent to the value of this instance.</returns>
+        public bool? ToBoolean()
+        {
+            return _value;
+        }
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent string value using the specified culture-specific formatting information.
+        /// </summary>
+        /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
+        /// <returns>A string value equivalent to the value of this instance.  May be null.</returns>
+        public string ToString(IFormatProvider provider)
+        {
+            return _value != null ? ((bool)_value).ToString().ToLower() : null;
+        }
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent nullable decimal value using the specified culture-specific formatting information.
+        /// </summary>
+        /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
+        /// <returns>A nullable decimal equivalent to the value of this instance.</returns>
+        public decimal? ToDecimal()
+        {
+            throw ThrowHelper.New<InvalidCastException>(this, ErrorMessages.UnsupportedParameterValueConversion, _value, "Decimal");
+        }
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent nullable DateTime value using the specified culture-specific formatting information.
+        /// </summary>
+        /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
+        /// <returns>A nullable DateTime equivalent to the value of this instance.</returns>
+        public DateTime? ToDateTime()
+        {
+            throw ThrowHelper.New<InvalidCastException>(this, ErrorMessages.UnsupportedParameterValueConversion, _value, "DateTime");
+        }
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent EnumState value.
+        /// </summary>
+        /// <returns>A valid EnumState, assuming the source value can be correctly converted.</returns>
+        public EnumState ToEnumState(EnumPairCollection enumPairs)
+        {
+            throw ThrowHelper.New<InvalidCastException>(this, ErrorMessages.UnsupportedParameterValueConversion, _value, "Enumerated Type");
+        }
+
+        #endregion
     }
 }

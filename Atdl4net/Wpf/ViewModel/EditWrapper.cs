@@ -19,21 +19,27 @@
 //
 #endregion
 
+using System;
+using System.Linq;
 using Atdl4net.Diagnostics.Exceptions;
 using Atdl4net.Model.Elements;
+using Atdl4net.Model.Elements.Support;
 using Atdl4net.Resources;
 using Atdl4net.Utility;
-using System;
+using Common.Logging;
 using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 
 namespace Atdl4net.Wpf.ViewModel
 {
+    // TODO: Implement IDisposable
     public class EditWrapper : INotifyStateChanged, IBindable<ViewModelControlCollection>
     {
-        private IEdit_t<Control_t> _underlyingEdit;
-        private ViewModelEditCollection _edits;
+        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Wpf.ViewModel");
 
-        public EditWrapper(IEdit_t<Control_t> underlyingEdit)
+        private readonly IEdit<Control_t> _underlyingEdit;
+        private readonly ViewModelEditCollection _edits;
+
+        public EditWrapper(IEdit<Control_t> underlyingEdit)
         {
             _underlyingEdit = underlyingEdit;
 
@@ -47,24 +53,34 @@ namespace Atdl4net.Wpf.ViewModel
 
         public bool CurrentState { get { return _underlyingEdit.CurrentState; } }
 
+        #region INotifyStateChanged Members
+
+        public event EventHandler<StateChangedEventArgs> StateChanged;
+
+        #endregion INotifyStateChanged Members
+
         #region Event handlers
 
         private void OnFieldValueChanged(object sender, ValueChangedEventArgs e)
         {
+            _log.Debug(m => m("EditWrapper.OnFieldValueChanged invoked; value changed from '{0}' to '{1}'", e.OldValue, e.NewValue));
+
             bool previousState = _underlyingEdit.CurrentState;
 
             _underlyingEdit.Evaluate();
 
-            NotifyStateChange(previousState, _underlyingEdit.CurrentState);
+            NotifyStateChange(e.Id, previousState, _underlyingEdit.CurrentState);
         }
 
         private void OnField2ValueChanged(object sender, ValueChangedEventArgs e)
         {
+            _log.Debug(m => m("EditWrapper.OnField2ValueChanged invoked; value changed from '{0}' to '{1}'", e.OldValue, e.NewValue));
+
             bool previousState = _underlyingEdit.CurrentState;
 
             _underlyingEdit.Evaluate();
 
-            NotifyStateChange(previousState, _underlyingEdit.CurrentState);
+            NotifyStateChange(e.Id, previousState, _underlyingEdit.CurrentState);
         }
 
         private void OnEditsStateChanged(object sender, StateChangedEventArgs e)
@@ -73,15 +89,17 @@ namespace Atdl4net.Wpf.ViewModel
 
             _underlyingEdit.Evaluate();
 
-            NotifyStateChange(previousState, _underlyingEdit.CurrentState);
+            NotifyStateChange("Edits", previousState, _underlyingEdit.CurrentState);
         }
 
-        #endregion Event handlers
+        #endregion
 
-        private void NotifyStateChange(bool oldState, bool newState)
+        private void NotifyStateChange(string sourceOfChange, bool oldState, bool newState)
         {
             if (oldState != newState)
             {
+                _log.Debug(m=>m("Edit_t state changed by {0}; old state = {1}, new state = {2}", sourceOfChange, oldState.ToString().ToLower(), newState.ToString().ToLower()));
+
                 EventHandler<StateChangedEventArgs> stateChanged = StateChanged;
 
                 if (stateChanged != null)
@@ -127,11 +145,5 @@ namespace Atdl4net.Wpf.ViewModel
         }
 
         #endregion IBindable<Strategy_t> Members
-
-        #region INotifyStateChanged Members
-
-        public event EventHandler<StateChangedEventArgs> StateChanged;
-
-        #endregion INotifyStateChanged Members
     }
 }

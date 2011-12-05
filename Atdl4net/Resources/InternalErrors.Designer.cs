@@ -124,11 +124,47 @@ namespace Atdl4net.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unexpected type {0} used in method that expects one of ({1})..
+        /// </summary>
+        internal static string UnexpectedArgumentType {
+            get {
+                return ResourceManager.GetString("UnexpectedArgumentType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The value supplied {0} as an argument to this method was not expected and is not supported..
+        /// </summary>
+        internal static string UnexpectedArgumentValue {
+            get {
+                return ResourceManager.GetString("UnexpectedArgumentValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The field or property {0} of type {1} unexpectedly contained a null reference..
+        /// </summary>
+        internal static string UnexpectedNullReference {
+            get {
+                return ResourceManager.GetString("UnexpectedNullReference", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The attribute type specified, &apos;{0}&apos;, is not a supported attribute type..
         /// </summary>
         internal static string UnrecognisedAttributeType {
             get {
                 return ResourceManager.GetString("UnrecognisedAttributeType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The conversion from {0} value to type {1} is not supported..
+        /// </summary>
+        internal static string UnsupportedTypeConversion {
+            get {
+                return ResourceManager.GetString("UnsupportedTypeConversion", resourceCulture);
             }
         }
     }

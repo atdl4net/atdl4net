@@ -19,12 +19,28 @@
 //
 #endregion
 
-using Atdl4net.Model.Enumerations;
+using Atdl4net.Resources;
+using System;
+using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 
-namespace Atdl4net.Model.Controls
+namespace Atdl4net.Model.Types.Support
 {
-    public interface IOrientableControl
+    /// <summary>
+    /// Abstract base class for FIXatdl types that require positive integers greater than zero.
+    /// </summary>
+    public abstract class NonZeroPositiveIntegerTypeBase : NonNegativeIntegerTypeBase
     {
-        Orientation_t? Orientation { get; }
+        /// <summary>
+        /// Validates the supplied value in terms of the parameters constraints (e.g., MinValue, MaxValue, etc.).
+        /// </summary>
+        /// <param name="value">Value to validate, may be null in which case no validation is applied.</param>
+        /// <returns>Value passed in is returned if it is valid; otherwise an appropriate exception is thrown.</returns>
+        protected override uint? ValidateValue(uint? value)
+        {
+            if (value != null && (uint)value < 1)
+                throw ThrowHelper.New<ArgumentOutOfRangeException>(this, ErrorMessages.NonZeroPositiveIntRequired, value);
+
+            return value;
+        }
     }
 }

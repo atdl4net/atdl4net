@@ -19,8 +19,9 @@
 //
 #endregion
 
-using Atdl4net.Model.Elements;
 using System.Collections.ObjectModel;
+using Atdl4net.Model.Elements;
+using Atdl4net.Model.Types.Support;
 
 namespace Atdl4net.Model.Collections
 {

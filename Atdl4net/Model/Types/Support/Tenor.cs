@@ -23,8 +23,11 @@ using System;
 using Atdl4net.Resources;
 using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 
-namespace Atdl4net.Model.Types
+namespace Atdl4net.Model.Types.Support
 {
+    /// <summary>
+    /// Represents the Tenor type within FIX/FIXatdl.
+    /// </summary>
     public struct Tenor
     {
         private enum TenorTypeValue
@@ -128,16 +131,16 @@ namespace Atdl4net.Model.Types
             switch (TenorType)
             {
                 case TenorTypeValue.Day:
-                    return string.Format("D{1}", Offset);
+                    return string.Format("D{0}", Offset);
 
                 case TenorTypeValue.Week:
-                    return string.Format("W{1}", Offset);
+                    return string.Format("W{0}", Offset);
 
                 case TenorTypeValue.Month:
-                    return string.Format("M{1}", Offset);
+                    return string.Format("M{0}", Offset);
 
                 default:
-                    return string.Format("Y{1}", Offset);
+                    return string.Format("Y{0}", Offset);
             }
         }
     }

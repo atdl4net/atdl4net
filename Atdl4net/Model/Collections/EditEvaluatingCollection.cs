@@ -18,10 +18,12 @@
 //      http://www.gnu.org/licenses/.
 //
 #endregion
+
 using System;
 using System.Collections.ObjectModel;
 using Atdl4net.Diagnostics;
 using Atdl4net.Model.Elements;
+using Atdl4net.Model.Elements.Support;
 using Atdl4net.Model.Enumerations;
 using Atdl4net.Resources;
 using Atdl4net.Utility;
@@ -31,13 +33,13 @@ namespace Atdl4net.Model.Collections
 {
     /// <summary>
     /// Collection used to store typed instances of Edit_t, either for validating parameters via StrategyEdit, or 
-    /// for implementing StateRules using control values.  This collection also provides the ability evaluate the Edits that
+    /// for implementing StateRules using control values.  This collection also provides the ability to evaluate the Edits that
     /// it contains.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class EditEvaluatingCollection<T> : Collection<IEdit_t<T>>, IResolvable<Strategy_t, T>, IKeyedObject
+    public class EditEvaluatingCollection<T> : Collection<IEdit<T>>, IResolvable<Strategy_t, T>
     {
-        private static readonly ILog _log = LogManager.GetLogger("EditEvaluation");
+        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Collections");
 
         private bool _currentState;
 
@@ -45,23 +47,15 @@ namespace Atdl4net.Model.Collections
 
         public bool CurrentState { get { return _currentState; } }
 
-        public EditEvaluatingCollection()
-        {
-            (this as IKeyedObject).RefKey = RefKeyGenerator.GetNextKey(typeof(EditEvaluatingCollection<T>));
-
-            _log.DebugFormat("New EditEvaluatingCollection created as EditEvaluatingCollection[{0}].", (this as IKeyedObject).RefKey);
-        }
-
         /// <summary>
         /// Adds the specified item.
         /// </summary>
         /// <param name="item">The item.</param>
-        public new void Add(IEdit_t<T> item)
+        public new void Add(IEdit<T> item)
         {
             base.Add(item);
 
-            _log.DebugFormat("IEdit_t[{0}] added to EditEvaluatingCollection[{1}].",
-                (item as IKeyedObject).RefKey, (this as IKeyedObject).RefKey);
+            _log.Debug(m=>m("Edit_t {0} added to EditEvaluatingCollection", item.ToString()));
         }
 
         /// <summary>
@@ -69,16 +63,16 @@ namespace Atdl4net.Model.Collections
         /// </summary>
         public void Evaluate()
         {
-            _log.DebugFormat("Evaluating EditEvaluatingCollection[{0}] with {1} elements; current state = {2}.",
-                (this as IKeyedObject).RefKey, this.Count, _currentState);
+            _log.Debug(m=>m("Evaluating EditEvaluatingCollection with {0} elements; current state = {1}", this.Count, _currentState.ToString().ToLower()));
 
             if (LogicOperator == null)
                 throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.MissingLogicalOperatorOnSetOfEdits);
 
             bool shortCircuit = false;
             bool newState = (LogicOperator == LogicOperator_t.And) ? true : false;
+            int xorCount = 0;
 
-            foreach (IEdit_t<T> item in this.Items)
+            foreach (IEdit<T> item in this.Items)
             {
                 if (shortCircuit)
                     break;
@@ -103,14 +97,17 @@ namespace Atdl4net.Model.Collections
                         newState = !item.CurrentState;
                         break;
 
+                    // From the spec: "As a convention we define XOR as 'one and only one', which means it evaluates to true when one
+                    // and only one of its operands is true. If none or more than one of its operands is true then XOR is false."
                     case LogicOperator_t.Xor:
-                        newState ^= item.CurrentState;
+                        if (item.CurrentState)
+                            xorCount++;
+                        newState = xorCount == 1;
                         break;
                 }
-            }
 
-            _log.DebugFormat("Evaluation of EditEvaluatingCollection[{0}] yielded {1}.",
-                (this as IKeyedObject).RefKey, newState);
+                _log.Debug(m => m("EditEvaluatingCollection state is now {0}", newState.ToString().ToLower()));
+            }
 
             _currentState = newState;
         }
@@ -118,20 +115,14 @@ namespace Atdl4net.Model.Collections
         #region IResolvable<Strategy_t, T> Members
 
         // TODO: Unbind needed?
-        void IResolvable<Strategy_t, T>.Resolve(Strategy_t strategy, IDictionary<T> sourceCollection)
+        void IResolvable<Strategy_t, T>.Resolve(Strategy_t strategy, ISimpleDictionary<T> sourceCollection)
         {
-            foreach (IEdit_t<T> item in this.Items)
+            foreach (IEdit<T> item in this.Items)
             {
                 (item as IResolvable<Strategy_t, T>).Resolve(strategy, sourceCollection);
             }
         }
 
         #endregion IResolvable<Strategy_t> Members
-
-        #region IKeyedObject Members
-
-        string IKeyedObject.RefKey { get; set; }
-
-        #endregion IKeyedObject Members
     }
 }

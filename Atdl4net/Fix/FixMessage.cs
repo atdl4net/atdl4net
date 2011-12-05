@@ -33,18 +33,21 @@ namespace Atdl4net.Fix
     /// </summary>
     public class FixMessage : Dictionary<FixField, string>
     {
+        /// <summary>Field separator.</summary>
         public static readonly char SOH = '\x01';
+
+        /// <summary>Field/value separator.</summary>
         public static readonly char Separator = '=';
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FixMessage"/> class.
+        /// Initializes a new instance of <see cref="FixMessage"/>.
         /// </summary>
         public FixMessage()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FixMessage"/> class using the supplied FIX message.
+        /// Initializes a new instance of <see cref="FixMessage"/> using the supplied FIX message.
         /// </summary>
         /// <param name="rawMessage">The FIX message to parse.</param>
         /// <remarks>The current implementation of this class does NOT support repeating blocks.</remarks>
@@ -95,6 +98,10 @@ namespace Atdl4net.Fix
             get { return this.Keys; }
         }
 
+        /// <summary>
+        /// Provides the string representation of this FixMessage.
+        /// </summary>
+        /// <returns>String representation of this message.</returns>
         public string ToFix()
         {
             StringBuilder sb = new StringBuilder();

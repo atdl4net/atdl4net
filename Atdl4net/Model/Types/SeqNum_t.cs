@@ -19,12 +19,14 @@
 //
 #endregion
 
+using Atdl4net.Model.Types.Support;
+
 namespace Atdl4net.Model.Types
 {
     /// <summary>
     /// 'int field representing a message sequence number. Value must be positive.'
     /// </summary>
-    public class SeqNum_t : NonZeroPositiveInteger
+    public class SeqNum_t : NonZeroPositiveIntegerTypeBase
     {
     }
 }

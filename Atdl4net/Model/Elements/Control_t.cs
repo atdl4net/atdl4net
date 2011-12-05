@@ -19,27 +19,36 @@
 //
 #endregion
 
+using System;
 using Atdl4net.Diagnostics;
 using Atdl4net.Model.Collections;
-using Atdl4net.Model.Controls;
+using Atdl4net.Model.Controls.Support;
+using Atdl4net.Model.Elements.Support;
 using Atdl4net.Model.Enumerations;
-using Atdl4net.Model.Types;
+using Atdl4net.Model.Types.Support;
+using Atdl4net.Resources;
 using Atdl4net.Utility;
-using System;
 
 namespace Atdl4net.Model.Elements
 {
     /// <summary>
-    /// Base class for all concrete <see cref="Control_t{T}">Control&lt;T&gt;</see> types.
+    /// Base class for all concrete <see cref="Control_t"/> types.
     /// </summary>
-    public abstract class Control_t : IParentable<StrategyPanel_t>, IKeyedObject, IValueProvider
+    public abstract class Control_t : IParentable<StrategyPanel_t>, IValueProvider, IParameterConvertible
     {
-        public const string NullValue = "{NULL}";
-
         private StrategyPanel_t _owner;
         private StateRuleCollection _stateRules;
 
-        protected IParameter_t ReferencedParameter { get; set; }
+        /// <summary>
+        /// Initializes a new <see cref="Control_t"/> instance with the specified identifier as id.
+        /// </summary>
+        /// <param name="id">Id of this control.</param>
+        protected Control_t(string id)
+        {
+            Id = id;
+        }
+
+        #region Control_t Attributes
 
         /// <summary>For implementing systems that support saving order templates or pre-populated orders for basket trading/list
         ///  trading this attribute specifies that the control should be disabled when the order screen is going to be saved as a
@@ -69,31 +78,36 @@ namespace Atdl4net.Model.Elements
 
         /// <summary>The name of the parameter for which this control gives the visual representation. A parameter with this name 
         /// must be defined within the same strategy as this control.</summary>
+        /// <remarks>The <see cref="ReferencedParameter"/> property provides access to the parameter instance itself, whilst
+        /// this property provides access to the name of the parameter.</remarks>
         public string ParameterRef { get; set; }
 
         /// <summary>Tool tip text for rendered GUI objects rendered for the parameter.</summary>
         public string Tooltip { get; set; }
 
-        /// <summary>Indicates the type of GUI control that should be rendered on the screen.  Absence of this attribute may indicate
-        ///  that the parameter should not be visible to the user and the parameter’s initValue should be used to populate the FIX 
-        /// message.</summary>
-        //public string Type { get; set; }
+        #endregion
 
         /// <summary>
-        /// 
+        /// Sets the value of this control; either with a value of the appropriate type, or using the FIXatdl '{NULL}' 
+        /// value.  This method is either called indirectly from the user interface, or by a StateRule.
         /// </summary>
-        /// <param name="id"></param>
-        protected Control_t(string id)
-        {
-            Id = id;
-
-            (this as IKeyedObject).RefKey = RefKeyGenerator.GetNextKey(typeof(Control_t));
-        }
-
-        public abstract object GetValue();
-
+        /// <param name="newValue">Either a valid instance of the appropriate type or null (meaning do not send this 
+        /// value over FIX).  May also contain the FIXatdl '{NULL}' value as a string.</param>
         public abstract void SetValue(object newValue);
 
+        /// <summary>
+        /// Provides access to the value of this control using the <see cref="IParameterConvertible"/> interface which
+        /// means that this control's value can be converted into a form that is appropriate for the target parameter.
+        /// </summary>
+        /// <returns>An <see cref="IParameterConvertible"/> object through which the control's value can be accessed.</returns>
+        public virtual IParameterConvertible GetValueForParameter()
+        {
+            return this as IParameterConvertible;
+        }
+
+        /// <summary>
+        /// Gets the collection of <see cref="StateRule_t"/>s for this control.
+        /// </summary>
         public StateRuleCollection StateRules
         {
             get
@@ -106,13 +120,12 @@ namespace Atdl4net.Model.Elements
             }
         }
 
-        public abstract void LoadDefault();
-
         /// <summary>
-        /// Adds support for the visitor pattern, enabling ...
+        /// Adds support for the visitor pattern, enabling the appropriate Visit() method to be called on the visitor
+        /// depending on its concrete type.
         /// </summary>
-        /// <param name="visitor"></param>
-        public void DoVisit(IControl_tVisitor visitor)
+        /// <param name="visitor">Visitor.</param>
+        public void DoVisit(IControlVisitor visitor)
         {
             ModelUtils.VisitHelper(visitor, this);
         }
@@ -125,6 +138,31 @@ namespace Atdl4net.Model.Elements
                 return null;
         }
 
+        #region IValueProvider Members
+
+        /// <summary>
+        /// Gets the current value of this control, for use in Edits as part of StateRules.
+        /// </summary>
+        /// <returns>Current value of this control; may be null.</returns>
+        public abstract object GetCurrentValue();
+
+        #endregion
+
+        #region Abstract Methods that all Controls must implement
+
+        /// <summary>
+        /// Sets the value of this control using the value of the supplied parameter.
+        /// </summary>
+        /// <param name="parameter">Parameter to set this control's value from.</param>
+        public abstract void SetValueFromParameter(IParameter parameter);
+
+        /// <summary>
+        /// Loads the initial values for this control from the InitValue field, if supplied.
+        /// </summary>
+        public abstract void LoadDefault();
+
+        #endregion
+
         #region IParentable<StrategyPanel_t> Members
 
         StrategyPanel_t IParentable<StrategyPanel_t>.Parent
@@ -135,19 +173,138 @@ namespace Atdl4net.Model.Elements
 
         #endregion
 
-        #region IKeyedObject Members
+        #region IParameterConvertible Members
 
-        string IKeyedObject.RefKey { get; set; }
+        /// <summary>
+        /// Converts the value of this instance to an equivalent nullable boolean value.
+        /// </summary>
+        /// <returns>One of true, false or null which is equivalent to the value of this instance.</returns>
+        public abstract bool? ToBoolean(IParameter targetParameter);
 
-        #endregion IKeyedObject Members
-    }
+        /// <summary>
+        /// Converts the value of this instance to an equivalent nullable decimal value using the specified culture-specific formatting information.
+        /// </summary>
+        /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
+        /// <returns>A nullable decimal equivalent to the value of this instance.</returns>
+        public abstract decimal? ToDecimal(IParameter targetParameter, IFormatProvider provider);
 
-    /// <summary>
-    /// Interface to support visitor pattern.
-    /// (Thanks to Brad Wilson - http://www.agileprogrammer.com/dotnetguy/articles/ReflectionVisitor.aspx - for this tip.)
-    /// </summary>
-    public interface IControl_tVisitor
-    {
-        void Visit(Control_t control);
+        /// <summary>
+        /// Converts the value of this instance to an equivalent 32-bit signed integer using the specified culture-specific formatting information.
+        /// </summary>
+        /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
+        /// <returns>A nullable 32-bit signed integer equivalent to the value of this instance.</returns>
+        public abstract int? ToInt32(IParameter targetParameter, IFormatProvider provider);
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent 32-bit unsigned integer using the specified culture-specific formatting information.
+        /// </summary>
+        /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
+        /// <returns>A nullable 32-bit unsigned integer equivalent to the value of this instance.</returns>
+        public abstract uint? ToUInt32(IParameter targetParameter, IFormatProvider provider);
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent char value.
+        /// </summary>
+        /// <returns>A nullable char value equivalent to the value of this instance.  May be null.</returns>
+        public abstract char? ToChar(IParameter targetParameter);
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent string value using the specified culture-specific formatting information.
+        /// </summary>
+        /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
+        /// <returns>A string value equivalent to the value of this instance.  May be null.</returns>
+        public abstract string ToString(IParameter targetParameter);
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent nullable DateTime value using the specified culture-specific formatting information.
+        /// </summary>
+        /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
+        /// <returns>A nullable DateTime equivalent to the value of this instance.</returns>
+        public abstract DateTime? ToDateTime(IParameter targetParameter, IFormatProvider provider);
+
+        /// <summary>
+        /// Indicates whether the control has enumerated state (i.e., its state is held internally in an <see cref="EnumState"/> which
+        /// requires special conversion, or if instead a regular value conversion is appropriate).
+        /// </summary>
+        public abstract bool HasEnumeratedState { get; }
+
+        #endregion
+
+        #region Conversion Utilities
+
+        /// <summary>
+        /// Attempts to convert the supplied value to an integer, provided that the value is non-null and of non-zero length.
+        /// </summary>
+        /// <param name="value">Value to attempt to convert.</param>
+        /// <param name="result">Valid int value if the conversion was possible; zero otherwise.</param>
+        /// <returns>True if the value was non-null and of non-zero length and the conversion succeeded; false otherwise.</returns>
+        /// <exception cref="InvalidCastException">Thrown if the supplied value was non-null and of non-zero length and the conversion was unsuccessful.</exception>
+        protected bool TryConvertToInt(string value, out int result)
+        {
+            result = 0;
+            bool hasValue = !string.IsNullOrEmpty(value);
+
+            if (hasValue && !int.TryParse(value, out result))
+                throw ThrowHelper.New<InvalidCastException>(this, ErrorMessages.InvalidNumericValue, value);
+
+            return hasValue;
+        }
+
+        /// <summary>
+        /// Attempts to convert the supplied value to an unsigned integer, provided that the value is non-null and of non-zero length.
+        /// </summary>
+        /// <param name="value">Value to attempt to convert.</param>
+        /// <param name="result">Valid uint value if the conversion was possible; zero otherwise.</param>
+        /// <returns>True if the value was non-null and of non-zero length and the conversion succeeded; false otherwise.</returns>
+        /// <exception cref="InvalidCastException">Thrown if the supplied value was non-null and of non-zero length and the conversion was unsuccessful.</exception>
+        protected bool TryConvertToUint(string value, out uint result)
+        {
+            result = 0;
+            bool hasValue = !string.IsNullOrEmpty(value);
+
+            if (hasValue && !uint.TryParse(value, out result))
+                throw ThrowHelper.New<InvalidCastException>(this, ErrorMessages.InvalidNumericValue, value);
+
+            return hasValue;
+        }
+
+        /// <summary>
+        /// Attempts to convert the supplied value to an decimal, provided that the value is non-null and of non-zero length.
+        /// </summary>
+        /// <param name="value">Value to attempt to convert.</param>
+        /// <param name="result">Valid decimal value if the conversion was possible; zero otherwise.</param>
+        /// <returns>True if the value was non-null and of non-zero length and the conversion succeeded; false otherwise.</returns>
+        /// <exception cref="InvalidCastException">Thrown if the supplied value was non-null and of non-zero length and the conversion was unsuccessful.</exception>
+        protected bool TryConvertToDecimal(string value, out decimal result)
+        {
+            result = 0;
+            bool hasValue = !string.IsNullOrEmpty(value);
+
+            if (hasValue && !decimal.TryParse(value, out result))
+                throw ThrowHelper.New<InvalidCastException>(this, ErrorMessages.InvalidNumericValue, value);
+
+            return hasValue;
+        }
+
+        /// <summary>
+        /// Attempts to convert the supplied value to a char, provided that the value is non-null and of non-zero length.
+        /// </summary>
+        /// <param name="value">Value to attempt to convert.</param>
+        /// <param name="result">Valid char value if the conversion was possible; Char.MinValue otherwise.</param>
+        /// <returns>True if the value was non-null and of non-zero length and the conversion succeeded; false otherwise.</returns>
+        /// <exception cref="InvalidCastException">Thrown if the supplied value was non-null and of non-zero length and the conversion was unsuccessful.</exception>
+        protected bool TryConvertToChar(string value, out char result)
+        {
+            bool hasValue = !string.IsNullOrEmpty(value);
+
+            if (hasValue && value.Length != 1)
+                throw ThrowHelper.New<InvalidCastException>(this, ErrorMessages.InvalidCharValue, value);
+
+            result = hasValue ? value[0] : char.MinValue;
+
+            return hasValue;
+        }
+
+        #endregion
     }
 }

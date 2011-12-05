@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Atdl4net.Wpf.View.Controls"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" Name="controlRoot">
     <UserControl.Resources>
         <Style TargetType="{x:Type RepeatButton}">
@@ -38,7 +39,7 @@
             <Grid Grid.Column="0" Height="Auto">
                 <local:ClickSelectTextBox x:Name="value" BorderThickness="0" Margin="0,1,0,0" TextAlignment="Left" 
                                         KeyDown="value_KeyDown">
-                    <Binding ElementName="controlRoot" Path="Value" Mode="TwoWay" UpdateSourceTrigger="LostFocus"/>
+                    <Binding ElementName="controlRoot" Path="Value" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged"/>
                 </local:ClickSelectTextBox>
             </Grid>
             <Grid Grid.Column="1">

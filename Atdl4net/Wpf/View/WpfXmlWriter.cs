@@ -220,14 +220,17 @@ namespace Atdl4net.Wpf.View
             _attributeInformation[(int)WpfXmlWriterAttribute.Header] = new AttributeInformation("Header");
             _attributeInformation[(int)WpfXmlWriterAttribute.HeaderVisibility] = new AttributeInformation("HeaderVisibility");
             _attributeInformation[(int)WpfXmlWriterAttribute.Height] = new AttributeInformation("Height");
-            _attributeInformation[(int)WpfXmlWriterAttribute.ItemsSource] = new AttributeInformation("ItemsSource");
+            _attributeInformation[(int)WpfXmlWriterAttribute.Increment] = new AttributeInformation("Increment");
+            _attributeInformation[(int)WpfXmlWriterAttribute.InnerIncrement] = new AttributeInformation("InnerIncrement");
             _attributeInformation[(int)WpfXmlWriterAttribute.IsChecked] = new AttributeInformation("IsChecked");
             _attributeInformation[(int)WpfXmlWriterAttribute.IsEditable] = new AttributeInformation("IsEditable");
             _attributeInformation[(int)WpfXmlWriterAttribute.IsEnabled] = new AttributeInformation("IsEnabled");
             _attributeInformation[(int)WpfXmlWriterAttribute.IsExpanded] = new AttributeInformation("IsExpanded");
+            _attributeInformation[(int)WpfXmlWriterAttribute.ItemsSource] = new AttributeInformation("ItemsSource");
             _attributeInformation[(int)WpfXmlWriterAttribute.Margin] = new AttributeInformation("Margin");
             _attributeInformation[(int)WpfXmlWriterAttribute.Name] = new AttributeInformation("Name");
             _attributeInformation[(int)WpfXmlWriterAttribute.Orientation] = new AttributeInformation("Orientation");
+            _attributeInformation[(int)WpfXmlWriterAttribute.OuterIncrement] = new AttributeInformation("OuterIncrement");
             _attributeInformation[(int)WpfXmlWriterAttribute.Padding] = new AttributeInformation("Padding");
             _attributeInformation[(int)WpfXmlWriterAttribute.SelectedItem] = new AttributeInformation("SelectedItem");
             _attributeInformation[(int)WpfXmlWriterAttribute.SelectedValue] = new AttributeInformation("SelectedValue");
@@ -235,6 +238,7 @@ namespace Atdl4net.Wpf.View
             _attributeInformation[(int)WpfXmlWriterAttribute.Target] = new AttributeInformation("Target");
             _attributeInformation[(int)WpfXmlWriterAttribute.Text] = new AttributeInformation("Text");
             _attributeInformation[(int)WpfXmlWriterAttribute.Time] = new AttributeInformation("Time");
+            _attributeInformation[(int)WpfXmlWriterAttribute.Value] = new AttributeInformation("Value");
             _attributeInformation[(int)WpfXmlWriterAttribute.Visibility] = new AttributeInformation("Visibility");
             _attributeInformation[(int)WpfXmlWriterAttribute.Width] = new AttributeInformation("Width");
         }

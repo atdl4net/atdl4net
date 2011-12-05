@@ -25,6 +25,6 @@ namespace Atdl4net.Utility
 {
     public interface IResolvable<Thost, Tvaluesource>
     {
-        void Resolve(Thost host, IDictionary<Tvaluesource> sourceCollection);
+        void Resolve(Thost host, ISimpleDictionary<Tvaluesource> sourceCollection);
     }
 }

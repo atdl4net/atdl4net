@@ -26,13 +26,11 @@ using Common.Logging;
 namespace Atdl4net.Diagnostics
 {
     /// <summary>
-    /// Helper class for generating new instances of exceptions using the provided parameters
+    /// Static helper class for generating new instances of exceptions using the provided parameters
     /// </summary>
-    public class ThrowHelper
+    public static class ThrowHelper
     {
         private static readonly ILog _log = LogManager.GetLogger("ExceptionManagement");
-
-        private ThrowHelper() { }
 
         /// <summary>
         /// Creates an exception of the specified type and initializes it using the values supplied.
@@ -218,11 +216,7 @@ namespace Atdl4net.Diagnostics
             return exception;
         }
 
-        /// <summary>
-        /// Workaround limitation in C# 2.0/4.0 - can't create an instance of a generic type with parameters.
-        /// </summary>
-        /// <param name="args"></param>
-        /// <returns></returns>
+        // Workaround limitation in C# 3.0/4.0 - can't create an instance of a generic type with parameters using new T().
         private static T CreateException<T>(object source, string message, ExceptionInfo info) where T : System.Exception
         {
             Type classType = typeof(T);
@@ -262,11 +256,7 @@ namespace Atdl4net.Diagnostics
             }
         }
 
-        /// <summary>
-        /// Workaround limitation in C# 2.0/4.0 - can't create an instance of a generic type with parameters.
-        /// </summary>
-        /// <param name="args"></param>
-        /// <returns></returns>
+        // Workaround limitation in C# 3.0/4.0 - can't create an instance of a generic type with parameters using new T().
         private static T CreateException<T>(object source, string message, Exception innerException, ExceptionInfo info) where T : System.Exception
         {
             Type classType = typeof(T);

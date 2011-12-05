@@ -54,9 +54,11 @@ namespace Atdl4net.Wpf.View.DefaultRendering
 
                     writer.WriteAttribute(WpfXmlWriterAttribute.ItemsSource, string.Format("{0}Binding Path=Controls[{1}].ListItems{2}", "{", id, "}"));
                     writer.WriteAttribute(WpfXmlWriterAttribute.SelectedValue, string.Format("{0}Binding Path=Controls[{1}].SelectedValue{2}", "{", id, "}"));
-                    writer.WriteAttribute(WpfXmlWriterAttribute.SelectedValuePath, string.Format("EnumId", "{", id, "}"));
+                    writer.WriteAttribute(WpfXmlWriterAttribute.SelectedValuePath, "EnumId");
                     writer.WriteAttribute(WpfXmlWriterAttribute.DisplayMemberPath, "UiRep");
-                    writer.WriteAttribute("Text", string.Format("{0}Binding Path=Controls[{1}].Text{2}", "{", id, "}"));
+                    writer.WriteAttribute(WpfXmlWriterAttribute.Text, string.Format("{0}Binding Path=Controls[{1}].Text{2}", "{", id, "}"));
+                    writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, string.Format("{0}Binding Path=Controls[{1}].Enabled{2}", "{", id, "}"));
+                    writer.WriteAttribute(WpfXmlWriterAttribute.Visibility, string.Format("{0}Binding Path=Controls[{1}].Visibility{2}", "{", id, "}"));
                 }
             });
         }

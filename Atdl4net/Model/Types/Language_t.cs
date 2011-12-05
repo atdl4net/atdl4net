@@ -19,31 +19,67 @@
 //
 #endregion
 
-using Atdl4net.Model.Elements;
-using Atdl4net.Resources;
 using System;
-using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
+using Atdl4net.Model.Controls.Support;
+using Atdl4net.Model.Elements.Support;
+using Atdl4net.Model.Reference;
+using Atdl4net.Model.Types.Support;
+using Atdl4net.Utility;
 
 namespace Atdl4net.Model.Types
 {
     /// <summary>
-    /// 'Identifier for a national language - uses ISO 639-1 standard'
+    /// Represents an identifier for a national language using the ISO 639-1 standard.
     /// </summary>
-    public class Language_t : EnumableReferenceType<string>
+    public class Language_t : EnumTypeBase<IsoLanguageCode>
     {
-        protected override string ValidateValue(string value)
+        #region AtdlValueType<T> Overrides
+
+        /// <summary>
+        /// Validates the supplied value in terms of the parameters constraints.  This method does nothing because
+        /// is not possible for an IsoLanguageCode value to be invalid.
+        /// </summary>
+        /// <param name="value">Value to validate, may be null in which case no validation is applied.</param>
+        /// <returns>Value passed in.</returns>
+        protected override IsoLanguageCode? ValidateValue(IsoLanguageCode? value)
         {
             return value;
         }
 
-        protected override string ConvertFromString(string value)
+        /// <summary>
+        /// Converts the supplied value from string format (as might be used on the FIX wire) into the type of the type
+        /// parameter for this type.
+        /// </summary>
+        /// <param name="value">Type to convert from string; cannot be null as empty fields are invalid in FIX.</param>
+        /// <returns>Value converted from a string.</returns>
+        protected override IsoLanguageCode? ConvertFromWireValueFormat(string value)
         {
-            return value;
+            return (IsoLanguageCode?)value.ParseAsEnum<IsoLanguageCode>();
         }
 
-        protected override string ConvertToString(string value)
+        /// <summary>
+        /// Converts the supplied value to a string, as might be used on the FIX wire.
+        /// </summary>
+        /// <param name="value">Value to convert, may be null.</param>
+        /// <returns>If input value is not null, returns value converted to a string; null otherwise.</returns>
+        protected override string ConvertToWireValueFormat(IsoLanguageCode? value)
         {
-            return value;
+            return value != null ? Enum.GetName(typeof(IsoLanguageCode), value) : null;
         }
+
+        /// <summary>
+        /// Converts the supplied value to the type parameter type (T?) for this class.
+        /// </summary>
+        /// <param name="hostParameter">Parameter that this value belongs to.</param>
+        /// <param name="value">Value to convert, may be null.</param>
+        /// <returns>If input value is not null, returns value converted to T?; null otherwise.</returns>
+        protected override IsoLanguageCode? ConvertToNativeType(IParameter hostParameter, IParameterConvertible value)
+        {
+            string wireValue = value.ToString(hostParameter);
+
+            return !string.IsNullOrEmpty(wireValue) ? ConvertFromWireValueFormat(wireValue) : null;
+        }
+
+        #endregion
     }
 }

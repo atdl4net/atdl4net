@@ -18,16 +18,30 @@
 //      http://www.gnu.org/licenses/.
 //
 #endregion
-using Atdl4net.Diagnostics;
-using Atdl4net.Model.Elements;
+
+using System;
+using Atdl4net.Model.Controls.Support;
 using Atdl4net.Model.Enumerations;
 using Common.Logging;
 
 namespace Atdl4net.Model.Controls
 {
-    public class DoubleSpinner_t : Control_t, IDecimalControl
+    /// <summary>
+    /// Represents the DoubleSpinner_t control element within FIXatdl.
+    /// </summary>
+    public class DoubleSpinner_t : NumericControlBase
     {
-        private static readonly ILog _log = LogManager.GetLogger("Model");
+        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Controls");
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="DoubleSpinner_t"/> using the supplied ID.
+        /// </summary>
+        /// <param name="id">ID for this control.</param>
+        public DoubleSpinner_t(string id)
+            : base(id)
+        {
+            _log.Debug(m => m("New DoubleSpinner_t created as control {0}", id));
+        }
 
         /// <summary>Limits the granularity of the inner spinner of a double spinner control. Useful in spinner objects to enforce
         ///  odd-lot and sub-penny restrictions.  Applicable when xsi:type is DoubleSpinner_t.</summary>
@@ -44,43 +58,5 @@ namespace Atdl4net.Model.Controls
         /// <summary>For double spinner control, defines how to determine the increment for the outer set of spinners. Applicable 
         /// when xsi:type is DoubleSpinner_t only.</summary>
         public IncrementPolicy_t? OuterIncrementPolicy { get; set; }
-
-        /// <summary>
-        /// Initialises a new instance of the <see cref="Atdl4net.Model.Controls.DoubleSpinner_t">DoubleSpinner_t</see> class using the supplied ID.
-        /// </summary>
-        /// <param name="id">ID for this control.</param>
-        public DoubleSpinner_t(string id)
-            : base(id)
-        {
-            _log.DebugFormat("New {0} created as Control[{1}] Id='{2}'.", typeof(DoubleSpinner_t).Name, (this as IKeyedObject).RefKey, id);
-        }
-
-        public override void LoadDefault()
-        {
-            if (InitValue != null)
-                Value = InitValue;
-        }
-
-        #region IDecimalControl Members
-
-        public decimal? Value { get; set; }
-
-        /// <summary>The value used to pre-populate the GUI component when the order entry screen is initially rendered.</summary>
-        public decimal? InitValue { get; set; }
-
-        #endregion
-
-        public override object GetValue()
-        {
-            return Value;
-        }
-
-        public override void SetValue(object newValue)
-        {
-            if (object.Equals(newValue, Control_t.NullValue))
-                Value = null;
-            else
-                Value = (decimal?)newValue;
-        }
     }
 }

@@ -21,10 +21,19 @@
 
 namespace Atdl4net
 {
+    /// <summary>
+    /// Provides the global settings for Atdl4net.
+    /// </summary>
     public class GlobalSettings
     {
+        /// <summary>
+        /// Provides the global View settings for Atdl4net.
+        /// </summary>
         public class View
         {
+            /// <summary>
+            /// Provides the WPF settings for Atdl4net.
+            /// </summary>
             public class Wpf
             {
                 static Wpf()
@@ -32,6 +41,9 @@ namespace Atdl4net
                     AutosizeDropdowns = true;
                 }
 
+                /// <summary>
+                /// Indicates whether Atdl4net should auto-size to the width of the largest element or not.
+                /// </summary>
                 public static bool AutosizeDropdowns { get; set; }
             }
         }

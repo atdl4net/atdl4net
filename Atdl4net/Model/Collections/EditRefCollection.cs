@@ -19,8 +19,9 @@
 //
 #endregion
 
-using Atdl4net.Model.Elements;
 using System.Collections.ObjectModel;
+using Atdl4net.Model.Elements;
+using Atdl4net.Model.Types.Support;
 
 namespace Atdl4net.Model.Collections
 {
@@ -30,10 +31,10 @@ namespace Atdl4net.Model.Collections
     /// <typeparam name="T">Type.</typeparam>
     public class EditRefCollection<T> : KeyedCollection<string, EditRef_t<T>> where T : class, IValueProvider
     {
-        private EditEvaluatingCollection<T> _evaluatingCollection;
+        private readonly EditEvaluatingCollection<T> _evaluatingCollection;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EditRefCollection&lt;T&gt;"/> class.
+        /// Initializes a new instance of the <see cref="EditRefCollection{T}"/> class.
         /// </summary>
         public EditRefCollection()
             : this(null)
@@ -41,7 +42,7 @@ namespace Atdl4net.Model.Collections
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EditRefCollection&lt;T&gt;"/> class.
+        /// Initializes a new instance of the <see cref="EditRefCollection{T}"/> class.
         /// </summary>
         /// <param name="evaluatingCollection">The evaluating collection.</param>
         public EditRefCollection(EditEvaluatingCollection<T> evaluatingCollection)
@@ -73,6 +74,11 @@ namespace Atdl4net.Model.Collections
             return this.Contains(id);
         }
 
+        /// <summary>
+        /// Gets the key for items in this collection, i.e., the Edit_t ID.
+        /// </summary>
+        /// <param name="item">EditRef_t.</param>
+        /// <returns>Edit_t ID.</returns>
         protected override string GetKeyForItem(EditRef_t<T> item)
         {
             return item.Id;

@@ -19,10 +19,10 @@
 //
 #endregion
 
-namespace Atdl4net.Model.Types
+namespace Atdl4net.Model.Types.Support
 {
     /// <summary>
-    /// Helper class containing the names of all the valid ATDL data types.
+    /// Helper class containing the names of all the valid FIXatdl data types.
     /// </summary>
     public class AtdlTypeName
     {

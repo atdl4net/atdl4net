@@ -19,51 +19,29 @@
 //
 #endregion
 
-using Atdl4net.Diagnostics;
-using Atdl4net.Model.Collections;
-using Atdl4net.Model.Elements;
+using System;
+using Atdl4net.Model.Controls.Support;
 using Atdl4net.Model.Enumerations;
-using Atdl4net.Model.Types;
 using Common.Logging;
 
 namespace Atdl4net.Model.Controls
 {
-    public class RadioButtonList_t : Control_t, IListControl, IOrientableControl
+    /// <summary>
+    /// Represents the RadioButtonList_t control element within FIXatdl.
+    /// </summary>
+    public class RadioButtonList_t : ListControlBase, IOrientableControl
     {
-        private static readonly ILog _log = LogManager.GetLogger("Model");
+        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Controls");
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="Atdl4net.Model.Controls.RadioButtonList_t">RadioButtonList_t</see> class using the supplied ID.
+        /// Initializes a new instance of <see cref="RadioButtonList_t"/> using the supplied ID.
         /// </summary>
         /// <param name="id">ID for this control.</param>
         public RadioButtonList_t(string id)
             : base(id)
         {
-            _log.DebugFormat("New {0} created as Control[{1}] Id='{2}'.", typeof(RadioButtonList_t).Name, (this as IKeyedObject).RefKey, id);
-
-            ListItems = new ListItemCollection();
+            _log.Debug(m => m("New RadioButtonList_t created as control {0}", id));
         }
-
-        public override void LoadDefault()
-        {
-            Value = new EnumState(ListItems.EnumIds);
-
-            if (InitValue != null)
-                Value.LoadInitValue(InitValue);
-        }
-
-        #region IListControl Members
-
-        public EnumState Value { get; set; }
-
-        /// <summary>The value used to pre-populate the GUI component when the order entry screen is initially rendered.</summary>
-        public string InitValue { get; set; }
-
-        public bool HasListItems { get { return ListItems.HasItems; } }
-
-        public ListItemCollection ListItems { get; private set; }
-
-        #endregion
 
         #region IOrientableControl Members
 
@@ -72,18 +50,5 @@ namespace Atdl4net.Model.Controls
         public Orientation_t? Orientation { get; set; }
         
         #endregion
-
-        public override object GetValue()
-        {
-            return Value;
-        }
-
-        public override void SetValue(object newValue)
-        {
-            if (object.Equals(newValue, Control_t.NullValue))
-                Value.ClearAll();
-            else
-                Value = (EnumState)newValue;
-        }
     }
 }

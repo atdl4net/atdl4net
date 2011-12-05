@@ -44,8 +44,9 @@ namespace Atdl4net.Wpf.View.DefaultRendering
                 if (!string.IsNullOrEmpty(control.Id))
                     writer.WriteAttribute(WpfXmlWriterAttribute.Name, id);
 
-                writer.WriteAttribute(WpfXmlWriterAttribute.IsChecked, string.Format("{0}Binding Path=Controls[{1}].Value{2}", "{", id, "}"));
+                writer.WriteAttribute(WpfXmlWriterAttribute.IsChecked, string.Format("{0}Binding Path=Controls[{1}].UiValue{2}", "{", id, "}"));
                 writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, string.Format("{0}Binding Path=Controls[{1}].Enabled{2}", "{", id, "}"));
+                writer.WriteAttribute(WpfXmlWriterAttribute.Visibility, string.Format("{0}Binding Path=Controls[{1}].Visibility{2}", "{", id, "}"));
             }
         }
     }

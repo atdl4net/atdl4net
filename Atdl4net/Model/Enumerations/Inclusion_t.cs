@@ -21,9 +21,19 @@
 
 namespace Atdl4net.Model.Enumerations
 {
+    /// <summary>
+    /// FIXatdl Inclusion type.
+    /// </summary>
     public enum Inclusion_t
     {
+        /// <summary>
+        /// Include.
+        /// </summary>
         Include,
+
+        /// <summary>
+        /// Exclude.
+        /// </summary>
         Exclude
     }
 }

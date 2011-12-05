@@ -18,15 +18,16 @@
 //      http://www.gnu.org/licenses/.
 //
 #endregion
-using Atdl4net.Fix;
-using Atdl4net.Model.Elements;
+
 using System.Collections.ObjectModel;
+using Atdl4net.Fix;
+using Atdl4net.Model.Elements.Support;
 
 namespace Atdl4net.Model.Collections
 {
-    public class ParameterCollection : KeyedCollection<string, IParameter_t>, IDictionary<IParameter_t>
+    public class ParameterCollection : KeyedCollection<string, IParameter>, ISimpleDictionary<IParameter>
     {
-        protected override string GetKeyForItem(IParameter_t parameter)
+        protected override string GetKeyForItem(IParameter parameter)
         {
             return parameter.Name;
         }
@@ -35,7 +36,7 @@ namespace Atdl4net.Model.Collections
         {
             string value;
 
-            foreach (IParameter_t parameter in this.Items)
+            foreach (IParameter parameter in this.Items)
             {
                 if (parameter.FixTag != null && inputValues.TryGetValue((FixTag)parameter.FixTag, out value))
                     parameter.WireValue = value;
@@ -48,7 +49,7 @@ namespace Atdl4net.Model.Collections
         {
             FixTagValuesCollection output = new FixTagValuesCollection();
 
-            foreach (IParameter_t parameter in this.Items)
+            foreach (IParameter parameter in this.Items)
             {
                 if (parameter.FixTag != null && parameter.WireValue != null)
                     output.Add((FixTag)parameter.FixTag, parameter.WireValue);

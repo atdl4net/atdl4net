@@ -18,52 +18,28 @@
 //      http://www.gnu.org/licenses/.
 //
 #endregion
-using Atdl4net.Diagnostics;
-using Atdl4net.Model.Elements;
+
+using System;
+using Atdl4net.Model.Controls.Support;
 using Common.Logging;
 
 namespace Atdl4net.Model.Controls
 {
-    public class TextField_t : Control_t, IStringControl
+    /// <summary>
+    /// Represents the TextField_t control element within FIXatdl.
+    /// </summary>
+    public class TextField_t : TextControlBase
     {
-        private static readonly ILog _log = LogManager.GetLogger("Model");
+        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Controls");
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="Atdl4net.Model.Controls.TextField_t">TextField_t</see> class using the supplied ID.
+        /// Initializes a new instance of <see cref="TextField_t"/> using the supplied ID.
         /// </summary>
         /// <param name="id">ID for this control.</param>
         public TextField_t(string id)
             : base(id)
         {
-            _log.DebugFormat("New {0} created as Control[{1}] Id='{2}'.", typeof(TextField_t).Name, (this as IKeyedObject).RefKey, id);
-        }
-
-        public override void LoadDefault()
-        {
-            if (InitValue != null)
-                Value = InitValue;
-        }
-
-        #region IStringControl Members
-
-        public string Value { get; set; }
-
-        /// <summary>The value used to pre-populate the GUI component when the order entry screen is initially rendered.</summary>
-        public string InitValue { get; set; }
-
-        #endregion
-
-        public override object GetValue()
-        {
-            return Value;
-        }
-
-        public override void SetValue(object newValue)
-        {
-            if (object.Equals(newValue, Control_t.NullValue))
-                Value = null;
-            else
-                Value = (string)newValue;
+            _log.Debug(m => m("New TextField_t created as control {0}", id));
         }
     }
 }

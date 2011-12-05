@@ -25,10 +25,19 @@ using System;
 
 namespace Atdl4net.Utility
 {
+    /// <summary>
+    /// Provides extension methods for System.String.
+    /// </summary>
     public static class StringExtensions
     {
         private static readonly string TypeName = typeof(StringExtensions).Name;
 
+        /// <summary>
+        /// Gets the string representation of this enumerated type value.
+        /// </summary>
+        /// <typeparam name="T">Type of enum.</typeparam>
+        /// <param name="value">Value to convert to the supplied enum type.</param>
+        /// <returns>A valid enumerated value if the conversion was possible; an exception is thrown otherwise.</returns>
         public static T ParseAsEnum<T>(this string value) where T : struct
         {
             if (string.IsNullOrEmpty(value))
@@ -37,15 +46,15 @@ namespace Atdl4net.Utility
             T result;
 
             if (!typeof(T).IsEnum)
-                throw new InvalidOperationException(InternalErrors.InvalidUseOfParseAsEnum);
+                throw ThrowHelper.New<InvalidOperationException>(TypeName, InternalErrors.InvalidUseOfParseAsEnum);
 
 #if NET_40
-            if (!Enum.TryParse<T>(value, out result))
+            if (!Enum.TryParse<T>(value, true, out result))
                 throw ThrowHelper.New<ArgumentException>(TypeName, ErrorMessages.InvalidValueEnumParseFailure, value, typeof(T).Name);
 #else
             try
             {
-                result = (T)Enum.Parse(typeof(T), value);
+                result = (T)Enum.Parse(typeof(T), value, true);
             }
             catch (ArgumentException ex)
             {

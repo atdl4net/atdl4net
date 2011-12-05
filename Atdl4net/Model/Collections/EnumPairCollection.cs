@@ -82,7 +82,7 @@ namespace Atdl4net.Model.Collections
         public bool TryParseWireValue(string wireValue, out string enumId)
         {
             enumId = null;
-            string testValue = (wireValue != null) ? wireValue : Control_t.NullValue;
+            string testValue = (wireValue != null) ? wireValue : Atdl.NullValue;
 
             foreach (EnumPair_t enumPair in this)
             {

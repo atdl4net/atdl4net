@@ -19,18 +19,12 @@
 //
 #endregion
 
-using System;
+using Atdl4net.Model.Enumerations;
 
-namespace Atdl4net.Model.Controls
+namespace Atdl4net.Model.Controls.Support
 {
-    public interface IDateTimeControl
+    public interface IOrientableControl
     {
-        DateTime? Value { get; set; }
-
-        string LocalMktTz { get; set; }
-
-        DateTime? InitValue { get; set; }
-
-        int? InitValueMode { get; set; }
+        Orientation_t? Orientation { get; }
     }
 }

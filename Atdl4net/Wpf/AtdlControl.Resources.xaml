@@ -64,7 +64,7 @@
             <Setter.Value>
                 <DataTemplate DataType="{x:Type viewmodel:ListItemWrapper}">
                     <StackPanel>
-                        <RadioButton Margin="5" Content="{Binding Path=UiRep}" IsChecked="{Binding Path=IsSelected}"/>
+                        <RadioButton Margin="5" Content="{Binding Path=UiRep}" IsChecked="{Binding Path=IsSelected}" GroupName="{Binding Path=GroupName}"/>
                     </StackPanel>
                 </DataTemplate>
             </Setter.Value>
@@ -90,7 +90,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ToggleButton}">
                     <Grid SnapsToDevicePixels="False" Background="Transparent">
-                        <Ellipse HorizontalAlignment="Center" x:Name="circle" VerticalAlignment="Center" Width="15" Height="15" Fill="{DynamicResource ButtonNormalBackgroundFill}" Stroke="DarkGray"/>
+                        <Ellipse HorizontalAlignment="Center" x:Name="circle" VerticalAlignment="Center" Width="15" Height="15" Fill="{DynamicResource ButtonNormalBackgroundFill}" Stroke="LightCoral"/>
                         <Ellipse Visibility="Hidden" HorizontalAlignment="Center" x:Name="shadow" VerticalAlignment="Center" Width="13" Height="13" Fill="{DynamicResource ExpanderShadowFill}"/>
                         <Path SnapsToDevicePixels="false" x:Name="arrow" VerticalAlignment="Center" HorizontalAlignment="Center" Stroke="#666" StrokeThickness="2" Data="M1,1 L4,4 7,1" />
                     </Grid>

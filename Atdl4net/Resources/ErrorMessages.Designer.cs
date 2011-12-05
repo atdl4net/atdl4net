@@ -152,7 +152,7 @@ namespace Atdl4net.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A null reference was passed to this method in error; a value reference is required..
+        ///   Looks up a localized string similar to A null reference was passed to this method in error; a valid reference is required..
         /// </summary>
         internal static string IllegalUseOfNullError {
             get {
@@ -203,6 +203,15 @@ namespace Atdl4net.Resources {
         internal static string InvalidCharValue {
             get {
                 return ResourceManager.GetString("InvalidCharValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The value supplied, &apos;{0}&apos;, for this date or time field could not be interpreted as a valid date or time..
+        /// </summary>
+        internal static string InvalidDateOrTimeValue {
+            get {
+                return ResourceManager.GetString("InvalidDateOrTimeValue", resourceCulture);
             }
         }
         
@@ -494,6 +503,24 @@ namespace Atdl4net.Resources {
         internal static string UnsupportedComparisonOperation {
             get {
                 return ResourceManager.GetString("UnsupportedComparisonOperation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The conversion of the value &apos;{0}&apos; to the type {1} is not supported.  This relates to the {2} control..
+        /// </summary>
+        internal static string UnsupportedControlValueConversion {
+            get {
+                return ResourceManager.GetString("UnsupportedControlValueConversion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The conversion of the parameter value &apos;{0}&apos; to the type {1} is not supported..
+        /// </summary>
+        internal static string UnsupportedParameterValueConversion {
+            get {
+                return ResourceManager.GetString("UnsupportedParameterValueConversion", resourceCulture);
             }
         }
     }

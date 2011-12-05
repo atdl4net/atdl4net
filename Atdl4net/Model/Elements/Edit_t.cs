@@ -18,12 +18,15 @@
 //      http://www.gnu.org/licenses/.
 //
 #endregion
+
 using System;
 using System.Linq;
-using Atdl4net.Diagnostics;
+using System.Text;
 using Atdl4net.Diagnostics.Exceptions;
 using Atdl4net.Model.Collections;
+using Atdl4net.Model.Elements.Support;
 using Atdl4net.Model.Enumerations;
+using Atdl4net.Model.Types.Support;
 using Atdl4net.Resources;
 using Atdl4net.Utility;
 using Common.Logging;
@@ -31,6 +34,9 @@ using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 
 namespace Atdl4net.Model.Elements
 {
+    /// <summary>
+    /// Represents the FIXatdl type Edit_t when it occurs outside of a StateRule_t or a StrategyEdit_t element.
+    /// </summary>
     public class Edit_t
     {
         public string Field { get; set; }
@@ -53,42 +59,53 @@ namespace Atdl4net.Model.Elements
         }
     }
 
-    public interface IValueProvider
-    {
-        object GetValue();
-    }
-
     /// <summary>
-    /// Represents a FIXatdl Edit_t.
+    /// Represents a FIXatdl Edit_t when implemented within a StateRule_t or StrategyEdit_t element.
     /// </summary>
-    public class Edit_t<T> : IEdit_t<T>, IResolvable<Strategy_t, T>, IKeyedObject where T : class, IValueProvider
+    public class Edit_t<T> : IEdit<T>, IResolvable<Strategy_t, T> where T : class, IValueProvider
     {
-        private static readonly ILog _log = LogManager.GetLogger("EditEvaluation");
+        // Use Atdl4net.Model.Validation namespace rather than Atdl4net.Model.Elements for debugging purposes
+        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Validation");
 
         private bool _currentState;
         private T _fieldSource;
         private T _field2Source;
-        private EditEvaluatingCollection<T> _edits = new EditEvaluatingCollection<T>();
+        private readonly EditEvaluatingCollection<T> _edits = new EditEvaluatingCollection<T>();
         private EditRefCollection<T> _editRefs;
 
-        public Edit_t()
+        /// <summary>
+        /// Provides a string representation of this Edit_t, primarily for debugging purposes.
+        /// </summary>
+        /// <returns>String representation of this Edit_t.</returns>
+        public override string ToString()
         {
-            (this as IKeyedObject).RefKey = RefKeyGenerator.GetNextKey(typeof(Edit_t));
+            StringBuilder sb = new StringBuilder();
 
-            _log.DebugFormat("New Edit_t created as Edit[{0}].", (this as IKeyedObject).RefKey);
+            sb.Append("(");
+
+            if (Id != null)
+                sb.AppendFormat("Id=\"{0}\", ", Id);
+
+            if (LogicOperator != null)
+                sb.AppendFormat("LogicOperator=\"{0}\", ", LogicOperator);
+
+            if (Field != null)
+                sb.AppendFormat("Field=\"{0}\", ", Field);
+
+            if (Operator != null)
+                sb.AppendFormat("Operator=\"{0}\", ", Operator);
+
+            if (Value != null)
+                sb.AppendFormat("Value=\"{0}\", ", Value);
+
+            if (Field2 != null)
+                sb.AppendFormat("Field2=\"{0}\", ", Field2);
+
+            // Convert to string so we can remove trailing ', '
+            string text = sb.ToString();
+
+            return string.Format("{0})", text.Substring(0, text.Length - 2));
         }
-
-        #region IEdit_t Members
-
-        public string Field { get; set; }
-        public string Field2 { get; set; }
-        public string Id { get; set; }
-        public Operator_t? Operator { get; set; }
-        public string Value { get; set; }
-
-        public bool CurrentState { get { return _currentState; } }
-
-        public EditEvaluatingCollection<T> Edits { get { return _edits; } }
 
         public EditRefCollection<T> EditRefs
         {
@@ -102,38 +119,91 @@ namespace Atdl4net.Model.Elements
             }
         }
 
+        #region IEdit_t Members
+
+        /// <summary>
+        /// Gets/sets the name of field to be used as left hand side of the evaluation.
+        /// </summary>
+        public string Field { get; set; }
+
+        /// <summary>
+        /// Gets/sets the name of second (optional) field, to be used as the right hand side of the evaluation.
+        /// </summary>
+        public string Field2 { get; set; }
+
+        /// <summary>
+        /// Gets/sets the optional ID for this Edit.
+        /// </summary>
+        public string Id { get; set; }
+
+        /// <summary>
+        /// Gets/sets the optional operator - used when comparing two values.
+        /// </summary>
+        public Operator_t? Operator { get; set; }
+
+        /// <summary>
+        /// Gets/sets the optional fixed value to be used as the right hand side of the evaluation.
+        /// </summary>
+        /// <remarks>From the spec:<br/><br/>"When Edit is a descendant of a StateRule element, Value refers to the 
+        /// value of the control referred by Field. If the control referred by Field has enumerated values then Value 
+        /// refers to the enumID of one of the control's ListItem elements.<br/>
+        /// When Edit is a descendant of a StrategyEdit element, Value refers to the wireValue of the parameter 
+        /// referred by Field."</remarks>
+        public string Value { get; set; }
+
+        /// <summary>
+        /// Gets the current state of this Edit based on the most recent evaluation.
+        /// </summary>
+        public bool CurrentState { get { return _currentState; } }
+
+        /// <summary>
+        /// Gets the collection of child Edits.  May be empty, unless LogicOperator is non-null.
+        /// </summary>
+        public EditEvaluatingCollection<T> Edits { get { return _edits; } }
+
+        /// <summary>
+        /// Gets/sets the optional logical operator - used when combining two or more Edits.
+        /// </summary>
         public LogicOperator_t? LogicOperator
         {
             get { return Edits.LogicOperator; }
             set { Edits.LogicOperator = value; }
         }
 
+        /// <summary>
+        /// Gets the current value of the field pointed to by the Field property.
+        /// </summary>
         public object FieldValue
         {
             get
             {
                 if (_fieldSource != null)
-                    return _fieldSource.GetValue();
+                    return _fieldSource.GetCurrentValue();
                 else
                     throw ThrowHelper.New<InvalidOperationException>(this, "Edit attempted to access FieldValue but requisite control was not set.");
             }
         }
 
+        /// <summary>
+        /// Gets the current value of the field pointed to by the Field2 property.
+        /// </summary>
         public object Field2Value
         {
             get
             {
                 if (_field2Source != null)
-                    return _field2Source.GetValue();
+                    return _field2Source.GetCurrentValue();
                 else
                     throw ThrowHelper.New<InvalidOperationException>(this, "Edit attempted to access Field2Value but requisite control was not set.");
             }
         }
 
+        /// <summary>
+        /// Evaluates this Edit based on the current field values.
+        /// </summary>
         public void Evaluate()
         {
-            _log.DebugFormat("Evaluating Edit[{0}]; current state = {1}.",
-                (this as IKeyedObject).RefKey, _currentState);
+            _log.Debug(m => m("Evaluating Edit_t {0}; current state is {1}", ToString(), _currentState.ToString().ToLower()));
 
             if (Operator != null)
             {
@@ -151,33 +221,52 @@ namespace Atdl4net.Model.Elements
             else
                 throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.MissingOperatorsOnEdit);
 
-            _log.DebugFormat("Evaluation of Edit[{0}] yielded {1}.",
-                (this as IKeyedObject).RefKey, _currentState);
+            _log.Debug(m => m("Evaluation of Edit_t {0} yielded state of {1}", ToString(), _currentState.ToString().ToLower()));
         }
 
         #endregion IEdit_t Members
 
+        #region IResolvable<Strategy_t> Members
+
+        void IResolvable<Strategy_t, T>.Resolve(Strategy_t strategy, ISimpleDictionary<T> sourceCollection)
+        {
+            (_edits as IResolvable<Strategy_t, T>).Resolve(strategy, sourceCollection);
+
+            if (!string.IsNullOrEmpty(Field) && !Field.StartsWith("FIX_"))
+            {
+                if (sourceCollection.Contains(Field))
+                    _fieldSource = sourceCollection[Field];
+                else
+                    throw ThrowHelper.New<ReferencedObjectNotFoundException>(this, ErrorMessages.EditRefFieldControlNotFound, Field, "Field");
+            }
+
+            if (!string.IsNullOrEmpty(Field2) && !Field2.StartsWith("FIX_"))
+            {
+                if (sourceCollection.Contains(Field2))
+                    _field2Source = sourceCollection[Field2];
+                else
+                    throw ThrowHelper.New<ReferencedObjectNotFoundException>(this, ErrorMessages.EditRefFieldControlNotFound, Field2, "Field2");
+            }
+        }
+
+        #endregion IResolvable<Strategy_t> Members
+
         private bool EvaluateExists()
         {
-            _log.DebugFormat("Evaluating Edit[{0}] with Operator = '{1}'; field value = '{2}'.",
-                (this as IKeyedObject).RefKey, Operator.ToString(), FieldValue);
+            object fieldValue = FieldValue;
 
-            bool result = false;
+            bool empty = fieldValue == null ||  string.IsNullOrEmpty(fieldValue as string);
 
-            if (FieldValue is System.String)
-                result = string.IsNullOrEmpty(FieldValue as string);
-            else
-                result = (FieldValue != null);
+            bool result = (Operator == Operator_t.Exist) ? !empty : empty;
 
-            bool finalResult = (Operator == Operator_t.Exist) ? result : !result;
+            _log.Debug(m => m("Evaluated whether FieldValue {0} has a value; result is {1}", fieldValue, result));
 
-            return finalResult;
+            return result;
         }
 
         private bool EvaluateComparison()
         {
-            _log.DebugFormat("Evaluating Edit[{0}] with Operator = '{1}'; field value = '{2}', Value = '{3}', field2 value = '{4}'.",
-                (this as IKeyedObject).RefKey, Operator.ToString(), FieldValue, Value, Field2 != null ? Field2Value : "N/A");
+            _log.Debug(m => m("Evaluating comparison operation of Edit_t {0}", this.ToString()));
 
             IComparable operand1 = FieldValue as IComparable;
             IComparable operand2;
@@ -193,7 +282,7 @@ namespace Atdl4net.Model.Elements
                 else if (FieldValue is int)
                     operand2 = Convert.ToInt32(Field2Value);
                 else
-                    operand2 = Value as IComparable;
+                    operand2 = Value;
             }
             else
                 operand2 = Field2Value as IComparable;
@@ -201,7 +290,7 @@ namespace Atdl4net.Model.Elements
             int compareResult;
 
             if (FieldValue == null)
-                compareResult = (operand2 == null || object.Equals(operand2, Control_t.NullValue)) ? 0 : 1;
+                compareResult = (operand2 == null || object.Equals(operand2, Atdl.NullValue)) ? 0 : 1;
             else
                 compareResult = operand1.CompareTo(operand2);
 
@@ -234,38 +323,9 @@ namespace Atdl4net.Model.Elements
                     break;
             }
 
+            _log.Debug(m => m("Compared values '{0}' and '{1}' as part of Edit_t evaluation; result was {2}", operand1, operand2, finalResult.ToString().ToLower()));
+
             return finalResult;
         }
-
-        #region IResolvable<Strategy_t> Members
-
-        void IResolvable<Strategy_t, T>.Resolve(Strategy_t strategy, IDictionary<T> sourceCollection)
-        {
-            (_edits as IResolvable<Strategy_t, T>).Resolve(strategy, sourceCollection);
-
-            if (!string.IsNullOrEmpty(Field) && !Field.StartsWith("FIX_"))
-            {
-                if (sourceCollection.Contains(Field))
-                    _fieldSource = sourceCollection[Field] as T;
-                else
-                    throw ThrowHelper.New<ReferencedObjectNotFoundException>(this, ErrorMessages.EditRefFieldControlNotFound, Field, "Field");
-            }
-
-            if (!string.IsNullOrEmpty(Field2) && !Field2.StartsWith("FIX_"))
-            {
-                if (sourceCollection.Contains(Field2))
-                    _field2Source = sourceCollection[Field2] as T;
-                else
-                    throw ThrowHelper.New<ReferencedObjectNotFoundException>(this, ErrorMessages.EditRefFieldControlNotFound, Field2, "Field2");
-            }
-        }
-
-        #endregion IResolvable<Strategy_t> Members
-
-        #region IKeyedObject Members
-
-        string IKeyedObject.RefKey { get; set; }
-
-        #endregion IKeyedObject Members
     }
 }

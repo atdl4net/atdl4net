@@ -28,7 +28,7 @@ namespace Atdl4net.Wpf.ViewModel
 {
     public class ViewModelStateRuleCollection : Collection<StateRuleWrapper>, IBindable<ViewModelControlCollection>
     {
-        private static readonly ILog _log = LogManager.GetLogger("ViewModel");
+        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Wpf.ViewModel");
 
         private readonly ControlWrapper _owningControl;
 
@@ -46,13 +46,16 @@ namespace Atdl4net.Wpf.ViewModel
 
         public void RefreshState()
         {
+            if (this.Items.Count > 0 )
+                _log.Debug(m=>m("Refreshing state for all state rules of control ID {0}", _owningControl.Id));
+
             foreach (StateRuleWrapper stateRule in this.Items)
                 stateRule.RefreshState();
         }
 
         void IBindable<ViewModelControlCollection>.Bind(ViewModelControlCollection target)
         {
-            _log.DebugFormat("Binding state rules for control Id={0}.", _owningControl.Id);
+            _log.Debug(m=>m("Binding state rules for control Id={0}.", _owningControl.Id));
 
             foreach (IBindable<ViewModelControlCollection> item in Items)
                 item.Bind(target);

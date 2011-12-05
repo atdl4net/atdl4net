@@ -42,10 +42,11 @@ namespace Atdl4net.Wpf.View.DefaultRendering
                     if (!string.IsNullOrEmpty(c.Id))
                         writer.WriteAttribute(WpfXmlWriterAttribute.Name, id);
 
-                    writer.WriteAttribute("Value", string.Format("{0}Binding Path=Controls[{1}].Value{2}", "{", id, "}"));
-                    writer.WriteAttribute("InnerIncrement", string.Format("{0}Binding Path=Controls[{1}].UnderlyingControl.InnerIncrement, Mode=OneWay{2}", "{", id, "}"));
-                    writer.WriteAttribute("OuterIncrement", string.Format("{0}Binding Path=Controls[{1}].UnderlyingControl.OuterIncrement, Mode=OneWay{2}", "{", id, "}"));
+                    writer.WriteAttribute(WpfXmlWriterAttribute.Value, string.Format("{0}Binding Path=Controls[{1}].UiValue,Mode=TwoWay,TargetNullValue={{x:Static sys:String.Empty}},StringFormat=\\{{0:D\\}}{2}", "{", id, "}"));
+                    writer.WriteAttribute(WpfXmlWriterAttribute.InnerIncrement, string.Format("{0}Binding Path=Controls[{1}].UnderlyingControl.InnerIncrement, Mode=OneWay{2}", "{", id, "}"));
+                    writer.WriteAttribute(WpfXmlWriterAttribute.OuterIncrement, string.Format("{0}Binding Path=Controls[{1}].UnderlyingControl.OuterIncrement, Mode=OneWay{2}", "{", id, "}"));
                     writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, string.Format("{0}Binding Path=Controls[{1}].Enabled{2}", "{", id, "}"));
+                    writer.WriteAttribute(WpfXmlWriterAttribute.Visibility, string.Format("{0}Binding Path=Controls[{1}].Visibility{2}", "{", id, "}"));
 
                     writer.WriteAttribute(WpfXmlWriterAttribute.Width, "120");
                 }

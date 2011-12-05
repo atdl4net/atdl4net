@@ -22,7 +22,9 @@
 using Atdl4net.Diagnostics;
 using Atdl4net.Diagnostics.Exceptions;
 using Atdl4net.Model.Collections;
+using Atdl4net.Model.Elements.Support;
 using Atdl4net.Model.Enumerations;
+using Atdl4net.Model.Types.Support;
 using Atdl4net.Resources;
 using Atdl4net.Utility;
 using Common.Logging;
@@ -32,25 +34,36 @@ namespace Atdl4net.Model.Elements
     /// <summary>
     /// Represents a FIXatdl EditRef_t.
     /// </summary>
-    public class EditRef_t<T> : IEdit_t<T>, IResolvable<Strategy_t, T>, IKeyedObject where T : class, IValueProvider
+    public class EditRef_t<T> : IEdit<T>, IResolvable<Strategy_t, T> where T : class, IValueProvider
     {
-        private static readonly ILog _log = LogManager.GetLogger("Model");
+        // Use Atdl4net.Model.Validation namespace rather than Atdl4net.Model.Elements for debugging purposes
+        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Validation");
 
         private Edit_t<T> _referencedEdit;
 
         public EditRef_t(string id)
         {
             Id = id;
-
-            (this as IKeyedObject).RefKey = RefKeyGenerator.GetNextKey(typeof(EditRef_t<T>));
-
-            _log.DebugFormat("New EditRef_t created as EditRef[{0}], Id='{1}'.", (this as IKeyedObject).RefKey, id);
         }
 
         /// <summary>
         /// Refers to an ID of a previously defined edit element. The edit element may be defined at the strategy level or at the strategies level.
         /// </summary>
         public string Id { get; set; }
+
+        /// <summary>
+        /// Provides a string representation of this EditRef_t, primarily for debugging purposes.
+        /// </summary>
+        /// <returns>String representation of this EditRef_t.</returns>
+        public override string ToString()
+        {
+            return _referencedEdit != null ? _referencedEdit.ToString() : string.Empty;
+        }
+
+        public void Evaluate()
+        {
+            _referencedEdit.Evaluate();
+        }
 
         #region IEdit_t Members
 
@@ -84,43 +97,25 @@ namespace Atdl4net.Model.Elements
             set { _referencedEdit.Value = value; }
         }
 
-        public object FieldValue
-        {
-            get { return _referencedEdit.FieldValue; }
-        }
+        public object FieldValue { get { return _referencedEdit.FieldValue; } }
 
-        public object Field2Value
-        {
-            get { return _referencedEdit.Field2Value; }
-        }
+        public object Field2Value { get { return _referencedEdit.Field2Value; } }
 
-        public bool CurrentState
-        {
-            get { return _referencedEdit.CurrentState; }
-        }
+        public bool CurrentState { get { return _referencedEdit.CurrentState; } }
 
-        public EditEvaluatingCollection<T> Edits
-        {
-            get { return _referencedEdit.Edits; }
-        }
+        public EditEvaluatingCollection<T> Edits { get { return _referencedEdit.Edits; } }
 
         #endregion
 
-        public void Evaluate()
-        {
-            _referencedEdit.Evaluate();
-        }
-
         #region IResolvable<Strategy_t> Members
 
-        void IResolvable<Strategy_t, T>.Resolve(Strategy_t strategy, IDictionary<T> sourceCollection)
+        void IResolvable<Strategy_t, T>.Resolve(Strategy_t strategy, ISimpleDictionary<T> sourceCollection)
         {
             if (strategy.Edits.Contains(Id))
             {
                 _referencedEdit = strategy.Edits.Clone<T>(Id);
 
-                _log.DebugFormat("EditRef[{0}], Id='{1}' linked to new Edit[{2}] resolved from Strategy[{3}].",
-                    (this as IKeyedObject).RefKey, Id, (_referencedEdit as IKeyedObject).RefKey, (strategy as IKeyedObject).RefKey);
+                _log.Debug(m=>m("EditRef Id {0} linked to new Edit_t resolved from Strategy '{1}'", Id, strategy.Name));
             }
             else
             {
@@ -130,8 +125,7 @@ namespace Atdl4net.Model.Elements
                 {
                     _referencedEdit = strategies.Edits.Clone<T>(Id);
 
-                    _log.DebugFormat("EditRef[{0}], Id='{1}' linked to new Edit[{2}] resolved from Strategies level.",
-                        (this as IKeyedObject).RefKey, Id, (_referencedEdit as IKeyedObject).RefKey);
+                    _log.Debug(m => m("EditRef Id {0} linked to new Edit_t resolved resolved from Strategies level", Id));
                 }
                 else
                     throw ThrowHelper.New<ReferencedObjectNotFoundException>(this, ErrorMessages.EditRefResolutionFailure, Id);
@@ -141,11 +135,5 @@ namespace Atdl4net.Model.Elements
         }
 
         #endregion IBinIResolvabledable<Strategy_t> Members
-
-        #region IKeyedObject Members
-
-        string IKeyedObject.RefKey { get; set; }
-
-        #endregion IKeyedObject Members
     }
 }

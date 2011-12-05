@@ -26,7 +26,7 @@ using System;
 using System.Globalization;
 using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 
-namespace Atdl4net.Utility
+namespace Atdl4net.Xml.Serialization
 {
     public class ValueConverter
     {

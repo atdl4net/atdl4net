@@ -19,28 +19,47 @@
 //
 #endregion
 
+#if !NET_40
 using Atdl4net.Model.Controls;
-using Atdl4net.Model.Elements;
+using Atdl4net.Model.Elements.Support;
 using Atdl4net.Utility;
 
 namespace Atdl4net.Wpf.ViewModel
 {
+    /// <summary>
+    /// Wrapper class for <see cref="RadioButton_t"/> - needed only for .NET Framework v3.5 to workaround a bug
+    /// in that version of the Framework that allows more than one WPF RadioButton in a radio button group to 
+    /// selected at a time.
+    /// </summary>
     public class RadioButtonWrapper : ControlWrapper
     {
+        /// <summary>
+        /// Gets/sets the <see cref="RadioButtonGroupManager"/> that is used to manage the state of all the
+        /// RadioButtons within a given radio button group.
+        /// </summary>
         public RadioButtonGroupManager RadioButtonGroupManager { get; set; }
 
-        public RadioButtonWrapper(RadioButton_t control, IParameter_t referencedParameter, DataEntryMode mode) 
+        /// <summary>
+        /// Initializes a new instance of <see cref="RadioButtonWrapper"/>.
+        /// </summary>
+        /// <param name="control">Underlying <see cref="RadioButton_t"/> for this RadioButtonWrapper.</param>
+        /// <param name="referencedParameter">Parameter that the RadioButton_t refers to.</param>
+        /// <param name="mode">Data entry mode (create/amend/view).</param>
+        public RadioButtonWrapper(RadioButton_t control, IParameter referencedParameter, DataEntryMode mode) 
             :base(control, referencedParameter, mode)
         {
         }
 
-        public override object Value
+        /// <summary>
+        /// Gets/sets the user interface control value for the underlying <see cref="RadioButton_t"/>.
+        /// </summary>
+        public override object UiValue
         {
-            get { return base.Value; }
+            get { return base.UiValue; }
             
             set
             {
-                base.Value = value;
+                base.UiValue = value;
 
                 if ((bool)value)
                 {
@@ -52,9 +71,10 @@ namespace Atdl4net.Wpf.ViewModel
             }
         }
 
-        public void NotifyRadioButtonCleared()
+        private void NotifyRadioButtonCleared()
         {
             base.NotifyPropertyChanged("Value");
         }
     }
 }
+#endif

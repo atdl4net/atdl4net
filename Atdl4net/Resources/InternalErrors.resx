@@ -138,7 +138,19 @@
   <data name="UnableToSetPropertyValueOnObject" xml:space="preserve">
     <value>It was not possible to set the value of property {0} to the value '{1}' on the target object of type {2}.</value>
   </data>
+  <data name="UnexpectedArgumentType" xml:space="preserve">
+    <value>Unexpected type {0} used in method that expects one of ({1}).</value>
+  </data>
+  <data name="UnexpectedArgumentValue" xml:space="preserve">
+    <value>The value supplied {0} as an argument to this method was not expected and is not supported.</value>
+  </data>
+  <data name="UnexpectedNullReference" xml:space="preserve">
+    <value>The field or property {0} of type {1} unexpectedly contained a null reference.</value>
+  </data>
   <data name="UnrecognisedAttributeType" xml:space="preserve">
     <value>The attribute type specified, '{0}', is not a supported attribute type.</value>
+  </data>
+  <data name="UnsupportedTypeConversion" xml:space="preserve">
+    <value>The conversion from {0} value to type {1} is not supported.</value>
   </data>
 </root>

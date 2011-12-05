@@ -22,7 +22,7 @@
 namespace Atdl4net.Model.Types
 {
     /// <summary>
-    /// 'float field typically representing a Price times a Qty.'
+    /// Represents a floating point field typically representing a Price times a Qty.
     /// </summary>
     public class Amt_t : Float_t
     {

@@ -21,6 +21,7 @@
 
 using Atdl4net.Fix;
 using Atdl4net.Model.Collections;
+using Atdl4net.Model.Elements.Support;
 using Atdl4net.Utility;
 
 namespace Atdl4net.Model.Elements
@@ -86,7 +87,7 @@ namespace Atdl4net.Model.Elements
                     control.StateRules.ResolveAll(strategy);
 
                 foreach (StrategyEdit_t strategyEdit in strategy.StrategyEdits)
-                    (strategyEdit as IResolvable<Strategy_t, IParameter_t>).Resolve(strategy, strategy.Parameters);
+                    (strategyEdit as IResolvable<Strategy_t, IParameter>).Resolve(strategy, strategy.Parameters);
             }
         }
     }

@@ -19,6 +19,7 @@
 //
 #endregion
 
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -28,14 +29,15 @@ namespace Atdl4net.Wpf.View.Controls
     /// <summary>
     /// Interaction logic for SingleSpinner.xaml
     /// </summary>
-    public partial class SingleSpinner : UserControl
+    public partial class SingleSpinner : UserControl, INotifyPropertyChanged
     {
         private const decimal DefaultIncrement = 1;
 
         public static readonly DependencyProperty IncrementProperty =
             DependencyProperty.Register("Increment", typeof(decimal), typeof(SingleSpinner), new FrameworkPropertyMetadata(DefaultIncrement));
+
         public static readonly DependencyProperty ValueProperty =
-            DependencyProperty.Register("Value", typeof(decimal?), typeof(SingleSpinner), new FrameworkPropertyMetadata(OnValuePropertyChanged));
+            DependencyProperty.Register("Value", typeof(decimal?), typeof(SingleSpinner));
 
         public SingleSpinner()
         {
@@ -54,24 +56,18 @@ namespace Atdl4net.Wpf.View.Controls
             set { SetValue(IncrementProperty, value); }
         }
 
-        private static void OnValuePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is SingleSpinner)
-                (d as SingleSpinner).OnValuePropertyChanged(e.NewValue as decimal?);
-        }
-
-        private void OnValuePropertyChanged(decimal? newValue)
-        {
-        }
-
         private void DecrementValue()
         {
-            Value -= Increment;
+            decimal value = Value ?? 0;
+            value -= Increment;
+            Value = value;
         }
 
         private void IncrementValue()
         {
-            Value += Increment;
+            decimal value = Value ?? 0;
+            value += Increment;
+            Value = value;
         }
 
         private void upButton_Click(object sender, RoutedEventArgs e)
@@ -123,5 +119,19 @@ namespace Atdl4net.Wpf.View.Controls
                 e.Handled = true;
             }
         }
+
+        private void NotifyPropertyChanged(string propertyName)
+        {
+            PropertyChangedEventHandler propertyChanged = PropertyChanged;
+
+            if (propertyChanged != null)
+                propertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        #region INotifyPropertyChanged Members
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        #endregion
     }
 }

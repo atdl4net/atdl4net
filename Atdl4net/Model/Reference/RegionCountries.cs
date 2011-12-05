@@ -23,10 +23,16 @@ using System.Collections.Generic;
 
 namespace Atdl4net.Model.Reference
 {
+    /// <summary>
+    /// Represents the Regions supported by FIXatdl.
+    /// </summary>
     public class Regions
     {
         private Regions() { }
 
+        /// <summary>
+        /// Provides the set of ISO country codes that are in The Americas.
+        /// </summary>
         public static readonly HashSet<IsoCountryCode> TheAmericasCountries = new HashSet<IsoCountryCode> 
         { 
             IsoCountryCode.AI,
@@ -81,6 +87,9 @@ namespace Atdl4net.Model.Reference
             IsoCountryCode.VE,
         };
 
+        /// <summary>
+        /// Provides the set of ISO country codes that are in Europe, the Middle East and Africa.
+        /// </summary>
         public static readonly HashSet<IsoCountryCode> EuropeMiddleEastAfricaCountries = new HashSet<IsoCountryCode>()
         {
             IsoCountryCode.AD,
@@ -218,6 +227,9 @@ namespace Atdl4net.Model.Reference
             IsoCountryCode.ZW
         };
 
+        /// <summary>
+        /// Provides the set of ISO country codes that are in the Asia Pacific and Japan region.
+        /// </summary>
         public static readonly HashSet<IsoCountryCode> AsiaPacificJapanCountries = new HashSet<IsoCountryCode>()
         {
             IsoCountryCode.AF, 

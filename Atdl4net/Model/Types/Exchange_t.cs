@@ -19,31 +19,31 @@
 //
 #endregion
 
-using Atdl4net.Model.Elements;
-using Atdl4net.Resources;
 using System;
-using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
+using Atdl4net.Diagnostics;
 
 namespace Atdl4net.Model.Types
 {
     /// <summary>
-    /// 'string field representing a market or exchange using ISO 10383 Market Identifier Code (MIC) values (see"Appendix 6-C).'
+    /// String field representing a market or exchange using ISO 10383 Market Identifier Code (MIC) values (see"Appendix 6-C).
     /// </summary>
-    public class Exchange_t : EnumableReferenceType<string>
+    public class Exchange_t : String_t
     {
+        #region AtdlReferenceType<T> Overrides
+
+        /// <summary>
+        /// Validates the supplied value in terms of 'ISO 10383 correctness', i.e., MICs must be 4 characters in length.
+        /// </summary>
+        /// <param name="value">Value to validate, may be null in which case no validation is applied.</param>
+        /// <returns>Value passed in.</returns>
         protected override string ValidateValue(string value)
         {
+            if (value != null && value.Length != 4)
+                throw ThrowHelper.New<ArgumentException>(this, "Exchange codes must conform to the ISO 10383 standard, i.e., be 4 characters in length");
+
             return value;
         }
 
-        protected override string ConvertFromString(string value)
-        {
-            return value;
-        }
-
-        protected override string ConvertToString(string value)
-        {
-            return value;
-        }
+        #endregion
     }
 }

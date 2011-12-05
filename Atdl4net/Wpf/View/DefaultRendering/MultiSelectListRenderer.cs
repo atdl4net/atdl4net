@@ -53,6 +53,8 @@ namespace Atdl4net.Wpf.View.DefaultRendering
                     writer.WriteAttribute("VirtualizingStackPanel.IsVirtualizing","False");
 
                     writer.WriteAttribute("ItemContainerStyle", "{DynamicResource MultiSelectListItemStyle}");
+                    writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, string.Format("{0}Binding Path=Controls[{1}].Enabled{2}", "{", id, "}"));
+                    writer.WriteAttribute(WpfXmlWriterAttribute.Visibility, string.Format("{0}Binding Path=Controls[{1}].Visibility{2}", "{", id, "}"));
                 }
             });
         }

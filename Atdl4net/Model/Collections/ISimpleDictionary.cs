@@ -19,19 +19,26 @@
 //
 #endregion
 
-using Atdl4net.Model.Collections;
-using Atdl4net.Model.Types;
-
-namespace Atdl4net.Model.Controls
+namespace Atdl4net.Model.Collections
 {
-    public interface IListControl
+    /// <summary>
+    /// Accessor interface that simple dictionary collections must implement.  Lookup is via string-based key.
+    /// </summary>
+    /// <typeparam name="T">Type of item that this SimpleDictionary provides access to.</typeparam>
+    public interface ISimpleDictionary<T>
     {
-        string InitValue { get; set; }
+        /// <summary>
+        /// Gets the item specified by the supplied key.
+        /// </summary>
+        /// <param name="key">String-based key for the desired item.</param>
+        /// <returns>Item whose key matches the supplied value.  Behaviour is undefined if the key cannot be found.</returns>
+        T this[string key] { get; }
 
-        EnumState Value { get; set; }
-
-        ListItemCollection ListItems { get; }
-
-        bool HasListItems { get; }
+        /// <summary>
+        /// Indicates whether an item with the supplied key is present in the collection.
+        /// </summary>
+        /// <param name="key">String-based key to check for.</param>
+        /// <returns>True if an item with the supplied key is present; false otherwise.</returns>
+        bool Contains(string key);
     }
 }

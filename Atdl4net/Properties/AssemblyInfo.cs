@@ -25,7 +25,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Atdl4net")]
+#if NET_40
 [assembly: AssemblyDescription("Atdl4net - .NET Framework v4.0 Version")]
+#else
+[assembly: AssemblyDescription("Atdl4net - .NET Framework v3.5 Version")]
+#endif
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Cornerstone Technology Ltd")]
 [assembly: AssemblyProduct("Atdl4net")]
@@ -48,8 +52,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-// You can specify all the values or you can default the Build and Revision Numbers 
-// by using the '*' as shown below:
-// [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2010.9.0.213")]
-[assembly: AssemblyFileVersion("2010.9.0.213")]
+[assembly: AssemblyVersion("1.1.0.1064")]
+[assembly: AssemblyFileVersion("1.1.0.1064")]

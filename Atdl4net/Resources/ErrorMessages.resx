@@ -258,12 +258,21 @@
     <value>Both checkedEnumRef and uncheckedEnumRef must be set on CheckBox_t and RadioButton_t when populating non-Boolean parameter.</value>
   </data>
   <data name="IllegalUseOfNullError" xml:space="preserve">
-    <value>A null reference was passed to this method in error; a value reference is required.</value>
+    <value>A null reference was passed to this method in error; a valid reference is required.</value>
   </data>
   <data name="NonOptionalParameterNotSupplied" xml:space="preserve">
     <value>A valid value must be supplied for the parameter '{0}'; this parameter is not optional.</value>
   </data>
   <data name="StrategiesLoadFailure" xml:space="preserve">
     <value>It was not possible to load the supplied FIXatdl content as 'Strategies' is not the root element.</value>
+  </data>
+  <data name="InvalidDateOrTimeValue" xml:space="preserve">
+    <value>The value supplied, '{0}', for this date or time field could not be interpreted as a valid date or time.</value>
+  </data>
+  <data name="UnsupportedParameterValueConversion" xml:space="preserve">
+    <value>The conversion of the parameter value '{0}' to the type {1} is not supported.</value>
+  </data>
+  <data name="UnsupportedControlValueConversion" xml:space="preserve">
+    <value>The conversion of the value '{0}' to the type {1} is not supported.  This relates to the {2} control.</value>
   </data>
 </root>

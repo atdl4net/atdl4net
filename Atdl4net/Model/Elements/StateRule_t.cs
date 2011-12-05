@@ -18,7 +18,8 @@
 //      http://www.gnu.org/licenses/.
 //
 #endregion
-using Atdl4net.Diagnostics;
+
+using System.Text;
 using Atdl4net.Model.Validation;
 using Atdl4net.Utility;
 using Common.Logging;
@@ -28,7 +29,7 @@ namespace Atdl4net.Model.Elements
     // TODO: Implement IDisposable
     public class StateRule_t : EditEvaluator<Control_t>, IParentable<Control_t>
     {
-        private static readonly ILog _log = LogManager.GetLogger("Model");
+        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Elements");
 
         private Control_t _owner;
 
@@ -36,11 +37,28 @@ namespace Atdl4net.Model.Elements
         public string Value { get; set; }
         public bool? Visible { get; set; }
 
-        public StateRule_t()
+        /// <summary>
+        /// Provides a string representation of this StateRule_t, primarily for debugging purposes.
+        /// </summary>
+        /// <returns>String representation in the format (control_id, enabled_value_if_set, value_value_if_set, visible_value_if_set).</returns>
+        public override string ToString()
         {
-            (this as IKeyedObject).RefKey = RefKeyGenerator.GetNextKey(typeof(StateRule_t));
+            StringBuilder sb = new StringBuilder();
 
-            _log.DebugFormat("New StateRule_t created as StateRule[{0}].", (this as IKeyedObject).RefKey);
+            sb.AppendFormat("(Control.ID=\"{0}\"", _owner.Id);
+
+            if (Enabled != null)
+                sb.AppendFormat(", enabled=\"{0}\"", Enabled.ToString().ToLower());
+ 
+            if (Value != null)
+                sb.AppendFormat(", value=\"{0}\"", Value);
+
+            if (Visible != null)
+                sb.AppendFormat(", visible=\"{0}\"", Visible.ToString().ToLower());
+
+            sb.Append(")");
+
+            return sb.ToString();
         }
 
         #region IParentable<Control_t> Members

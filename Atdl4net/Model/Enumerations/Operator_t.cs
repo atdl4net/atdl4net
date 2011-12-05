@@ -21,6 +21,9 @@
 
 namespace Atdl4net.Model.Enumerations
 {
+    /// <summary>
+    /// FIXatdl Operator type.
+    /// </summary>
     public enum Operator_t
     {
         /// <summary>Exists i.e., the user has entered a value</summary>

@@ -24,10 +24,14 @@ using System.Collections.Generic;
 using Atdl4net.Fix;
 using Atdl4net.Model.Reference;
 using Atdl4net.Model.Types;
+using Atdl4net.Model.Types.Support;
 using Atdl4net.Xml.Serialization;
 
 namespace Atdl4net.Xml
 {
+    /// <summary>
+    /// Provides the definition of the FIXatdl schema.
+    /// </summary>
     public static class SchemaDefinitions
     {
         #region SecurityType_t Definition
@@ -117,6 +121,13 @@ namespace Atdl4net.Xml
             new ElementAttribute("constValue", "Value.ConstValue", typeof(char), Required.Optional),
         };
 
+        private static readonly ElementAttribute[] CountryDefinition = new ElementAttribute[]
+        {
+            new ElementAttribute("constValue", "Value.ConstValue", typeof(IsoCountryCode), Required.Optional),
+            new ElementAttribute("maxLength", "Value.MaxLength", typeof(int), Required.Optional),
+            new ElementAttribute("minLength", "Value.MinLength", typeof(int), Required.Optional),
+        };
+
         private static readonly ElementAttribute[] CurrencyDefinition = new ElementAttribute[]
         {
             new ElementAttribute("constValue", "Value.ConstValue", typeof(IsoCurrencyCode), Required.Optional),
@@ -152,15 +163,14 @@ namespace Atdl4net.Xml
 
         private static readonly ElementAttribute[] LanguageDefinition = new ElementAttribute[]
         {
-            new ElementAttribute("constValue", "Value.ConstValue", typeof(string), Required.Optional)
+            new ElementAttribute("constValue", "Value.ConstValue", typeof(IsoLanguageCode), Required.Optional)
         };
 
-        /// <remarks>Used for Length_t, NumInGroup_t, SeqNum_t, TagNum_t.</remarks>
+        // Used for Length_t, NumInGroup_t, SeqNum_t, TagNum_t
         private static readonly ElementAttribute[] LengthDefinition = new ElementAttribute[]
         {
             new ElementAttribute("constValue", "Value.ConstValue", typeof(int), Required.Optional),
         };
-
 
         private static readonly ElementAttribute[] LocalMktDateDefinition = new ElementAttribute[]
         {
@@ -185,7 +195,7 @@ namespace Atdl4net.Xml
             new ElementAttribute("multiplyBy100", "Value.MultiplyBy100", typeof(bool), Required.Optional),
         };
 
-        /// <remarks>Used for MultipleCharValue_t, MultipleStringValue_t.</remarks>
+        // Used for MultipleCharValue_t, MultipleStringValue_t
         private static readonly ElementAttribute[] MultipleStringValueDefinition = new ElementAttribute[]
         {
             new ElementAttribute("constValue", "Value.ConstValue", typeof(string), Required.Optional),
@@ -206,7 +216,8 @@ namespace Atdl4net.Xml
             new ElementAttribute("constValue", "Value.ConstValue", typeof(Tenor), Required.Optional)
         };
 
-        /// <remarks>Used for TZTimeOnly_t, TZTimestamp_t, UTCDateOnly_t, UTCTimeOnly_t. (UTCTimestamp_t has an extra attribute.)</remarks>
+        // Used for TZTimeOnly_t, TZTimestamp_t, UTCDateOnly_t, UTCTimeOnly_t
+        // (UTCTimestamp_t has an extra attribute.)
         private static readonly ElementAttribute[] TZTimeOnlyDefinition = new ElementAttribute[]
         {
             new ElementAttribute("constValue", "Value.ConstValue", typeof(DateTime), Required.Optional),
@@ -231,6 +242,9 @@ namespace Atdl4net.Xml
                 }),
                 "EnumPairs", typeof(Atdl4net.Model.Collections.EnumPairCollection), StandardContainerMethod.Add);
 
+        /// <summary>
+        /// Defines the content of Parameter_t.
+        /// </summary>
         public static readonly GenericTypeElementDefinition Parameter_t = new GenericTypeElementDefinition(
             AtdlNamespaces.core + "Parameter", typeof(Atdl4net.Model.Elements.Parameter_t<>), AtdlNamespaces.xsi + "type", "Atdl4net.Model.Types",
             ParameterConstructorParameters, ParameterCommonAttributes,
@@ -239,6 +253,7 @@ namespace Atdl4net.Xml
 	            {  typeof(Amt_t), FloatDefinition },
 	            {  typeof(Boolean_t), BooleanDefinition },
 	            {  typeof(Char_t), CharDefinition },
+	            {  typeof(Country_t), CountryDefinition },
 	            {  typeof(Currency_t), CurrencyDefinition },
 	            {  typeof(Data_t), DataDefinition },
 	            {  typeof(Exchange_t), ExchangeDefinition },
@@ -276,11 +291,17 @@ namespace Atdl4net.Xml
             new ElementAttribute("id", "Id", typeof(string), Required.Mandatory)
         };
 
+        /// <summary>
+        /// Defines the content of EditRef_t when it relates to a control.
+        /// </summary>
         public static readonly ElementDefinition EditRef_t_Control_t = new ElementDefinition(
             AtdlNamespaces.val + "EditRef", typeof(Atdl4net.Model.Elements.EditRef_t<Atdl4net.Model.Elements.Control_t>), EditRefAttributes);
 
+        /// <summary>
+        /// Defines the content of EditRef_t when it relates to a parameter.
+        /// </summary>
         public static readonly ElementDefinition EditRef_t_IParameter_t = new ElementDefinition(
-            AtdlNamespaces.val + "EditRef", typeof(Atdl4net.Model.Elements.EditRef_t<Atdl4net.Model.Elements.IParameter_t>), EditRefAttributes);
+            AtdlNamespaces.val + "EditRef", typeof(Atdl4net.Model.Elements.EditRef_t<Atdl4net.Model.Elements.Support.IParameter>), EditRefAttributes);
 
         #endregion // EditRef_t<T> Definitions
 
@@ -296,7 +317,10 @@ namespace Atdl4net.Xml
             new ElementAttribute("value", "Value", typeof(string), Required.Optional)
         };
 
-        private static readonly ElementDefinition Edit_t = new ElementDefinition(
+        /// <summary>
+        /// Defines the content of Edit_t.
+        /// </summary>
+        public static readonly ElementDefinition Edit_t = new ElementDefinition(
             AtdlNamespaces.val + "Edit", typeof(Atdl4net.Model.Elements.Edit_t), EditAttributes,
             new ChildElementDefinition[] 
             {
@@ -315,13 +339,13 @@ namespace Atdl4net.Xml
             });
 
         private static readonly ElementDefinition Edit_t_IParameter_t = new ElementDefinition(
-            AtdlNamespaces.val + "Edit", typeof(Atdl4net.Model.Elements.Edit_t<Atdl4net.Model.Elements.IParameter_t>), EditAttributes,
+            AtdlNamespaces.val + "Edit", typeof(Atdl4net.Model.Elements.Edit_t<Atdl4net.Model.Elements.Support.IParameter>), EditAttributes,
             new ChildElementDefinition[] 
             {
                 new ChildElementDefinition(new RecursiveTypeElementDefinition(), "Edits", 
-                    typeof(Atdl4net.Model.Collections.EditEvaluatingCollection<Atdl4net.Model.Elements.IParameter_t>), StandardContainerMethod.Add),
+                    typeof(Atdl4net.Model.Collections.EditEvaluatingCollection<Atdl4net.Model.Elements.Support.IParameter>), StandardContainerMethod.Add),
                 new ChildElementDefinition(SchemaDefinitions.EditRef_t_IParameter_t, "EditRefs", 
-                    typeof(Atdl4net.Model.Collections.EditRefCollection<Atdl4net.Model.Elements.IParameter_t>), StandardContainerMethod.Add)
+                    typeof(Atdl4net.Model.Collections.EditRefCollection<Atdl4net.Model.Elements.Support.IParameter>), StandardContainerMethod.Add)
             });
 
         #endregion // Edit_t Definitions
@@ -335,6 +359,9 @@ namespace Atdl4net.Xml
             new ElementAttribute("value", "Value", typeof(string), Required.Optional)
         };
 
+        /// <summary>
+        /// Defines the content of StateRule_t.
+        /// </summary>
         public static readonly ElementDefinition StateRule_t = new ElementDefinition(
             AtdlNamespaces.flow + "StateRule", typeof(Atdl4net.Model.Elements.StateRule_t), StateRuleAttibutes,
                 new ChildElementDefinition[]
@@ -353,6 +380,9 @@ namespace Atdl4net.Xml
             new ElementAttribute("enumID", "EnumId", typeof(string), Required.Mandatory)
         };
 
+        /// <summary>
+        /// Defines the content of ListItem_t.
+        /// </summary>
         public static readonly ElementDefinition ListItem_t = new ElementDefinition(
             AtdlNamespaces.lay + "ListItem", typeof(Atdl4net.Model.Elements.ListItem_t), ListItemAttibutes);
 
@@ -374,7 +404,7 @@ namespace Atdl4net.Xml
         {
             new ElementAttribute("checkedEnumRef", "CheckedEnumRef", typeof(string), Required.Optional),
             new ElementAttribute("uncheckedEnumRef", "UncheckedEnumRef", typeof(string), Required.Optional),
-            new ElementAttribute("initValue", "InitValue", typeof(Atdl4net.Model.Controls.InitValue<bool>), Required.Optional)
+            new ElementAttribute("initValue", "InitValue", typeof(bool), Required.Optional)
         };
 
         private static readonly ElementAttribute[] CheckBoxListAttributes = new ElementAttribute[] 
@@ -426,7 +456,7 @@ namespace Atdl4net.Xml
 
         private static readonly ElementAttribute[] RadioButtonAttributes = new ElementAttribute[] 
         {
-            new ElementAttribute("initValue", "InitValue", typeof(Atdl4net.Model.Controls.InitValue<bool>), Required.Optional),
+            new ElementAttribute("initValue", "InitValue", typeof(bool), Required.Optional),
             new ElementAttribute("checkedEnumRef", "CheckedEnumRef", typeof(string), Required.Optional),
             new ElementAttribute("uncheckedEnumRef", "UncheckedEnumRef", typeof(string), Required.Optional),
             new ElementAttribute("radioGroup", "RadioGroup", typeof(string), Required.Optional)
@@ -460,6 +490,9 @@ namespace Atdl4net.Xml
             new ElementAttribute("initValue", "InitValue", typeof(string), Required.Optional)
         };
 
+        /// <summary>
+        /// Defines the content of Control_t.
+        /// </summary>
         public static readonly MultiTypeElementDefinition Control_t = new MultiTypeElementDefinition(
             AtdlNamespaces.lay + "Control", AtdlNamespaces.xsi + "type", "Atdl4net.Model.Controls",
             new ConstructorParameter[] { new ConstructorParameter(typeof(string), SourceType.ElementAttribute, "ID") },
@@ -502,13 +535,16 @@ namespace Atdl4net.Xml
             new ElementAttribute("title", "Title", typeof(string), Required.Optional)
         };
 
+        /// <summary>
+        /// Defines the content of StrategyPanel_t.
+        /// </summary>
         public static readonly ElementDefinition StrategyPanel_t = new ElementDefinition(
             AtdlNamespaces.lay + "StrategyPanel",
             typeof(Atdl4net.Model.Elements.StrategyPanel_t),
             new ConstructorParameter[]
             {
                 new ConstructorParameter(typeof(Atdl4net.Model.Elements.Strategy_t), SourceType.NamedPredecessor, "CurrentStrategy"),
-                new ConstructorParameter(typeof(Atdl4net.Model.Elements.IStrategyPanel), SourceType.ParentObject, string.Empty)
+                new ConstructorParameter(typeof(Atdl4net.Model.Elements.Support.IStrategyPanel), SourceType.ParentObject, string.Empty)
             },
             StrategyPanelAttributes,
             new ChildElementDefinition[] 
@@ -523,6 +559,9 @@ namespace Atdl4net.Xml
 
         #region StrategyLayout_t Definition
 
+        /// <summary>
+        /// Defines the content of StrategyLayout_t.
+        /// </summary>
         public static readonly ElementDefinition StrategyLayout_t = new ElementDefinition(
             AtdlNamespaces.lay + "StrategyLayout", typeof(Atdl4net.Model.Elements.StrategyLayout_t),
             new ElementAttribute[] { }, new ChildElementDefinition(
@@ -537,15 +576,18 @@ namespace Atdl4net.Xml
             new ElementAttribute("errorMessage", "ErrorMessage", typeof(string), Required.Mandatory)
         };
 
+        /// <summary>
+        /// Defines the content of StrategyEdit_t.
+        /// </summary>
         public static readonly ElementDefinition StrategyEdit_t = new ElementDefinition(
             AtdlNamespaces.val + "StrategyEdit", typeof(Atdl4net.Model.Elements.StrategyEdit_t),
             StrategyEditAttributes,
             new ChildElementDefinition[] 
             {
                 new ChildElementDefinition(SchemaDefinitions.Edit_t_IParameter_t, "Edit", 
-                    typeof(Atdl4net.Model.Elements.Edit_t<Atdl4net.Model.Elements.IParameter_t>), StandardContainerMethod.Assign),
+                    typeof(Atdl4net.Model.Elements.Edit_t<Atdl4net.Model.Elements.Support.IParameter>), StandardContainerMethod.Assign),
                 new ChildElementDefinition(SchemaDefinitions.EditRef_t_IParameter_t, "EditRef", 
-                    typeof(Atdl4net.Model.Elements.EditRef_t<Atdl4net.Model.Elements.IParameter_t>), StandardContainerMethod.Assign)
+                    typeof(Atdl4net.Model.Elements.EditRef_t<Atdl4net.Model.Elements.Support.IParameter>), StandardContainerMethod.Assign)
             });
 
         #endregion // StrategyEdit_t Definition
@@ -569,6 +611,9 @@ namespace Atdl4net.Xml
             new ElementAttribute("wireValue", "WireValue", typeof(string), Required.Mandatory)
         };
 
+        /// <summary>
+        /// Defines the content of Strategy_t.
+        /// </summary>
         public static readonly ElementDefinition Strategy_t = new ElementDefinition(
             AtdlNamespaces.core + "Strategy", typeof(Atdl4net.Model.Elements.Strategy_t), StrategyAttributes,
             new ChildElementDefinition[]
@@ -599,6 +644,9 @@ namespace Atdl4net.Xml
             new ElementAttribute("tag957Support", "Tag957Support", typeof(bool), Required.Optional),
         };
 
+        /// <summary>
+        /// Defines the content of Strategies_t.
+        /// </summary>
         public static readonly ElementDefinition Strategies_t = new ElementDefinition(
             AtdlNamespaces.core + "Strategies", typeof(Atdl4net.Model.Elements.Strategies_t), StrategiesAttributes,
             new ChildElementDefinition[]

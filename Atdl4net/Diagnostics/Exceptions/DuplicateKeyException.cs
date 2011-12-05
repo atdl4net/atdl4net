@@ -26,6 +26,7 @@ namespace Atdl4net.Diagnostics.Exceptions
     /// <summary>
     /// The exception that is thrown when an item is added to a collection but there is already an item with the same key in the collection.
     /// </summary>
+    [Serializable]
     public class DuplicateKeyException : Atdl4netException
     {
         /// <summary>

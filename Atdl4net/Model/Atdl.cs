@@ -19,12 +19,19 @@
 //
 #endregion
 
-namespace Atdl4net.Model.Controls
-{
-    public interface IObjectControl
-    {
-        object InitValue { get; set; }
+using System;
+using System.Linq;
 
-        object Value { get; set; }
+namespace Atdl4net.Model
+{
+    /// <summary>
+    /// Provides access to a set of constants useful throughout the model.
+    /// </summary>
+    public static class Atdl
+    {
+        /// <summary>
+        /// The FIXatdl 'null' value for controls as used in state rules.
+        /// </summary>
+        public const string NullValue = "{NULL}";
     }
 }

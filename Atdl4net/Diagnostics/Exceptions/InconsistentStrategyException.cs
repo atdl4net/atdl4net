@@ -19,51 +19,37 @@
 //
 #endregion
 
-using System.Collections.Generic;
+using System;
 
-namespace Atdl4net.Diagnostics
+namespace Atdl4net.Diagnostics.Exceptions
 {
     /// <summary>
-    /// Class that used to generate keys - for debugging purposes only.
+    /// The exception that is thrown when trying to process a strategy that is internally inconsistent, such as having ListItems but no EnumPairs.
     /// </summary>
-    public class RefKeyGenerator
+    [Serializable]
+    public class InconsistentStrategyException : Atdl4netException
     {
-        private static object _lockObj = new object();
-        private static Dictionary<System.Type, int> _nextKeys = new Dictionary<System.Type, int>();
-
         /// <summary>
-        /// Gets the next key.
+        /// Initializes a new instance of the <see cref="DuplicateKeyException"/> class with a specified error message.
         /// </summary>
-        /// <param name="type">The type.</param>
-        /// <returns></returns>
-        public static string GetNextKey(System.Type type)
+        /// <param name="message">The error message that explains the reason for the exception. </param>
+        public InconsistentStrategyException(string message)
+            : base(message)
         {
-            lock (_lockObj)
-            {
-                int key;
-
-                if (!_nextKeys.TryGetValue(type, out key))
-                {
-                    _nextKeys.Add(type, 2);
-
-                    return (1).ToString();
-                }
-
-                _nextKeys[type] += 1;
-
-                return key.ToString();
-            }
         }
 
         /// <summary>
-        /// Resets this instance.
+        /// Initializes a new instance of the <see cref="DuplicateKeyException"/> class with a specified error message and a
+        /// reference to the inner exception that is the cause of this exception.
         /// </summary>
-        public static void Reset()
+        /// <param name="message">The error message that explains the reason for the exception. </param>
+        /// <param name="innerException">The exception that is the cause of the current exception. If the innerException 
+        /// parameter is not a null reference (Nothing in Visual Basic), the current exception is raised in a catch block 
+        /// that handles the inner exception. </param>
+        public InconsistentStrategyException(string message, Exception innerException)
+            : base(message, innerException)
         {
-            lock (_lockObj)
-            {
-                _nextKeys.Clear();
-            }
         }
+
     }
 }

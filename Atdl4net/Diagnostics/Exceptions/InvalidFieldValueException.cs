@@ -26,6 +26,7 @@ namespace Atdl4net.Diagnostics.Exceptions
     /// <summary>
     /// The exception that is thrown when attempting to set a field to an invalid value.
     /// </summary>
+    [Serializable]
     public class InvalidFieldValueException : Atdl4netException
     {
         /// <summary>

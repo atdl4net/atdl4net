@@ -19,19 +19,20 @@
 //
 #endregion
 
-using Atdl4net.Model.Collections;
-using Atdl4net.Model.Enumerations;
-using Atdl4net.Utility;
 using System;
 using System.Collections.Specialized;
+using Atdl4net.Model.Collections;
+using Atdl4net.Model.Elements.Support;
+using Atdl4net.Model.Enumerations;
+using Atdl4net.Utility;
 
 namespace Atdl4net.Model.Elements
 {
     public class StrategyPanel_t : IParentable<StrategyPanel_t>, IDisposable, IStrategyPanel
     {
-        private Strategy_t _owningStrategy;
+        private readonly Strategy_t _owningStrategy;
         private StrategyPanel_t _owningStrategyPanel;
-        private StrategyPanelCollection _strategyPanels;
+        private readonly StrategyPanelCollection _strategyPanels;
         private ControlCollection _controls;
 
         public Border_t? Border { get; set; }

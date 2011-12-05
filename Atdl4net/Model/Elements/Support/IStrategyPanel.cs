@@ -19,18 +19,13 @@
 //
 #endregion
 
-namespace Atdl4net.Diagnostics
+namespace Atdl4net.Model.Elements.Support
 {
     /// <summary>
-    /// Interface used for debugging purposes.  For objects that don't have a natural key in FIXatdl (e.g., StrategyPanels),
-    /// it is useful to have a key to identify them when debugging.
+    /// Interface that both <see cref="StrategyPanel_t"/> and <see cref="StrategyLayout_t"/> implement so they can be
+    /// treated and the same type.  Has no members.
     /// </summary>
-    public interface IKeyedObject
+    public interface IStrategyPanel
     {
-        /// <summary>
-        /// Gets or sets the key.
-        /// </summary>
-        /// <value>The ref key.</value>
-        string RefKey { get; set; }
     }
 }

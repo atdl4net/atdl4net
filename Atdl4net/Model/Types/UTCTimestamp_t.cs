@@ -19,6 +19,10 @@
 //
 #endregion
 
+using System;
+using Atdl4net.Fix;
+using Atdl4net.Model.Types.Support;
+
 namespace Atdl4net.Model.Types
 {
     /// <summary>
@@ -34,7 +38,7 @@ namespace Atdl4net.Model.Types
     /// utilized these dates. During a leap second insertion, a UTCTimestamp field may read "19981231-23:59:59", "19981231-23:59:60", 
     /// "19990101-00:00:00". (see http://tycho.usno.navy.mil/leapsec.html)'
     /// </summary>
-    public class UTCTimestamp_t : UTCDateTime
+    public class UTCTimestamp_t : DateTimeTypeBase
     {
         /// <summary>Gets or sets the local market timezone.<br/>
         /// Describes the time zone without indicating whether daylight savings is in effect. Valid values are taken from 
@@ -43,5 +47,19 @@ namespace Atdl4net.Model.Types
         /// Applicable when xsi:type is UTCTimestamp_t.</summary>
         /// <value>The local market timezone.</value>
         public string LocalMktTz { get; set; }
+
+        private static readonly string[] _formatStrings = new string[] { FixDateTimeFormat.FixDateTime, FixDateTimeFormat.FixDateTimeMs };
+
+        /// <summary>
+        /// Gets the DateTime format strings to use when converting this date/time to a FIX string and vice versa.
+        /// </summary>
+        /// <returns>Format strings suitable when calling DateTime.ToString().</returns>
+        /// <remarks>When converting from DateTime to string, the first member of the returned array is used.  When
+        /// converting from string to DateTime, the member of the array that has the same length as the string
+        /// value is used.</remarks>
+        protected override string[] GetDateTimeFormatStrings()
+        {
+            return _formatStrings;
+        }
     }
 }

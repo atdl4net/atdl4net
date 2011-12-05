@@ -27,6 +27,7 @@ namespace Atdl4net.Diagnostics.Exceptions
     /// Thrown if an error occurs when trying to render a strategy.  The InnerException should provide more insight into the
     /// underlying cause, if the Message value provides insufficient detail.
     /// </summary>
+    [Serializable]
     public class RenderingException : Atdl4netException
     {
         /// <summary>

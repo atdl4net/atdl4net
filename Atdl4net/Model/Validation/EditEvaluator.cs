@@ -18,10 +18,11 @@
 //      http://www.gnu.org/licenses/.
 //
 #endregion
+
 using System;
-using Atdl4net.Diagnostics;
 using Atdl4net.Model.Collections;
 using Atdl4net.Model.Elements;
+using Atdl4net.Model.Types.Support;
 using Atdl4net.Resources;
 using Atdl4net.Utility;
 using Common.Logging;
@@ -30,9 +31,9 @@ using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 namespace Atdl4net.Model.Validation
 {
     // TODO: Implement IDisposable
-    public class EditEvaluator<T> : IResolvable<Strategy_t, T>, IKeyedObject where T : class, IValueProvider
+    public class EditEvaluator<T> : IResolvable<Strategy_t, T> where T : class, IValueProvider
     {
-        private static readonly ILog _log = LogManager.GetLogger("EditEvaluation");
+        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Validation");
 
         private const string ObjectDescription = "collection of Edits";
 
@@ -62,9 +63,6 @@ namespace Atdl4net.Model.Validation
                     throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.BothEditAndEditRefSetOnObject, ObjectDescription);
 
                 _editRef = value;
-
-                _log.DebugFormat("EditRef[{0}] associated with EditEvaluator[{1}].",
-                    (value as IKeyedObject).RefKey, (this as IKeyedObject).RefKey);
             }
         }
 
@@ -78,25 +76,26 @@ namespace Atdl4net.Model.Validation
                     throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.BothEditAndEditRefSetOnObject, ObjectDescription);
 
                 _edit = value;
-
-                _log.DebugFormat("Edit[{0}] associated with EditEvaluator[{1}].",
-                    (value as IKeyedObject).RefKey, (this as IKeyedObject).RefKey);
             }
         }
 
         public void Evaluate()
         {
+            _log.Debug(m => m("EditEvaluator evaluating state of Edit_t/EditRef_t; current state is {0}", CurrentState.ToString().ToLower()));
+
             if (_edit != null)
                 _edit.Evaluate();
             else if (_editRef != null)
                 _editRef.Evaluate();
             else
                 throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.NeitherEditNorEditRefSetOnObject, ObjectDescription);
+
+            _log.Debug(m => m("EditEvaluator evaluated to state {0}", CurrentState.ToString().ToLower()));
         }
 
         #region IResolvable<Strategy_t> Members
 
-        void IResolvable<Strategy_t, T>.Resolve(Strategy_t strategy, IDictionary<T> sourceCollection)
+        void IResolvable<Strategy_t, T>.Resolve(Strategy_t strategy, ISimpleDictionary<T> sourceCollection)
         {
             if (_editRef != null)
                 (_editRef as IResolvable<Strategy_t, T>).Resolve(strategy, sourceCollection);
@@ -105,12 +104,6 @@ namespace Atdl4net.Model.Validation
         }
 
         #endregion IResolvable<Strategy_t> Members
-
-        #region IKeyedObject Members
-
-        string IKeyedObject.RefKey { get; set; }
-
-        #endregion IKeyedObject Members
     }
 }
 

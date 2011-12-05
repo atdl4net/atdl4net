@@ -18,6 +18,7 @@
 //      http://www.gnu.org/licenses/.
 //
 #endregion
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +27,6 @@ using System.Xml.Linq;
 using Atdl4net.Diagnostics;
 using Atdl4net.Diagnostics.Exceptions;
 using Atdl4net.Resources;
-using Atdl4net.Utility;
 using Common.Logging;
 using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 
@@ -34,7 +34,7 @@ namespace Atdl4net.Xml.Serialization
 {
     public class ElementFactory : INotifyClassDeserialized
     {
-        private static readonly ILog _log = LogManager.GetLogger("Deserialization");
+        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Xml.Serialization");
 
         private const string ExceptionContext = "ElementFactory";
 

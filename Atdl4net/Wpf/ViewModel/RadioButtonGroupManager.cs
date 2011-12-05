@@ -19,37 +19,59 @@
 //
 #endregion
 
+#if !NET_40
 using System.Collections.Generic;
+using Atdl4net.Wpf.ViewModel;
 
 namespace Atdl4net.Wpf.ViewModel
 {
+    /// <summary>
+    /// Manages the state of WPF radio buttons within a radio button group - needed only for .NET Framework v3.5 to 
+    /// workaround a bug in that version of the Framework that allows more than one WPF RadioButton in a radio button 
+    /// group to selected at a time.
+    /// </summary>
     public class RadioButtonGroupManager
     {
-        private string _groupName;
-        private List<RadioButtonWrapper> _radioButtonWrappers = new List<RadioButtonWrapper>();
+        private readonly string _groupName;
+        private readonly List<RadioButtonWrapper> _radioButtonWrappers = new List<RadioButtonWrapper>();
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="RadioButtonGroupManager"/> with the specified radio button
+        /// group name.
+        /// </summary>
+        /// <param name="groupName">Radio button group name.</param>
         public RadioButtonGroupManager(string groupName)
         {
             _groupName = groupName;
         }
 
-        public string GroupName
-        {
-            get { return _groupName; }
-        }
+        /// <summary>
+        /// Gets the name of the radio button group that this RadioButtonGroupManager is managing.
+        /// </summary>
+        public string GroupName { get { return _groupName; } }
 
+        /// <summary>
+        /// Registers a radio button via its <see cref="RadioButtonWrapper"/> with this RadionButtonGroupManager.
+        /// </summary>
+        /// <param name="radioButtonWrapper">Reference to the RadioButtonWrapper to register.</param>
         public void RegisterRadioButton(RadioButtonWrapper radioButtonWrapper)
         {
             _radioButtonWrappers.Add(radioButtonWrapper);
         }
 
+        /// <summary>
+        /// Updates the states of all radio buttons within the radio button group based on the state of the
+        /// radio button specified by the supplied <see cref="RadioButtonWrapper"/>.
+        /// </summary>
+        /// <param name="activeButtonWrapper"></param>
         public void UpdateRadioButtons(RadioButtonWrapper activeButtonWrapper)
         {
             foreach (RadioButtonWrapper radioButtonWrapper in _radioButtonWrappers)
             {
                 if (radioButtonWrapper.Id != activeButtonWrapper.Id)
-                    radioButtonWrapper.Value = false;
+                    radioButtonWrapper.UiValue = false;
             }
         }
     }
 }
+#endif

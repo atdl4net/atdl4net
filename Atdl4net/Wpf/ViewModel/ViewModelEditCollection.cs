@@ -18,12 +18,12 @@
 //      http://www.gnu.org/licenses/.
 //
 #endregion
-
-using Atdl4net.Model.Collections;
-using Atdl4net.Model.Elements;
-using Atdl4net.Utility;
 using System;
 using System.Collections.ObjectModel;
+using Atdl4net.Model.Collections;
+using Atdl4net.Model.Elements;
+using Atdl4net.Model.Elements.Support;
+using Atdl4net.Utility;
 
 namespace Atdl4net.Wpf.ViewModel
 {
@@ -38,7 +38,7 @@ namespace Atdl4net.Wpf.ViewModel
         {
             _underlyingCollection = underlyingCollection;
 
-            foreach (IEdit_t<Control_t> item in underlyingCollection)
+            foreach (IEdit<Control_t> item in underlyingCollection)
             {
                 EditWrapper wrapper = new EditWrapper(item);
 

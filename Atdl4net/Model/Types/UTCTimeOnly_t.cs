@@ -19,6 +19,10 @@
 //
 #endregion
 
+using System;
+using Atdl4net.Fix;
+using Atdl4net.Model.Types.Support;
+
 namespace Atdl4net.Model.Types
 {
     /// <summary>
@@ -29,7 +33,20 @@ namespace Atdl4net.Model.Types
     /// HH = 00-23, MM = 00-60 (60 only if UTC leap second), SS = 00-59. (without milliseconds)
     /// HH = 00-23, MM = 00-59, SS = 00-60 (60 only if UTC leap second), sss=000-999 (indicating milliseconds).'
     /// </summary>
-    public class UTCTimeOnly_t : UTCDateTime
+    public class UTCTimeOnly_t : DateTimeTypeBase
     {
+        private static readonly string[] _formatStrings = new string[] { FixDateTimeFormat.FixTimeOnly, FixDateTimeFormat.FixTimeOnlyMs };
+
+        /// <summary>
+        /// Gets the DateTime format strings to use when converting this date/time to a FIX string and vice versa.
+        /// </summary>
+        /// <returns>Format strings suitable when calling DateTime.ToString().</returns>
+        /// <remarks>When converting from DateTime to string, the first member of the returned array is used.  When
+        /// converting from string to DateTime, the member of the array that has the same length as the string
+        /// value is used.</remarks>
+        protected override string[] GetDateTimeFormatStrings()
+        {
+            return _formatStrings;
+        }
     }
 }

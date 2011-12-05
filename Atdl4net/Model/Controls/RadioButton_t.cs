@@ -19,62 +19,31 @@
 //
 #endregion
 
-using Atdl4net.Diagnostics;
-using Atdl4net.Model.Elements;
+using System;
+using Atdl4net.Model.Controls.Support;
 using Common.Logging;
 
 namespace Atdl4net.Model.Controls
 {
-    public class RadioButton_t : Control_t, IBooleanControl
+    /// <summary>
+    /// Represents the RadioButton_t control element within FIXatdl.
+    /// </summary>
+    public class RadioButton_t : BinaryControlBase
     {
-        private static readonly ILog _log = LogManager.GetLogger("Model");
-
-        /// <summary>Identifies a common group name used by a set of RadioButton_t among which only one radio button 
-        /// may be selected at a time.  Applicable when xsi:type is RadioButton_t.</summary>
-        public string RadioGroup { get; set; }
+        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Controls");
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="Atdl4net.Model.Controls.RadioButton_t">RadioButton_t</see> class using the supplied ID.
+        /// Initializes a new instance of <see cref="RadioButton_t"/> using the supplied ID.
         /// </summary>
         /// <param name="id">ID for this control.</param>
         public RadioButton_t(string id)
             : base(id)
         {
-            _log.DebugFormat("New {0} created as Control[{1}] Id='{2}'.", typeof(RadioButton_t).Name, (this as IKeyedObject).RefKey, id);
+            _log.Debug(m => m("New RadioButton_t created as control {0}", id));
         }
 
-        public override void LoadDefault()
-        {
-            if (InitValue != null)
-                Value = InitValue.GetValue(GetInputValues());
-        }
-
-        #region IBooleanControl Members
-
-        public bool Value { get; set; }
-
-        /// <summary>The value used to pre-populate the GUI component when the order entry screen is initially rendered.</summary>
-        public InitValue<bool> InitValue { get; set; }
-
-        /// <summary>Output enumID if checked/selected.  Applicable when xsi:type is CheckBox_t or RadioButton_t.</summary>
-        public string CheckedEnumRef { get; set; }
-
-        /// <summary>Output enumID if unchecked/not selected.  Applicable when xsi:type is CheckBox_t or RadioButton_t.</summary>
-        public string UncheckedEnumRef { get; set; }
-
-        #endregion IBooleanControl Members
-
-        public override object GetValue()
-        {
-            return Value;
-        }
-
-        public override void SetValue(object newValue)
-        {
-            if (object.Equals(newValue, Control_t.NullValue))
-                Value = false;
-            else
-                Value = (bool)newValue;
-        }
+        /// <summary>Identifies a common group name used by a set of RadioButton_t among which only one radio button 
+        /// may be selected at a time.  Applicable when xsi:type is RadioButton_t.</summary>
+        public string RadioGroup { get; set; }
     }
 }
