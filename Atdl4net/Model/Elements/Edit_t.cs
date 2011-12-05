@@ -281,6 +281,10 @@ namespace Atdl4net.Model.Elements
                     operand2 = Convert.ToDecimal(Value);
                 else if (FieldValue is int)
                     operand2 = Convert.ToInt32(Value);
+                else if (FieldValue is char)
+                    operand2 = Convert.ToChar(Value);
+                else if (FieldValue is DateTime)
+                    operand2 = DateTime.Parse(Value);
                 else
                     operand2 = Value;
             }
