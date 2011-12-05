@@ -546,30 +546,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>InternalErrors.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Deserialization.sequencediagram.layout">
-      <DependentUpon>Deserialization.sequencediagram</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FromUiListControlToParameter.sequencediagram.layout">
-      <DependentUpon>FromUiListControlToParameter.sequencediagram</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FromUiToParameter.sequencediagram.layout">
-      <DependentUpon>FromUiToParameter.sequencediagram</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ListControls.sequencediagram.layout">
-      <DependentUpon>ListControls.sequencediagram</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="StateRules.sequencediagram.layout">
-      <DependentUpon>StateRules.sequencediagram</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="AtdlParameterTypes.cd" />
-    <None Include="Deserialization.sequencediagram" />
-    <None Include="FromUiListControlToParameter.sequencediagram" />
-    <None Include="FromUiToParameter.sequencediagram" />
-    <None Include="ListControls.sequencediagram" />
-    <None Include="Parameters.cd" />
-    <None Include="StateRules.sequencediagram" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
