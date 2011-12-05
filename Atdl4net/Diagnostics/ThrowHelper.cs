@@ -30,7 +30,7 @@ namespace Atdl4net.Diagnostics
     /// </summary>
     public static class ThrowHelper
     {
-        private static readonly ILog _log = LogManager.GetLogger("ExceptionManagement");
+        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Diagnostics");
 
         /// <summary>
         /// Creates an exception of the specified type and initializes it using the values supplied.

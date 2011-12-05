@@ -36,7 +36,7 @@ namespace Atdl4net.Xml
 {
     public class StrategiesReader: INotifyStrategyLoad
     {
-        private static readonly ILog _log = LogManager.GetLogger("Deserialization");
+        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Xml.Serialization");
 
         public Strategies_t Load(FileInfo file)
         {

@@ -38,7 +38,7 @@ namespace Atdl4net.Wpf
 {
     public partial class AtdlControl : UserControl, INotifyPropertyChanged
     {
-        private static readonly ILog _log = LogManager.GetLogger("AtdlControl");
+        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Wpf");
 
         public static readonly DependencyProperty DataEntryModeProperty =
             DependencyProperty.Register("DataEntryMode", typeof(DataEntryMode), typeof(AtdlControl), new FrameworkPropertyMetadata(DataEntryMode.Create));

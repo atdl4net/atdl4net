@@ -152,6 +152,8 @@ namespace Atdl4net.Model.Elements
                     fixTagValues.Add((FixTag)Parent.VersionIdentifierTag, Version);
             }
 
+            _log.Debug(m=>m("Strategy_t.GetOutputValues() returning: {0}", fixTagValues.ToString()));
+
             return fixTagValues;
         }
 

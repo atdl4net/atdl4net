@@ -86,7 +86,7 @@ namespace Atdl4net.Model.Types
         /// <returns>If input value is not null, returns value converted to a string; null otherwise.</returns>
         protected override string ConvertToWireValueFormat(char[] value)
         {
-            return value != null ? value.ToString() : null;
+            return value != null ? new string(value) : null;
         }
 
         /// <summary>

@@ -50,5 +50,21 @@ namespace Atdl4net.Fix
 
         /// <summary>Date and time with appended time zone information.</summary>
         public readonly static string FixTimeOnlyWithTz = "HH:mm:ssK";
+
+        /// <summary>
+        /// Gets an array containing all the FIX date/time formats.
+        /// </summary>
+        public static string[] AllFormats { get { return _allFormats; } }
+
+        private static readonly string[] _allFormats = new string[] 
+        { 
+            FixDateTime,
+            FixDateTimeMs,
+            FixTimeOnly,
+            FixTimeOnlyMs,
+            FixDateOnly,
+            FixDateTimeWithTz,
+            FixTimeOnlyWithTz
+        };
     }
 }

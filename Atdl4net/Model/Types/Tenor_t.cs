@@ -97,7 +97,7 @@ namespace Atdl4net.Model.Types
         {
             string tenor = value.ToString(hostParameter);
 
-            return tenor != null ? (Tenor?)Tenor.Parse(value.ToString()) : null;
+            return tenor != null ? (Tenor?)Tenor.Parse(tenor) : null;
         }
 
         #region IControlConvertible Members

@@ -42,7 +42,7 @@ namespace Atdl4net.Model.Controls.Support
     {
         private const string ExceptionContext = "EnumState";
 
-        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Types.Support");
+        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Types");
 
         private readonly BitArray _enumStates;
         private readonly string[] _enumIds;

@@ -123,7 +123,7 @@ namespace Atdl4net.Model.Types.Support
                 }
             }
 
-            throw ThrowHelper.New<ArgumentException>(ExceptionContext, ErrorMessages.InvalidMonthYearValue, value);
+            throw ThrowHelper.New<ArgumentException>(ExceptionContext, ErrorMessages.InvalidTenorValue, value);
         }
 
         public override string ToString()

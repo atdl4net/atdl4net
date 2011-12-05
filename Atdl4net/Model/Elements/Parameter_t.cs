@@ -40,7 +40,7 @@ namespace Atdl4net.Model.Elements
     /// <example>To create a parameter with underlying type Amt_t, use <c>new Parameter_t&lt;Amt_t&gt;</c>.</example>
     public class Parameter_t<T> : IParameter where T : IParameterType, new()
     {
-        private static readonly ILog _log = LogManager.GetLogger("Model");
+        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Elements");
 
         private readonly EnumPairCollection _enumPairs = new EnumPairCollection();
 
