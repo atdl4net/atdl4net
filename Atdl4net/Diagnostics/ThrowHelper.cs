@@ -179,8 +179,26 @@ namespace Atdl4net.Diagnostics
         /// <param name="source">The source.</param>
         /// <param name="ex">The ex.</param>
         /// <param name="format">The format.</param>
+        /// <param name="args">An array of zero or more arguments.</param>
+        /// <returns>A new exception of the same type as the supplied exception.</returns>
+        public static Exception Rethrow(object source, Exception ex, string format, params object[] args)
+        {
+            Exception newException = Rethrow(source, ex, string.Format(format, args), new object());
+
+            _log.Error("Exception rethrown by ThrowHelper", newException);
+
+            return newException;
+        }
+
+        /// <summary>
+        /// Wraps the supplied exception in a new exception of the same type as that supplied, in order to get a
+        /// decent error message back to the end-user.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <param name="ex">The ex.</param>
+        /// <param name="format">The format.</param>
         /// <param name="arg">The arg.</param>
-        /// <returns>A new exception of the specified type.</returns>
+        /// <returns>A new exception of the same type as the supplied exception.</returns>
         public static Exception Rethrow(object source, Exception ex, string format, object arg)
         {
             Exception newException = Rethrow(source, ex, null, format, arg);
@@ -199,7 +217,7 @@ namespace Atdl4net.Diagnostics
         /// <param name="info">The info.</param>
         /// <param name="format">The format.</param>
         /// <param name="arg">The arg.</param>
-        /// <returns>A new exception of the specified type.</returns>
+        /// <returns>A new exception of the same type as the supplied exception.</returns>
         public static Exception Rethrow(object source, Exception ex, ExceptionInfo info, string format, object arg)
         {
             Type classType = ex.GetType();

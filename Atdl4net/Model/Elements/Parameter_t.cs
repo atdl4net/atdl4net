@@ -160,7 +160,14 @@ namespace Atdl4net.Model.Elements
         {
             IParameterConvertible value = control.GetValueForParameter();
 
-            _value.SetValueFromControl(this, value);
+            try
+            {
+                _value.SetValueFromControl(this, value);
+            }
+            catch (Atdl4netException ex)
+            {
+                throw ThrowHelper.Rethrow(this, ex, ErrorMessages.UnsuccessfulSetParameterOperation, Name, control.Id, ex.Message);
+            }
         }
 
         /// <summary>
@@ -198,7 +205,7 @@ namespace Atdl4net.Model.Elements
         /// <returns>Current value of this parameter as an object.</returns>
         public object GetCurrentValue()
         {
-            return _value.GetWireValue(this);
+            return _value.GetNativeValue();
         }
 
         #endregion

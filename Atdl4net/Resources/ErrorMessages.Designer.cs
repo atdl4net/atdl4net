@@ -498,6 +498,15 @@ namespace Atdl4net.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Attempt to set parameter {0} from control {1} failed with error: {2}.
+        /// </summary>
+        internal static string UnsuccessfulSetParameterOperation {
+            get {
+                return ResourceManager.GetString("UnsuccessfulSetParameterOperation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The value supplied, &apos;{0}&apos;, cannot be compared with &apos;{1}&apos; because this type of comparison is not supported..
         /// </summary>
         internal static string UnsupportedComparisonOperation {

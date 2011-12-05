@@ -129,6 +129,14 @@ namespace Atdl4net.Model.Types.Support
             return (ConstValue != null) ? ConvertToWireValueFormat(ConstValue) : ConvertToWireValueFormat(_value);
         }
 
+        /// <summary>
+        /// Gets the value of this parameter type in its native (i.e., raw) form, such as int, char, string, etc. 
+        /// </summary>
+        /// <returns>Native parameter value.</returns>
+        public object GetNativeValue()
+        {
+            return _value;
+        }
         #endregion
 
         #region Abstract Methods that all FIXatdl value-based types must implement

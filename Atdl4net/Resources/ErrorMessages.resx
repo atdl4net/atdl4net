@@ -275,4 +275,7 @@
   <data name="UnsupportedControlValueConversion" xml:space="preserve">
     <value>The conversion of the value '{0}' to the type {1} is not supported.  This relates to the {2} control.</value>
   </data>
+  <data name="UnsuccessfulSetParameterOperation" xml:space="preserve">
+    <value>Attempt to set parameter {0} from control {1} failed with error: {2}</value>
+  </data>
 </root>

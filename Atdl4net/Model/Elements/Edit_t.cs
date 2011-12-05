@@ -255,7 +255,7 @@ namespace Atdl4net.Model.Elements
         {
             object fieldValue = FieldValue;
 
-            bool empty = fieldValue == null ||  string.IsNullOrEmpty(fieldValue as string);
+            bool empty = fieldValue == null || (fieldValue as string == string.Empty);
 
             bool result = (Operator == Operator_t.Exist) ? !empty : empty;
 
@@ -278,9 +278,9 @@ namespace Atdl4net.Model.Elements
                 if (FieldValue is bool)
                     operand2 = Boolean.Parse(Value);
                 else if (FieldValue is decimal)
-                    operand2 = Convert.ToDecimal(Field2Value);
+                    operand2 = Convert.ToDecimal(Value);
                 else if (FieldValue is int)
-                    operand2 = Convert.ToInt32(Field2Value);
+                    operand2 = Convert.ToInt32(Value);
                 else
                     operand2 = Value;
             }
