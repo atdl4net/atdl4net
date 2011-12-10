@@ -47,6 +47,7 @@ namespace Atdl4net.Wpf.View.DefaultRendering
                     if (!string.IsNullOrEmpty(id))
                         writer.WriteAttribute(WpfXmlWriterAttribute.Name, id);
 
+                    writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, string.Format("{0}Binding Path=Controls[{1}].Tooltip{2}", "{", id, "}"));
                     writer.WriteAttribute(WpfXmlWriterAttribute.ItemsSource, string.Format("{0}Binding Path=Controls[{1}].ListItems{2}", "{", id, "}"));
                     writer.WriteAttribute(WpfXmlWriterAttribute.SelectedValue, string.Format("{0}Binding Path=Controls[{1}].SelectedValue{2}", "{", id, "}"));
                     writer.WriteAttribute(WpfXmlWriterAttribute.SelectedValuePath, "EnumId");

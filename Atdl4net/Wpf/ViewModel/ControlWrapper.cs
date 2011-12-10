@@ -150,6 +150,11 @@ namespace Atdl4net.Wpf.ViewModel
         public string Id { get { return UnderlyingControl.Id; } }
 
         /// <summary>
+        /// Gets the tooltip for this control.
+        /// </summary>
+        public string Tooltip { get { return UnderlyingControl.Tooltip; } }
+
+        /// <summary>
         /// Gets/sets the user interface value for the <see cref="Control_t"/> that this ControlWrapper is responsible for.
         /// </summary>
         public virtual object UiValue

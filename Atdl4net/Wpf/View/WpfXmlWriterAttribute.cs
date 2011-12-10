@@ -113,6 +113,9 @@ namespace Atdl4net.Wpf.View
         /// <summary>Text</summary>
         Text,
 
+        /// <summary>ToolTip</summary>
+        ToolTip,
+
         /// <summary>Time</summary>
         Time,
 

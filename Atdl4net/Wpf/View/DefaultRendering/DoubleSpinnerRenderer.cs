@@ -42,6 +42,7 @@ namespace Atdl4net.Wpf.View.DefaultRendering
                     if (!string.IsNullOrEmpty(c.Id))
                         writer.WriteAttribute(WpfXmlWriterAttribute.Name, id);
 
+                    writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, string.Format("{0}Binding Path=Controls[{1}].Tooltip{2}", "{", id, "}"));
                     writer.WriteAttribute(WpfXmlWriterAttribute.Value, string.Format("{0}Binding Path=Controls[{1}].UiValue,Mode=TwoWay,TargetNullValue={{x:Static sys:String.Empty}},StringFormat=\\{{0:D\\}}{2}", "{", id, "}"));
                     writer.WriteAttribute(WpfXmlWriterAttribute.InnerIncrement, string.Format("{0}Binding Path=Controls[{1}].UnderlyingControl.InnerIncrement, Mode=OneWay{2}", "{", id, "}"));
                     writer.WriteAttribute(WpfXmlWriterAttribute.OuterIncrement, string.Format("{0}Binding Path=Controls[{1}].UnderlyingControl.OuterIncrement, Mode=OneWay{2}", "{", id, "}"));

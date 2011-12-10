@@ -14,6 +14,7 @@ namespace Atdl4net.Wpf.View.DefaultRendering
                 {
                     WpfControlRenderer.WriteGridAttribute(writer, control);
 
+                    writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, string.Format("{0}Binding Path=Controls[{1}].Tooltip{2}", "{", control.Id, "}"));
                     writer.WriteAttribute(WpfXmlWriterAttribute.Content, control.Label);
                 }
             }

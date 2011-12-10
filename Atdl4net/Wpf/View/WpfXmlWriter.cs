@@ -237,6 +237,7 @@ namespace Atdl4net.Wpf.View
             _attributeInformation[(int)WpfXmlWriterAttribute.SelectedValuePath] = new AttributeInformation("SelectedValuePath");
             _attributeInformation[(int)WpfXmlWriterAttribute.Target] = new AttributeInformation("Target");
             _attributeInformation[(int)WpfXmlWriterAttribute.Text] = new AttributeInformation("Text");
+            _attributeInformation[(int)WpfXmlWriterAttribute.ToolTip] = new AttributeInformation("ToolTip");
             _attributeInformation[(int)WpfXmlWriterAttribute.Time] = new AttributeInformation("Time");
             _attributeInformation[(int)WpfXmlWriterAttribute.Value] = new AttributeInformation("Value");
             _attributeInformation[(int)WpfXmlWriterAttribute.Visibility] = new AttributeInformation("Visibility");

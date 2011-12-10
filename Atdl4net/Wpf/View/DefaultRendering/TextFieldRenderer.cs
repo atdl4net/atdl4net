@@ -47,6 +47,7 @@ namespace Atdl4net.Wpf.View.DefaultRendering
 
                     writer.WriteAttribute(WpfXmlWriterAttribute.Width, "120");
 
+                    writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, string.Format("{0}Binding Path=Controls[{1}].Tooltip{2}", "{", id, "}"));
                     writer.WriteAttribute(WpfXmlWriterAttribute.Text, string.Format("{0}Binding Path=Controls[{1}].UiValue{2}", "{", id, "}"));
                     writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, string.Format("{0}Binding Path=Controls[{1}].Enabled{2}", "{", id, "}"));
                     writer.WriteAttribute(WpfXmlWriterAttribute.Visibility, string.Format("{0}Binding Path=Controls[{1}].Visibility{2}", "{", id, "}"));

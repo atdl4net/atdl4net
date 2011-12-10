@@ -18,6 +18,7 @@
 //      http://www.gnu.org/licenses/.
 //
 #endregion
+
 using Atdl4net.Model.Controls;
 using Atdl4net.Wpf.View.Controls;
 using System.ComponentModel.Composition;
@@ -41,6 +42,7 @@ namespace Atdl4net.Wpf.View.DefaultRendering
                     if (!string.IsNullOrEmpty(c.Id))
                         writer.WriteAttribute(WpfXmlWriterAttribute.Name, id);
 
+                    writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, string.Format("{0}Binding Path=Controls[{1}].Tooltip{2}", "{", id, "}"));
                     writer.WriteAttribute(WpfXmlWriterAttribute.ItemsSource, string.Format("{0}Binding Path=Controls[{1}].ListItems{2}", "{", id, "}"));
                     writer.WriteAttribute(WpfXmlWriterAttribute.SelectedValue, string.Format("{0}Binding Path=Controls[{1}].SelectedValue, Mode=TwoWay{2}", "{", id, "}"));
                     writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, string.Format("{0}Binding Path=Controls[{1}].Enabled{2}", "{", id, "}"));
