@@ -206,7 +206,14 @@ namespace Atdl4net.Model.Controls.Support
             if (_value == null)
                 throw ThrowHelper.New<InternalErrorException>(this, InternalErrors.UnexpectedNullReference, "_value", this.GetType().Name);
 
-            return _value.ToWireValue(targetParameter.EnumPairs);
+            try
+            {
+                return _value.ToWireValue(targetParameter.EnumPairs);
+            }
+            catch (InvalidOperationException ex)
+            {
+                throw ThrowHelper.Rethrow(this, ex, ErrorMessages.UnsuccessfulSetParameterOperation, targetParameter.Name, Id, ex.Message);
+            }
         }
 
         /// <summary>

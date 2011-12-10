@@ -187,7 +187,11 @@ namespace Atdl4net.Model.Controls.Support
         /// <returns>A nullable 32-bit signed integer equivalent to the value of this instance.</returns>
         public override int? ToInt32(IParameter targetParameter, IFormatProvider provider)
         {
-            throw ThrowHelper.New<InvalidCastException>(this, ErrorMessages.UnsupportedControlValueConversion, _value, "Int32", Id);
+            string wireValue = _value != null ? ToString(targetParameter) : null;
+
+            int result = 0;
+
+            return TryConvertToInt(wireValue, out result) ? (int?)result : null;
         }
 
         /// <summary>
@@ -198,7 +202,11 @@ namespace Atdl4net.Model.Controls.Support
         /// <returns>A nullable 32-bit unsigned integer equivalent to the value of this instance.</returns>
         public override uint? ToUInt32(IParameter targetParameter, IFormatProvider provider)
         {
-            throw ThrowHelper.New<InvalidCastException>(this, ErrorMessages.UnsupportedControlValueConversion, _value, "UInt32", Id);
+            string wireValue = _value != null ? ToString(targetParameter) : null;
+
+            uint result = 0;
+
+            return TryConvertToUint(wireValue, out result) ? (uint?)result : null;
         }
 
         /// <summary>

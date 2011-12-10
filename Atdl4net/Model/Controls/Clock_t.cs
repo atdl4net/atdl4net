@@ -114,7 +114,7 @@ namespace Atdl4net.Model.Controls
                     throw ThrowHelper.New<InvalidFieldValueException>(this, ErrorMessages.InitControlValueError,
                         Id, string.Format("'{0}' is not a valid value for this control", value));
             }
-            else if (isDateTime)
+            else if (isDateTime || newValue == null)
             {
                 _value = (DateTime?)newValue;
             }

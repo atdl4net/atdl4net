@@ -38,7 +38,7 @@
             <Setter.Value>
                 <DataTemplate DataType="{x:Type viewmodel:ListItemWrapper}">
                     <StackPanel>
-                        <CheckBox Margin="5" Content="{Binding Path=UiRep}"  IsChecked="{Binding Path=IsSelected}"/>
+                        <CheckBox Margin="5" Content="{Binding Path=UiRep}"  IsChecked="{Binding Path=IsSelected}" AutomationProperties.AutomationId="{Binding AutomationId}"/>
                     </StackPanel>
                 </DataTemplate>
             </Setter.Value>
@@ -64,7 +64,7 @@
             <Setter.Value>
                 <DataTemplate DataType="{x:Type viewmodel:ListItemWrapper}">
                     <StackPanel>
-                        <RadioButton Margin="5" Content="{Binding Path=UiRep}" IsChecked="{Binding Path=IsSelected}" GroupName="{Binding Path=GroupName}"/>
+                        <RadioButton Margin="5" Content="{Binding Path=UiRep}" IsChecked="{Binding Path=IsSelected}" GroupName="{Binding Path=GroupName}" AutomationProperties.AutomationId="{Binding AutomationId}"/>
                     </StackPanel>
                 </DataTemplate>
             </Setter.Value>

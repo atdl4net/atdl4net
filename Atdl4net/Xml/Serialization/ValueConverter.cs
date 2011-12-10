@@ -60,7 +60,14 @@ namespace Atdl4net.Xml.Serialization
                     return Convert.ToDecimal(value, CultureInfo.InvariantCulture);
 
                 case "System.DateTime":
-                    return DateTime.Now; // TODO: Think this should be corrected
+                    {
+                        DateTime result;
+
+                        if (!FixDateTime.TryParse(value, CultureInfo.InvariantCulture, out result))
+                            throw ThrowHelper.New<InvalidFieldValueException>(ExceptionContext, ErrorMessages.InvalidDateOrTimeValue, value);
+
+                        return result;
+                    }
 
                 case "Atdl4net.Fix.FixTag":
                     return new FixTag(Convert.ToInt32(value, CultureInfo.InvariantCulture));

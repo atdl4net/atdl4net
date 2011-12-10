@@ -72,6 +72,11 @@ namespace Atdl4net.Wpf.ViewModel
         }
 
         /// <summary>
+        /// Gets the ID of the control that this set of ListItems belong to.
+        /// </summary>
+        public string Id { get { return _owningControlWrapper.Id; } }
+
+        /// <summary>
         /// Attempts to get the EnumID for the supplied UiRep.
         /// </summary>
         /// <param name="uiRep">UiRep to search for.</param>

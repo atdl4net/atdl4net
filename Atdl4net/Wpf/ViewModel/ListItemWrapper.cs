@@ -56,6 +56,11 @@ namespace Atdl4net.Wpf.ViewModel
         #endregion
 
         /// <summary>
+        /// Gets a unique identifier for this ListItem to support automated testing.
+        /// </summary>
+        public string AutomationId { get { return string.Format("{0}:{1}", _owningCollection.Id, EnumId); } }
+
+        /// <summary>
         /// Gets/sets the selection state (true/false) of the ListItem that this ListItemWrapper is responsible for.
         /// </summary>
         public bool IsSelected

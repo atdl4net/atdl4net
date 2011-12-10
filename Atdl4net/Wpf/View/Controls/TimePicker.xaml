@@ -35,27 +35,28 @@
     <Border BorderThickness="1" BorderBrush="Gray" CornerRadius="1" Background="White" >
         <Grid Width="Auto" Height="Auto" x:Name="rootGrid" >
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="20"/>
-                <ColumnDefinition Width="0.05*"/>
+                <ColumnDefinition Width="0.2*"/>
                 <ColumnDefinition Width="22"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <Grid Grid.Column="0" Height="Auto">
+            <Grid Grid.Column="1" Height="Auto">
                 <local:ClickSelectTextBox x:Name="hours" BorderThickness="0" MaxLength="2" Margin="0,1,0,0" Width="17" TextAlignment="Right" 
                                         GotFocus="hours_GotFocus" KeyDown="hours_KeyDown">
                     <Binding ElementName="controlRoot" Path="Hours" Mode="TwoWay" UpdateSourceTrigger="LostFocus"/>
                 </local:ClickSelectTextBox>
             </Grid>
-            <Grid Grid.Column="1" Height="Auto">
+            <Grid Grid.Column="2" Height="Auto">
                 <TextBlock Text=":" Grid.RowSpan="2" Padding="0,1,0,0" Background="Transparent"/>
             </Grid>
-            <Grid Grid.Column="2" Height="Auto">
+            <Grid Grid.Column="3" Height="Auto">
                 <local:ClickSelectTextBox x:Name="minutes" BorderThickness="0"  MaxLength="2" Margin="0,1,4,0" Width="17"
                                         HorizontalAlignment="Right" GotFocus="minutes_GotFocus" KeyDown="minutes_KeyDown" >
                     <Binding ElementName="controlRoot" Path="Minutes" Mode="TwoWay" UpdateSourceTrigger="LostFocus"/>
                 </local:ClickSelectTextBox>
             </Grid>
-            <Grid Grid.Column="3">
+            <Grid Grid.Column="4">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>

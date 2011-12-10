@@ -18,7 +18,7 @@ namespace Atdl4net.Wpf.View.Controls
         /// Underlying dependency property for this control's Time property.
         /// </summary>
         public static readonly DependencyProperty TimeProperty = 
-            DependencyProperty.Register("Time", typeof(DateTime?), typeof(TimePicker));
+            DependencyProperty.Register("Time", typeof(DateTime?), typeof(TimePicker), new PropertyMetadata(new PropertyChangedCallback(OnTimeChanged)));
 
         /// <summary>
         /// Initializes a new instance of the TimePicker control.
@@ -52,6 +52,20 @@ namespace Atdl4net.Wpf.View.Controls
                 NotifyMinutesPropertyChanged(prevValue, _value);
                 NotifyHoursPropertyChanged(prevValue, _value);
             }
+        }
+
+        private static void OnTimeChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
+        {
+            TimePicker target = dependencyObject as TimePicker;
+
+            DateTime? oldValue = (DateTime?)e.OldValue;
+            DateTime? newValue = (DateTime?)e.NewValue;
+
+            TimeInstant oldTime = oldValue != null ? new TimeInstant(((DateTime)oldValue).Hour, ((DateTime)oldValue).Minute) : new TimeInstant();
+            target._value = newValue != null ? new TimeInstant(((DateTime)newValue).Hour, ((DateTime)newValue).Minute) : new TimeInstant();
+
+            target.NotifyMinutesPropertyChanged(oldTime, target._value);
+            target.NotifyHoursPropertyChanged(oldTime, target._value);
         }
 
         private void upButton_Click(object sender, RoutedEventArgs e)
@@ -144,17 +158,19 @@ namespace Atdl4net.Wpf.View.Controls
 
                     if (minutes >= 0 && minutes <= 59)
                     {
+                        TimeInstant prevValue = _value;
+
                         _value.Minutes = minutes;
 
                         if (_value.IsEmpty)
                         {
-                            TimeInstant prevValue = _value;
-
                             _value.IsEmpty = false;
                             _value.Hours = 0;
 
                             NotifyHoursPropertyChanged(prevValue, _value);
                         }
+
+                        NotifyMinutesPropertyChanged(prevValue, _value);
                     }
                 }
                 catch (FormatException)
@@ -180,17 +196,19 @@ namespace Atdl4net.Wpf.View.Controls
 
                     if (hours >= 0 && hours <= 23)
                     {
+                        TimeInstant prevValue = _value;
+
                         _value.Hours = hours;
 
                         if (_value.IsEmpty)
                         {
-                            TimeInstant prevValue = _value;
-
                             _value.IsEmpty = false;
                             _value.Minutes = 0;
 
                             NotifyMinutesPropertyChanged(prevValue, _value);
                         }
+
+                        NotifyHoursPropertyChanged(prevValue, _value);
                     }
                 }
                 catch (FormatException)

@@ -38,6 +38,9 @@ namespace Atdl4net.Wpf.View.DefaultRendering
                 {
                     writer.WriteAttribute(WpfXmlWriterAttribute.GridColumn, gridCoordinate.Column.ToString());
                     writer.WriteAttribute(WpfXmlWriterAttribute.GridRow, gridCoordinate.Row.ToString());
+
+                    // TODO: This probably needs to self-configure
+                    writer.WriteAttribute(WpfXmlWriterAttribute.Width, "75");
  
  //                   writer.WriteAttribute(WpfXmlWriterAttribute.Margin, "3");
 

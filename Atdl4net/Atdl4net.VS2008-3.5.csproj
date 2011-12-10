@@ -461,6 +461,7 @@
     <Compile Include=".\Xml\StrategiesReader.cs">
     </Compile>
     <Compile Include="Diagnostics\Exceptions\InconsistentStrategyException.cs" />
+    <Compile Include="Fix\FixDateTime.cs" />
     <Compile Include="Fix\FixDateTimeFormat.cs" />
     <Compile Include="Model\Atdl.cs" />
     <Compile Include="Model\Collections\ISimpleDictionary.cs" />

@@ -210,9 +210,7 @@ namespace Atdl4net.Model.Controls.Support
 
             DateTime result;
 
-            // Try loose parsing using the supplied locale, and if that fails, try all the supported FIX formats.
-            if (!DateTime.TryParse(_value, provider, DateTimeStyles.AllowWhiteSpaces, out result) &&
-                !DateTime.TryParseExact(_value, FixDateTimeFormat.AllFormats, provider, DateTimeStyles.AllowWhiteSpaces, out result))
+            if (!FixDateTime.TryParse(_value, provider, out result))
                 throw ThrowHelper.New<InvalidCastException>(this, ErrorMessages.InvalidDateOrTimeValue, _value);
            
             return result;
