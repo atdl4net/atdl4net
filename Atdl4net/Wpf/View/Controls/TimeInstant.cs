@@ -45,24 +45,32 @@ namespace Atdl4net.Wpf.View.Controls
         {
             if (Minutes < 59)
                 Minutes++;
+            else
+                Minutes = 0;
         }
 
         public void DecrementMinutes()
         {
             if (Minutes > 0)
                 Minutes--;
+            else
+                Minutes = 59;
         }
 
         public void IncrementHours()
         {
             if (Hours < 23)
                 Hours++;
+            else
+                Hours = 0;
         }
 
         public void DecrementHours()
         {
             if (Hours > 0)
                 Hours--;
+            else
+                Hours = 23;
         }
 
         public static bool operator <(TimeInstant lhs, TimeInstant rhs)
