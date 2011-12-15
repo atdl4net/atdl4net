@@ -39,7 +39,7 @@
             <Grid Grid.Column="0" Height="Auto">
                 <local:ClickSelectTextBox x:Name="value" BorderThickness="0" Margin="0,1,0,0" TextAlignment="Left" 
                                         KeyDown="value_KeyDown">
-                    <Binding ElementName="controlRoot" Path="Value" Mode="TwoWay" UpdateSourceTrigger="LostFocus"/>
+                    <Binding ElementName="controlRoot" Path="Value" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged"/>
                 </local:ClickSelectTextBox>
             </Grid>
             <Grid Grid.Column="1">

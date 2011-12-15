@@ -44,7 +44,7 @@
             <Grid Grid.Column="1" Height="Auto">
                 <local:ClickSelectTextBox x:Name="hours" BorderThickness="0" MaxLength="2" Margin="0,1,0,0" Width="17" TextAlignment="Right" 
                                         GotFocus="hours_GotFocus" KeyDown="hours_KeyDown">
-                    <Binding ElementName="controlRoot" Path="Hours" Mode="TwoWay" UpdateSourceTrigger="LostFocus"/>
+                    <Binding ElementName="controlRoot" Path="Hours" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged"/>
                 </local:ClickSelectTextBox>
             </Grid>
             <Grid Grid.Column="2" Height="Auto">
@@ -53,7 +53,7 @@
             <Grid Grid.Column="3" Height="Auto">
                 <local:ClickSelectTextBox x:Name="minutes" BorderThickness="0"  MaxLength="2" Margin="0,1,4,0" Width="17"
                                         HorizontalAlignment="Right" GotFocus="minutes_GotFocus" KeyDown="minutes_KeyDown" >
-                    <Binding ElementName="controlRoot" Path="Minutes" Mode="TwoWay" UpdateSourceTrigger="LostFocus"/>
+                    <Binding ElementName="controlRoot" Path="Minutes" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged"/>
                 </local:ClickSelectTextBox>
             </Grid>
             <Grid Grid.Column="4">
