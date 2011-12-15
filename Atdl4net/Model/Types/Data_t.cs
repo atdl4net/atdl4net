@@ -97,7 +97,9 @@ namespace Atdl4net.Model.Types
         /// <returns>If input value is not null, returns value converted to T?; null otherwise.</returns>
         protected override char[] ConvertToNativeType(IParameter hostParameter, IParameterConvertible value)
         {
-            return value != null ? value.ToString(hostParameter).ToCharArray() : null;
+            string result = value != null ? value.ToString(hostParameter) : null;
+
+            return result != null ? result.ToCharArray() : null;
         }
 
         #endregion
