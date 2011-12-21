@@ -26,6 +26,7 @@ using Atdl4net.Model.Controls.Support;
 using Atdl4net.Model.Elements.Support;
 using Atdl4net.Model.Types.Support;
 using Atdl4net.Resources;
+using Atdl4net.Validation;
 using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 
 namespace Atdl4net.Model.Types
@@ -53,20 +54,22 @@ namespace Atdl4net.Model.Types
         /// <value>The minimum value.</value>
         public MonthYear? MinValue { get; set; }
 
+        #region AtdlValueType<T> Overrides
+
         /// <summary>
         /// Validates the supplied value in terms of the parameters constraints (e.g., MinValue, MaxValue, etc.).
         /// </summary>
         /// <param name="value">Value to validate, may be null in which case no validation is applied.</param>
-        /// <returns>Value passed in is returned if it is valid; otherwise an appropriate exception is thrown.</returns>
-        protected override MonthYear? ValidateValue(MonthYear? value)
+        /// <returns>ValidationResult indicating whether the supplied value is valid.</returns>
+        protected override ValidationResult ValidateValue(MonthYear? value)
         {
             if (MaxValue != null && !(value >= MaxValue))
-                throw ThrowHelper.New<ArgumentException>(this, ErrorMessages.MaxValueExceeded, value.ToString(), MaxValue);
+                return new ValidationResult(false, ErrorMessages.MaxValueExceeded, value.ToString(), MaxValue);
 
             if (MinValue != null && !(value <= MinValue))
-                throw ThrowHelper.New<ArgumentException>(this, ErrorMessages.MinValueExceeded, value.ToString(), MinValue);
+                return new ValidationResult(false, ErrorMessages.MinValueExceeded, value.ToString(), MinValue);
 
-            return value;
+            return ValidationResult.ValidResult;
         }
 
         /// <summary>
@@ -103,6 +106,17 @@ namespace Atdl4net.Model.Types
 
             return monthYear != null ? (MonthYear?)MonthYear.Parse(monthYear) : null;
         }
+
+        /// <summary>
+        /// Gets the human-readable type name for use in error messages shown to the user.
+        /// </summary>
+        /// <returns>Human-readable type name.</returns>
+        protected override string GetHumanReadableTypeName()
+        {
+            return HumanReadableTypeNames.MonthYearType;
+        }
+
+        #endregion
 
         #region IControlConvertible Members
 

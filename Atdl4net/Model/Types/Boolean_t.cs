@@ -25,6 +25,7 @@ using Atdl4net.Model.Controls.Support;
 using Atdl4net.Model.Elements.Support;
 using Atdl4net.Model.Types.Support;
 using Atdl4net.Resources;
+using Atdl4net.Validation;
 using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 
 namespace Atdl4net.Model.Types
@@ -72,10 +73,10 @@ namespace Atdl4net.Model.Types
         /// is not possible for a boolean value to be invalid.
         /// </summary>
         /// <param name="value">Value to validate, may be null in which case no validation is applied.</param>
-        /// <returns>Value passed in.</returns>
-        protected override bool? ValidateValue(bool? value)
+        /// <returns>ValidationResult indicating whether the supplied value is valid.</returns>
+        protected override ValidationResult ValidateValue(bool? value)
         {
-            return value;
+            return ValidationResult.ValidResult;
         }
 
         /// <summary>
@@ -128,6 +129,15 @@ namespace Atdl4net.Model.Types
         protected override bool? ConvertToNativeType(IParameter hostParameter, IParameterConvertible value)
         {
             return value.ToBoolean(hostParameter);
+        }
+
+        /// <summary>
+        /// Gets the human-readable type name for use in error messages shown to the user.
+        /// </summary>
+        /// <returns>Human-readable type name.</returns>
+        protected override string GetHumanReadableTypeName()
+        {
+            return HumanReadableTypeNames.BooleanType;
         }
 
         #endregion

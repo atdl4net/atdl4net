@@ -24,7 +24,7 @@ using Atdl4net.Notification;
 
 namespace Atdl4net.Providers
 {
-    public interface IStrategyProvider : INotifyStrategyLoad
+    public interface IStrategyProvider : INotifyStrategyLoaded
     {
         StrategyInfoCollection AllStrategies { get; }
 

@@ -22,6 +22,7 @@
 using System;
 using Atdl4net.Model.Controls.Support;
 using Atdl4net.Model.Elements.Support;
+using Atdl4net.Validation;
 
 namespace Atdl4net.Model.Types.Support
 {
@@ -46,7 +47,7 @@ namespace Atdl4net.Model.Types.Support
         /// <param name="value">Control value that implements <see cref="IParameterConvertible"/>.</param>
         /// <remarks>An <see cref="IParameterConvertible"/> is passed in enabling the control value to be converted into any 
         /// desired type, provided that the value supports conversion to that type.</remarks>
-        void SetValueFromControl(IParameter hostParameter, IParameterConvertible value);
+        ValidationResult SetValueFromControl(IParameter hostParameter, IParameterConvertible value);
 
         /// <summary>
         /// Sets the wire value for this parameter.  This method is typically used to initialise the parameter through the
@@ -69,7 +70,15 @@ namespace Atdl4net.Model.Types.Support
         /// <summary>
         /// Gets the value of this parameter type in its native (i.e., raw) form, such as int, char, string, etc. 
         /// </summary>
+        /// <param name="applyWireValueFormat">If set to true, the value returned is adjusted to be in the 'format'
+        /// it would be if sent on the FIX wire.  For example, for Float_t parameters, setting this value to true
+        /// would cause the Precision attribute setting to be applied.</param>
         /// <returns>Native parameter value.</returns>
-        object GetNativeValue();
+        object GetNativeValue(bool applyWireValueFormat);
+
+        /// <summary>
+        /// Gets the human-readable name of this type.
+        /// </summary>
+        string HumanReadableTypeName { get; }
     }
 }

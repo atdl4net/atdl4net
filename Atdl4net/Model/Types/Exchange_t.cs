@@ -20,7 +20,8 @@
 #endregion
 
 using System;
-using Atdl4net.Diagnostics;
+using Atdl4net.Resources;
+using Atdl4net.Validation;
 
 namespace Atdl4net.Model.Types
 {
@@ -35,13 +36,22 @@ namespace Atdl4net.Model.Types
         /// Validates the supplied value in terms of 'ISO 10383 correctness', i.e., MICs must be 4 characters in length.
         /// </summary>
         /// <param name="value">Value to validate, may be null in which case no validation is applied.</param>
-        /// <returns>Value passed in.</returns>
-        protected override string ValidateValue(string value)
+        /// <returns>ValidationResult indicating whether the supplied value is valid.</returns>
+        protected override ValidationResult ValidateValue(string value)
         {
             if (value != null && value.Length != 4)
-                throw ThrowHelper.New<ArgumentException>(this, "Exchange codes must conform to the ISO 10383 standard, i.e., be 4 characters in length");
+                return new ValidationResult(false, ErrorMessages.InvalidExchangeCode);
 
-            return value;
+            return ValidationResult.ValidResult;
+        }
+
+        /// <summary>
+        /// Gets the human-readable type name for use in error messages shown to the user.
+        /// </summary>
+        /// <returns>Human-readable type name.</returns>
+        protected override string GetHumanReadableTypeName()
+        {
+            return HumanReadableTypeNames.ExchangeType;
         }
 
         #endregion

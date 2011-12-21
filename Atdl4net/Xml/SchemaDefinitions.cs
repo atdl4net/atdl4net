@@ -397,7 +397,7 @@ namespace Atdl4net.Xml
             new ElementAttribute("initPolicy","InitPolicy", EnumDefinitions.InitPolicy_t, Required.Optional),
             new ElementAttribute("label", "Label", typeof(string), Required.Optional),
             new ElementAttribute("parameterRef","ParameterRef", typeof(string), Required.Optional),
-            new ElementAttribute("tooltip","Tooltip", typeof(string), Required.Optional)
+            new ElementAttribute("tooltip","ToolTip", typeof(string), Required.Optional)
         };
 
         private static readonly ElementAttribute[] CheckBoxAttributes = new ElementAttribute[] 

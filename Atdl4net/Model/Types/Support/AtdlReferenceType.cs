@@ -24,7 +24,10 @@ using System.Linq;
 using Atdl4net.Diagnostics.Exceptions;
 using Atdl4net.Model.Controls.Support;
 using Atdl4net.Model.Elements.Support;
+using Atdl4net.Model.Enumerations;
 using Atdl4net.Resources;
+using Atdl4net.Validation;
+using Common.Logging;
 using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 
 namespace Atdl4net.Model.Types.Support
@@ -42,10 +45,17 @@ namespace Atdl4net.Model.Types.Support
     /// other uses T.)</remarks>
     public abstract class AtdlReferenceType<T> : IParameterType where T : class
     {
+        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Types.Support");
+
         /// <summary>
         /// Storage for the value of this parameter, as type T?.
         /// </summary>
         protected T _value;
+
+        /// <summary>
+        /// Human-readable name of this type.
+        /// </summary>
+        protected readonly string _humanReadableTypeName;
 
         /// <summary>
         /// Gets/sets an optional constant value for this parameter.
@@ -76,22 +86,37 @@ namespace Atdl4net.Model.Types.Support
         /// <param name="value">Control value that implements <see cref="IParameterConvertible"/>.</param>
         /// <remarks>An <see cref="IParameterConvertible"/> is passed in enabling the control value to be converted into any 
         /// desired type, provided that the value supports conversion to that type.</remarks>
-        public void SetValueFromControl(IParameter hostParameter, IParameterConvertible value)
+        public ValidationResult SetValueFromControl(IParameter hostParameter, IParameterConvertible value)
         {
             if (ConstValue != null)
-                throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.AttemptToSetConstValueParameter, ConstValue);
+                return new ValidationResult(false, string.Format(ErrorMessages.AttemptToSetConstValueParameter, ConstValue));
 
             try
             {
-                _value = ValidateValue(ConvertToNativeType(hostParameter, value));
+                _value = ConvertToNativeType(hostParameter, value);
+
+                return ValidateValue(_value);
             }
-            catch (ArgumentException ex)
+            catch (FormatException ex)
             {
-                throw ThrowHelper.New<InvalidFieldValueException>(this, ex, ex.Message);
+                _log.Error(m => m("Unable to convert value '{0}' to type {1} for parameter {2}; exception text: {3}",
+                    value, hostParameter.Type, hostParameter.Name, ex.Message));
+
+                return new ValidationResult(false, ErrorMessages.DataConversionFailure, HumanReadableTypeName);
             }
             catch (InvalidCastException ex)
             {
-                throw ThrowHelper.New<InvalidFieldValueException>(this, ex, ex.Message);
+                _log.Error(m => m("Unable to convert value '{0}' to type {1} for parameter {2}; exception text: {3}",
+                    value, hostParameter.Type, hostParameter.Name, ex.Message));
+
+                return new ValidationResult(false, ErrorMessages.DataConversionFailure, HumanReadableTypeName);
+            }
+            catch (ArgumentException ex)
+            {
+                _log.Error(m => m("Unable to convert value '{0}' to type {1} for parameter {2}; exception text: {3}",
+                    value, hostParameter.Type, hostParameter.Name, ex.Message));
+
+                return new ValidationResult(false, ErrorMessages.DataConversionFailure, HumanReadableTypeName);
             }
         }
 
@@ -114,7 +139,15 @@ namespace Atdl4net.Model.Types.Support
                 throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.AttemptToSetConstValueParameter, ConstValue);
             }
 
-            _value = ValidateValue(ConvertFromWireValueFormat(value));
+            T convertedValue = ConvertFromWireValueFormat(value);
+
+            ValidationResult result = ValidateValue(convertedValue);
+
+            if (result.IsValid)
+                _value = convertedValue;
+            else
+                throw ThrowHelper.New<InvalidFieldValueException>(this,
+                    ErrorMessages.InvalidParameterSetValue, hostParameter.Name, value, result.ErrorText);
         }
 
         /// <summary>
@@ -127,17 +160,38 @@ namespace Atdl4net.Model.Types.Support
         /// <returns>The parameter's current wire value (all wire values in Atdl4net are strings).</returns>
         public string GetWireValue(IParameter hostParameter)
         {
-            return (ConstValue != null) ? ConvertToWireValueFormat(ConstValue) : ConvertToWireValueFormat(_value);
+            T value = ConstValue ?? _value;
+
+            ValidationResult validity = ValidateValue(value);
+
+            if (!validity.IsValid)
+                throw ThrowHelper.New<InvalidFieldValueException>(ErrorMessages.InvalidGetParameterValue,
+                    hostParameter.Name, value, validity.ErrorText);
+
+            string wireValue = ConvertToWireValueFormat(value);
+
+            if (hostParameter.Use == Use_t.Required && wireValue == null)
+                throw ThrowHelper.New<MissingMandatoryValueException>(this, ErrorMessages.NonOptionalParameterNotSupplied, hostParameter.Name);
+
+            return wireValue;
         }
 
         /// <summary>
         /// Gets the value of this parameter type in its native (i.e., raw) form, such as int, char, string, etc. 
         /// </summary>
+        /// <param name="applyWireValueFormat">If set to true, the value returned is adjusted to be in the 'format'
+        /// it would be if sent on the FIX wire.  For example, for Float_t parameters, setting this value to true
+        /// would cause the Precision attribute setting to be applied.</param>
         /// <returns>Native parameter value.</returns>
-        public object GetNativeValue()
+        public virtual object GetNativeValue(bool applyWireValueFormat)
         {
             return _value;
         }
+
+        /// <summary>
+        /// Gets the human-readable name of this type.
+        /// </summary>
+        public string HumanReadableTypeName { get { return GetHumanReadableTypeName(); } }
 
         #endregion
 
@@ -148,7 +202,7 @@ namespace Atdl4net.Model.Types.Support
         /// </summary>
         /// <param name="value">Value to validate, may be null in which case no validation is applied.</param>
         /// <returns>Value passed in is returned if it is valid; otherwise an appropriate exception is thrown.</returns>
-        protected abstract T ValidateValue(T value);
+        protected abstract ValidationResult ValidateValue(T value);
 
         /// <summary>
         /// Converts the supplied value from string format (as might be used on the FIX wire) into the type of the type
@@ -172,6 +226,12 @@ namespace Atdl4net.Model.Types.Support
         /// <param name="value">Value to convert, may be null.</param>
         /// <returns>If input value is not null, returns value converted to T; null otherwise.</returns>
         protected abstract T ConvertToNativeType(IParameter hostParameter, IParameterConvertible value);
+
+        /// <summary>
+        /// Gets the human-readable type name for use in error messages shown to the user.
+        /// </summary>
+        /// <returns>Human-readable type name.</returns>
+        protected abstract string GetHumanReadableTypeName();
 
         #endregion
     }

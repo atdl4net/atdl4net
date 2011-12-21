@@ -32,7 +32,7 @@ namespace Atdl4net.Providers
 
         public StrategiesReaderProvider()
         {
-            _strategiesReader.StrategyLoaded += new System.EventHandler<StrategyLoadEventArgs>(OnStrategyLoaded);
+            _strategiesReader.StrategyLoaded += new System.EventHandler<StrategyLoadedEventArgs>(OnStrategyLoaded);
         }
 
         public void Load(StreamProviderContext context)
@@ -82,15 +82,15 @@ namespace Atdl4net.Providers
 
         #region INotifyStrategyLoad Members and Support Methods
 
-        protected virtual void OnStrategyLoaded(object sender, StrategyLoadEventArgs e)
+        protected virtual void OnStrategyLoaded(object sender, StrategyLoadedEventArgs e)
         {
-            System.EventHandler<StrategyLoadEventArgs> strategyLoaded = StrategyLoaded;
+            System.EventHandler<StrategyLoadedEventArgs> strategyLoaded = StrategyLoaded;
 
             if (strategyLoaded != null)
                 strategyLoaded(this, e);
         }
 
-        public event System.EventHandler<StrategyLoadEventArgs> StrategyLoaded;
+        public event System.EventHandler<StrategyLoadedEventArgs> StrategyLoaded;
 
         #endregion
     }

@@ -26,6 +26,7 @@ using Atdl4net.Model.Controls.Support;
 using Atdl4net.Model.Elements.Support;
 using Atdl4net.Model.Types.Support;
 using Atdl4net.Resources;
+using Atdl4net.Validation;
 using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 
 namespace Atdl4net.Model.Types
@@ -57,19 +58,19 @@ namespace Atdl4net.Model.Types
         /// Validates the supplied value in terms of the parameters constraints (e.g., MinValue, MaxValue, etc.).
         /// </summary>
         /// <param name="value">Value to validate, may be null in which case no validation is applied.</param>
-        /// <returns>Value passed in is returned if it is valid; otherwise an appropriate exception is thrown.</returns>
-        protected override int? ValidateValue(int? value)
+        /// <returns>ValidationResult indicating whether the supplied value is valid.</returns>
+        protected override ValidationResult ValidateValue(int? value)
         {
-            if (value == null)
-                return null;
+            if (value != null)
+            {
+                if (MaxValue != null && (int)value > MaxValue)
+                    return new ValidationResult(false, ErrorMessages.MaxValueExceeded, value, MaxValue);
 
-            if (MaxValue != null && (int)value > MaxValue)
-                throw ThrowHelper.New<ArgumentOutOfRangeException>(this, ErrorMessages.MaxValueExceeded, value, MaxValue);
+                if (MinValue != null && (int)value < MinValue)
+                    return new ValidationResult(false, ErrorMessages.MinValueExceeded, value, MinValue);
+            }
 
-            if (MinValue != null && (int)value < MinValue)
-                throw ThrowHelper.New<ArgumentOutOfRangeException>(this, ErrorMessages.MinValueExceeded, value, MinValue);
-
-            return value;
+            return ValidationResult.ValidResult;
         }
 
         /// <summary>
@@ -103,6 +104,15 @@ namespace Atdl4net.Model.Types
         protected override int? ConvertToNativeType(IParameter hostParameter, IParameterConvertible value)
         {
             return value.ToInt32(hostParameter, CultureInfo.CurrentUICulture);
+        }
+
+        /// <summary>
+        /// Gets the human-readable type name for use in error messages shown to the user.
+        /// </summary>
+        /// <returns>Human-readable type name.</returns>
+        protected override string GetHumanReadableTypeName()
+        {
+            return HumanReadableTypeNames.NumericType;
         }
 
         #endregion

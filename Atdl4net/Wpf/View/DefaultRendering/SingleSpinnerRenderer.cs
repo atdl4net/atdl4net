@@ -42,8 +42,8 @@ namespace Atdl4net.Wpf.View.DefaultRendering
                     if (!string.IsNullOrEmpty(c.Id))
                         writer.WriteAttribute(WpfXmlWriterAttribute.Name, id);
 
-                    writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, string.Format("{0}Binding Path=Controls[{1}].Tooltip{2}", "{", id, "}"));
-                    writer.WriteAttribute(WpfXmlWriterAttribute.Value, string.Format("{0}Binding Path=Controls[{1}].UiValue,Mode=TwoWay,TargetNullValue={{x:Static sys:String.Empty}},StringFormat=\\{{0:D\\}}{2}", "{", id, "}"));
+                    writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, string.Format("{0}Binding Path=Controls[{1}].ToolTip{2}", "{", id, "}"));
+                    writer.WriteAttribute(WpfXmlWriterAttribute.Value, string.Format("{0}Binding Path=Controls[{1}].UiValue, Mode=TwoWay, TargetNullValue={{x:Static sys:String.Empty}}{2}", "{", id, "}"));
                     writer.WriteAttribute(WpfXmlWriterAttribute.Increment, string.Format("{0}Binding Path=Controls[{1}].UnderlyingControl.Increment, Mode=OneWay{2}", "{", id, "}"));
                     writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, string.Format("{0}Binding Path=Controls[{1}].Enabled{2}", "{", id, "}"));
                     writer.WriteAttribute(WpfXmlWriterAttribute.Visibility, string.Format("{0}Binding Path=Controls[{1}].Visibility{2}", "{", id, "}"));

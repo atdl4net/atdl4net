@@ -28,7 +28,7 @@ namespace Atdl4net.Model.Types.Support
     /// <summary>
     /// Represents a FIX/FIXatdl MonthYear value.
     /// </summary>
-    public struct MonthYear
+    public struct MonthYear : IComparable
     {
         private const string ExceptionContext = "MonthYear";
 
@@ -212,5 +212,38 @@ namespace Atdl4net.Model.Types.Support
                 throw ThrowHelper.New<ArgumentException>(ExceptionContext, ex, ErrorMessages.InvalidMonthYearValue, value);
             }
         }
+
+        #region IComparable Members
+
+        /// <summary>
+        /// Compares the current instance with another object of the same type and returns an integer that indicates 
+        /// whether the current instance precedes, follows, or occurs in the same position in the sort order as the 
+        /// other object.
+        /// </summary>
+        /// <param name="obj">An object to compare with this instance.</param>
+        /// <returns>A value that indicates the relative order of the objects being compared. The return value has these meanings:
+        /// <list type="bullet">
+        /// <item><description>Less than zero - this instance precedes obj in the sort order.</description></item></list>
+        /// <item><description></description>Zero - this instance occurs in the same position in the sort order as obj.</item></list>
+        /// <item><description>Greater than zero - this instance follows obj in the sort order.</description></item></list>
+        /// </returns>
+        public int CompareTo(object obj)
+        {
+            // Null references are by definition less than the current instance.
+            if (obj == null)
+                return 1;
+
+            if (!(obj is MonthYear))
+                throw ThrowHelper.New<ArgumentException>(this, InternalErrors.UnexpectedArgumentType, obj.GetType().FullName, this.GetType().FullName);
+
+            MonthYear rhs = (MonthYear)obj;
+
+            if (rhs == this)
+                return 0;
+
+            return rhs <= this ? 1 : -1;
+        }
+
+        #endregion
     }
 }

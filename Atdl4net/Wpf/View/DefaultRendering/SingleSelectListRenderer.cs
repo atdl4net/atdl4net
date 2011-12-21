@@ -19,9 +19,9 @@
 //
 #endregion
 
-using Atdl4net.Model.Controls;
 using System.ComponentModel.Composition;
-using System.ComponentModel.Composition.Primitives;
+using Atdl4net.Configuration;
+using Atdl4net.Model.Controls;
 
 namespace Atdl4net.Wpf.View.DefaultRendering
 {
@@ -32,7 +32,7 @@ namespace Atdl4net.Wpf.View.DefaultRendering
         {
             string id = WpfControlRenderer.CleanName(control.Id);
 
-            if (GlobalSettings.View.Wpf.AutosizeDropdowns)
+            if (Atdl4netConfiguration.Settings.Wpf.View.AutoSizeDropDowns)
                 WpfControlRenderer.ComboBoxSizer.RegisterComboBox(id, control.ListItems);
 
             WpfControlRenderer.RenderLabelledControl<SingleSelectList_t>(writer, control, (c, gridCoordinate) =>
@@ -47,7 +47,7 @@ namespace Atdl4net.Wpf.View.DefaultRendering
                     if (!string.IsNullOrEmpty(id))
                         writer.WriteAttribute(WpfXmlWriterAttribute.Name, id);
 
-                    writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, string.Format("{0}Binding Path=Controls[{1}].Tooltip{2}", "{", id, "}"));
+                    writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, string.Format("{0}Binding Path=Controls[{1}].ToolTip{2}", "{", id, "}"));
                     writer.WriteAttribute(WpfXmlWriterAttribute.ItemsSource, string.Format("{0}Binding Path=Controls[{1}].ListItems{2}", "{", id, "}"));
                     writer.WriteAttribute(WpfXmlWriterAttribute.SelectedValue, string.Format("{0}Binding Path=Controls[{1}].SelectedValue{2}", "{", id, "}"));
                     writer.WriteAttribute(WpfXmlWriterAttribute.SelectedValuePath, "EnumId");

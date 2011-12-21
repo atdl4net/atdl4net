@@ -28,6 +28,7 @@ using Atdl4net.Model.Elements;
 using Atdl4net.Model.Elements.Support;
 using Atdl4net.Resources;
 using Atdl4net.Utility;
+using Atdl4net.Validation;
 using Common.Logging;
 using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 
@@ -123,6 +124,29 @@ namespace Atdl4net.Model.Collections
                 thisControl.StateRules.EvaluateAll();
         }
 
+        /// <summary>
+        /// Updates the parameter values from the controls in this control collection.
+        /// </summary>
+        /// <param name="parameters">Collection of parameters to be updated.</param>
+        public void UpdateParameterValues(ParameterCollection parameters)
+        {
+            foreach (Control_t control in this)
+            {
+                string parameter = control.ParameterRef;
+
+                if (parameter != null)
+                {
+                    if (!parameters.Contains(parameter))
+                        throw ThrowHelper.New<ReferencedObjectNotFoundException>(this, ErrorMessages.UnresolvedParameterRefError, parameter);
+
+                    ValidationResult result = parameters[parameter].SetValueFromControl(control);
+
+                    if (!result.IsValid)
+                        throw ThrowHelper.New<InvalidFieldValueException>(this, result.ErrorText);
+                }
+            }
+        }
+
         public void UpdateValuesFromParameters(ParameterCollection parameters)
         {
             foreach (Control_t control in this)
@@ -149,41 +173,17 @@ namespace Atdl4net.Model.Collections
                 }
             }
 
-            foreach (Control_t thisControl in this)
-                thisControl.StateRules.EvaluateAll();
+            foreach (Control_t control in this)
+                control.StateRules.EvaluateAll();
         }
 
-        public void UpdateParameterValues(ParameterCollection parameters)
+        /// <summary>
+        /// Resolves all the dependencies between each control's StateRules and their dependent control values.
+        /// </summary>
+        public void ResolveAll()
         {
             foreach (Control_t control in this)
-            {
-
-                try
-                {
-                    if (control.ParameterRef != null)
-                    {
-                        IParameter targetParameter = parameters[control.ParameterRef];
-
-                        targetParameter.SetValueFromControl(control);
-                    }
-                }
-                catch (FormatException ex)
-                {
-                    IParameter targetParameter = parameters[control.ParameterRef];
-
-                    throw ThrowHelper.New<InvalidCastException>(this, ex, ErrorMessages.DataConversionError, control.GetCurrentValue(), targetParameter.Type, targetParameter.Name);
-                }
-                catch (InvalidCastException ex)
-                {
-                    IParameter targetParameter = parameters[control.ParameterRef];
-
-                    throw ThrowHelper.New<InvalidCastException>(this, ex, ErrorMessages.DataConversionError, control.GetCurrentValue(), targetParameter.Type, targetParameter.Name);
-                }
-                catch (KeyNotFoundException ex)
-                {
-                    throw ThrowHelper.New<ReferencedObjectNotFoundException>(this, ex, ErrorMessages.UnresolvedParameterRefError, control.ParameterRef);
-                }
-            }
+                control.StateRules.ResolveAll(_owner);
         }
 
         #region IParentable<Strategy_t> Members

@@ -23,10 +23,10 @@ using System;
 using Atdl4net.Diagnostics;
 using Atdl4net.Model.Collections;
 using Atdl4net.Model.Controls.Support;
-using Atdl4net.Model.Elements;
 using Atdl4net.Model.Elements.Support;
 using Atdl4net.Model.Types.Support;
 using Atdl4net.Resources;
+using Atdl4net.Validation;
 
 namespace Atdl4net.Model.Types
 {
@@ -45,10 +45,10 @@ namespace Atdl4net.Model.Types
         /// is not possible for a char value to be invalid.
         /// </summary>
         /// <param name="value">Value to validate, may be null in which case no validation is applied.</param>
-        /// <returns>Value passed in.</returns>
-        protected override char? ValidateValue(char? value)
+        /// <returns>ValidationResult indicating whether the supplied value is valid.</returns>
+        protected override ValidationResult ValidateValue(char? value)
         {
-            return value;
+            return ValidationResult.ValidResult;
         }
 
         /// <summary>
@@ -85,6 +85,15 @@ namespace Atdl4net.Model.Types
         protected override char? ConvertToNativeType(IParameter hostParameter, IParameterConvertible value)
         {
             return value.ToChar(hostParameter);
+        }
+
+        /// <summary>
+        /// Gets the human-readable type name for use in error messages shown to the user.
+        /// </summary>
+        /// <returns>Human-readable type name.</returns>
+        protected override string GetHumanReadableTypeName()
+        {
+            return HumanReadableTypeNames.CharType;
         }
 
         #endregion

@@ -24,6 +24,7 @@ using System.Linq;
 using Atdl4net.Diagnostics.Exceptions;
 using Atdl4net.Model.Elements;
 using Atdl4net.Model.Elements.Support;
+using Atdl4net.Notification;
 using Atdl4net.Resources;
 using Atdl4net.Utility;
 using Common.Logging;
@@ -103,7 +104,7 @@ namespace Atdl4net.Wpf.ViewModel
                 EventHandler<StateChangedEventArgs> stateChanged = StateChanged;
 
                 if (stateChanged != null)
-                    stateChanged(this, new StateChangedEventArgs() { NewState = newState, OldState = oldState });
+                    stateChanged(this, new StateChangedEventArgs(newState, oldState));
             }
         }
 

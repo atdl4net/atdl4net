@@ -26,6 +26,7 @@ using Atdl4net.Model.Controls.Support;
 using Atdl4net.Model.Elements.Support;
 using Atdl4net.Model.Types.Support;
 using Atdl4net.Resources;
+using Atdl4net.Validation;
 using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 
 namespace Atdl4net.Model.Types
@@ -68,19 +69,19 @@ namespace Atdl4net.Model.Types
         /// Validates the supplied value in terms of the parameters constraints (e.g., MinValue, MaxValue, etc.).
         /// </summary>
         /// <param name="value">Value to validate, may be null in which case no validation is applied.</param>
-        /// <returns>Value passed in is returned if it is valid; otherwise an appropriate exception is thrown.</returns>
-        protected override decimal? ValidateValue(decimal? value)
+        /// <returns>ValidationResult indicating whether the supplied value is valid.</returns>
+        protected override ValidationResult ValidateValue(decimal? value)
         {
             if (value != null)
             {
                 if (MaxValue != null && (decimal)value > MaxValue)
-                    throw ThrowHelper.New<ArgumentOutOfRangeException>(this, ErrorMessages.MaxValueExceeded, value, MaxValue);
+                    return new ValidationResult(false, ErrorMessages.MaxValueExceeded, value, MaxValue);
 
                 if (MinValue != null && (decimal)value < MinValue)
-                    throw ThrowHelper.New<ArgumentOutOfRangeException>(this, ErrorMessages.MinValueExceeded, value, MinValue);
+                    return new ValidationResult(false, ErrorMessages.MinValueExceeded, value, MinValue);
             }
 
-            return value;
+            return ValidationResult.ValidResult;
         }
 
         /// <summary>
@@ -108,7 +109,7 @@ namespace Atdl4net.Model.Types
             if (Precision == null)
                 return ((decimal)value).ToString(CultureInfo.InvariantCulture);
             else
-                return ((decimal)value).ToString(string.Format("F{0}", Precision), CultureInfo.InvariantCulture);
+                return ((decimal)Round(value, (int)Precision)).ToString(CultureInfo.InvariantCulture);
         }
 
         /// <summary>
@@ -122,7 +123,42 @@ namespace Atdl4net.Model.Types
             return value.ToDecimal(hostParameter, CultureInfo.CurrentUICulture);
         }
 
+        /// <summary>
+        /// Gets the value of this parameter type in its native (i.e., raw) form, such as int, char, string, etc. 
+        /// </summary>
+        /// <param name="applyWireValueFormat">If set to true, the value returned is adjusted to be in the 'format'
+        /// it would be if sent on the FIX wire.  For example, for Float_t parameters, setting this value to true
+        /// would cause the Precision attribute setting to be applied.</param>
+        /// <returns>Native parameter value.</returns>
+        public override object GetNativeValue(bool applyWireValueFormat)
+        {
+            if (_value != null && applyWireValueFormat && Precision != null)
+                return Round(_value, (int)Precision);
+            else
+                return _value;
+        }
+
+        /// <summary>
+        /// Gets the human-readable type name for use in error messages shown to the user.
+        /// </summary>
+        /// <returns>Human-readable type name.</returns>
+        protected override string GetHumanReadableTypeName()
+        {
+            return HumanReadableTypeNames.NumericType;
+        }
+
         #endregion
+
+        /// <summary>
+        /// Rounds the supplied value to the specified number of decimal places.
+        /// </summary>
+        /// <param name="value">Value to be rounded. May be null.</param>
+        /// <param name="precision">Number of places to round to.</param>
+        /// <returns>If the supplied value is non-null, the rounded value is returned; otherwise returns null.</returns>
+        protected decimal? Round(decimal? value, int precision)
+        {
+            return value != null ? (decimal?)(Math.Round((decimal)value, precision, MidpointRounding.AwayFromZero)) : null;
+        }
 
         #region IControlConvertible Members
 

@@ -18,7 +18,7 @@
 //      http://www.gnu.org/licenses/.
 //
 #endregion
-
+using System.Windows.Controls;
 using Atdl4net.Fix;
 using Atdl4net.Model.Collections;
 using Atdl4net.Utility;
@@ -33,14 +33,14 @@ namespace Atdl4net.Model.Elements
     {
         private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Elements");
 
-        private readonly ParameterCollection _parameters = new ParameterCollection();
-        private ReadOnlyControlCollection _controls;
-        private readonly EditCollection _edits = new EditCollection();
         private FixTagValuesCollection _inputValues;
+        private readonly StrategyEditCollection _strategyEdits = new StrategyEditCollection();
+        private ReadOnlyControlCollection _controls;
+        private readonly ParameterCollection _parameters = new ParameterCollection();
+        private readonly EditCollection _edits = new EditCollection();
         private readonly MarketCollection _markets = new MarketCollection();
         private readonly RegionCollection _regions = new RegionCollection();
         private readonly SecurityTypeCollection _securityTypes = new SecurityTypeCollection();
-        private StrategyEditCollection _strategyEdits;
 
         /// <summary>
         /// Gets a read-only list of the controls for this Strategy.
@@ -152,9 +152,14 @@ namespace Atdl4net.Model.Elements
                     fixTagValues.Add((FixTag)Parent.VersionIdentifierTag, Version);
             }
 
-            _log.Debug(m=>m("Strategy_t.GetOutputValues() returning: {0}", fixTagValues.ToString()));
+            _log.Debug(m => m("Strategy_t.GetOutputValues() returning: {0}", fixTagValues.ToString()));
 
             return fixTagValues;
+        }
+
+        public void ValidateStrategyEdits()
+        {
+            StrategyEdits.ValidateAll();
         }
 
         /// <summary>
@@ -206,17 +211,7 @@ namespace Atdl4net.Model.Elements
         /// <summary>
         /// Gets the collection of <see cref="StrategyEdit_t">StrategyEdits</see> for validating the output of this Strategy.
         /// </summary>
-        public StrategyEditCollection StrategyEdits
-        {
-            get
-            {
-                // Lazy initialise as 'this' cannot be used in constructor.
-                if (_strategyEdits == null)
-                    _strategyEdits = new StrategyEditCollection(this);
-
-                return _strategyEdits;
-            }
-        }
+        public StrategyEditCollection StrategyEdits { get { return _strategyEdits; } }
 
         /// <summary>
         /// Gets/sets the StrategyLayout for this Strategy, which itself contains the root StrategyPanel for displaying

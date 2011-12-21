@@ -25,9 +25,9 @@ using Atdl4net.Model.Collections;
 using Atdl4net.Model.Controls.Support;
 using Atdl4net.Model.Elements.Support;
 using Atdl4net.Model.Enumerations;
-using Atdl4net.Model.Types.Support;
 using Atdl4net.Resources;
 using Atdl4net.Utility;
+using Atdl4net.Validation;
 
 namespace Atdl4net.Model.Elements
 {
@@ -83,7 +83,7 @@ namespace Atdl4net.Model.Elements
         public string ParameterRef { get; set; }
 
         /// <summary>Tool tip text for rendered GUI objects rendered for the parameter.</summary>
-        public string Tooltip { get; set; }
+        public string ToolTip { get; set; }
 
         #endregion
 
@@ -127,7 +127,7 @@ namespace Atdl4net.Model.Elements
         /// <param name="visitor">Visitor.</param>
         public void DoVisit(IControlVisitor visitor)
         {
-            ModelUtils.VisitHelper(visitor, this);
+            ModelUtils.VisitHelper(typeof(IControlVisitor), visitor, this);
         }
 
         protected FixTagValuesCollection GetInputValues()

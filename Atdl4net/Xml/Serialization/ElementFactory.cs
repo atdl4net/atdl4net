@@ -464,7 +464,7 @@ namespace Atdl4net.Xml.Serialization
                 }
                 catch (FormatException ex)
                 {
-                    throw ThrowHelper.New<InvalidFieldValueException>(ExceptionContext, ex, ErrorMessages.DataConversionError,
+                    throw ThrowHelper.New<InvalidFieldValueException>(ExceptionContext, ex, ErrorMessages.DataConversionError2,
                         attribute.Value, type.Name, attributeName.LocalName);
                 }
             }

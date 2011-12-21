@@ -21,7 +21,6 @@
 
 using Atdl4net.Model.Controls;
 using System.ComponentModel.Composition;
-using System.ComponentModel.Composition.Primitives;
 
 namespace Atdl4net.Wpf.View.DefaultRendering
 {
@@ -44,8 +43,8 @@ namespace Atdl4net.Wpf.View.DefaultRendering
                 if (!string.IsNullOrEmpty(control.Id))
                     writer.WriteAttribute(WpfXmlWriterAttribute.Name, id);
 
-                writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, string.Format("{0}Binding Path=Controls[{1}].Tooltip{2}", "{", id, "}"));
-                writer.WriteAttribute(WpfXmlWriterAttribute.IsChecked, string.Format("{0}Binding Path=Controls[{1}].UiValue{2}", "{", id, "}"));
+                writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, string.Format("{0}Binding Path=Controls[{1}].ToolTip{2}", "{", id, "}"));
+                writer.WriteAttribute(WpfXmlWriterAttribute.IsChecked, string.Format("{0}Binding Path=Controls[{1}].UiValue, Mode=TwoWay{2}", "{", id, "}"));
                 writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, string.Format("{0}Binding Path=Controls[{1}].Enabled{2}", "{", id, "}"));
                 writer.WriteAttribute(WpfXmlWriterAttribute.Visibility, string.Format("{0}Binding Path=Controls[{1}].Visibility{2}", "{", id, "}"));
             }

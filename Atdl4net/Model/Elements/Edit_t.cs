@@ -20,15 +20,16 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Atdl4net.Diagnostics.Exceptions;
 using Atdl4net.Model.Collections;
 using Atdl4net.Model.Elements.Support;
 using Atdl4net.Model.Enumerations;
-using Atdl4net.Model.Types.Support;
 using Atdl4net.Resources;
 using Atdl4net.Utility;
+using Atdl4net.Validation;
 using Common.Logging;
 using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 
@@ -116,6 +117,30 @@ namespace Atdl4net.Model.Elements
                     _editRefs = new EditRefCollection<T>(_edits);
 
                 return _editRefs;
+            }
+        }
+
+        /// <summary>
+        /// Gets the set of sources for this Edit and its children.  As source is non-null Field or Field2 value.
+        /// </summary>
+        public HashSet<string> Sources
+        {
+            get
+            {
+                HashSet<string> sources = new HashSet<string>();
+
+                if (Operator != null)
+                {
+                    sources.Add(Field);
+
+                    if (Field2 != null)
+                        sources.Add(Field2);
+                }
+                else
+                    foreach (string source in _edits.Sources)
+                        sources.Add(source);
+
+                return sources;
             }
         }
 
@@ -271,22 +296,13 @@ namespace Atdl4net.Model.Elements
             IComparable operand1 = FieldValue as IComparable;
             IComparable operand2;
 
-            // If we are dealing with a boolean on the left hand side, and we're comparing with a fixed value
-            // rather than another field, then we need to convert the supplied fixed value from a string to a bool.
             if (Value != null)
             {
-                if (FieldValue is bool)
-                    operand2 = Boolean.Parse(Value);
-                else if (FieldValue is decimal)
-                    operand2 = Convert.ToDecimal(Value);
-                else if (FieldValue is int)
-                    operand2 = Convert.ToInt32(Value);
-                else if (FieldValue is char)
-                    operand2 = Convert.ToChar(Value);
-                else if (FieldValue is DateTime)
-                    operand2 = DateTime.Parse(Value);
-                else
-                    operand2 = Value;
+                // We don't currently support comparisions for type 'Data_t' which is represented by a char[].
+                if (FieldValue is char[])
+                    throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.UnsupportedComparisonOperation, Value, new string(FieldValue as char[]));
+
+                operand2 = EditValueConverter.ConvertToComparableType(FieldValue, Value);
             }
             else
                 operand2 = Field2Value as IComparable;

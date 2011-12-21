@@ -28,6 +28,7 @@ using Atdl4net.Model.Elements.Support;
 using Atdl4net.Model.Enumerations;
 using Atdl4net.Model.Types.Support;
 using Atdl4net.Resources;
+using Atdl4net.Validation;
 using Common.Logging;
 using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 
@@ -156,13 +157,13 @@ namespace Atdl4net.Model.Elements
         /// null if the control is not set to a value, or if it has explicitly been set via a state rule to {NULL}.
         /// </summary>
         /// <param name="control">Control to extract this parameter's new value from.</param>
-        public void SetValueFromControl(Control_t control)
+        public ValidationResult SetValueFromControl(Control_t control)
         {
             IParameterConvertible value = control.GetValueForParameter();
 
             try
             {
-                _value.SetValueFromControl(this, value);
+                return _value.SetValueFromControl(this, value);
             }
             catch (Atdl4netException ex)
             {
@@ -175,15 +176,7 @@ namespace Atdl4net.Model.Elements
         /// </summary>
         public string WireValue
         {
-            get
-            {
-                string value = _value.GetWireValue(this);
-
-                if (Use == Use_t.Required && value == null)
-                    throw ThrowHelper.New<MissingMandatoryValueException>(this, ErrorMessages.NonOptionalParameterNotSupplied, Name);
-
-                return value;
-            }
+            get { return _value.GetWireValue(this); }
 
             set
             {
@@ -205,7 +198,7 @@ namespace Atdl4net.Model.Elements
         /// <returns>Current value of this parameter as an object.</returns>
         public object GetCurrentValue()
         {
-            return _value.GetNativeValue();
+            return _value.GetNativeValue(true);
         }
 
         #endregion

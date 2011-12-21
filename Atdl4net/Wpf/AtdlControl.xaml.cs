@@ -18,10 +18,9 @@
 //      http://www.gnu.org/licenses/.
 //
 #endregion
+
 using System;
 using System.ComponentModel;
-using System.ComponentModel.Composition;
-using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Text;
 using System.Windows;
@@ -36,6 +35,9 @@ using Common.Logging;
 
 namespace Atdl4net.Wpf
 {
+    /// <summary>
+    /// Custom control for rendering FIXatdl strategies.
+    /// </summary>
     public partial class AtdlControl : UserControl, INotifyPropertyChanged
     {
         private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Wpf");
@@ -48,10 +50,14 @@ namespace Atdl4net.Wpf
             DependencyProperty.Register("Strategy", typeof(Strategy_t), typeof(AtdlControl), new FrameworkPropertyMetadata(OnStrategyPropertyChanged));
 
         public const string ComboBoxSizerKey = "atdl4netComboBoxSizerKey";
+
         public const string DataContextKey = "atdl4netViewModelKey";
 
         private string _xaml;
 
+        /// <summary>
+        /// Initializes a new <see cref="AtdlControl"/>.
+        /// </summary>
         public AtdlControl()
         {
             InitializeComponent();
@@ -59,8 +65,10 @@ namespace Atdl4net.Wpf
             Application.Current.Resources[ComboBoxSizerKey] = new WpfComboBoxSizer() { ExampleComboBox = new ComboBox(), InitialComboWidth = 28 };
         }
 
+
         public event EventHandler<UnhandledExceptionEventArgs> ExceptionOccurred;
         public event PropertyChangedEventHandler PropertyChanged;
+
 
         public UIElementCollection Children
         {
@@ -160,6 +168,8 @@ namespace Atdl4net.Wpf
                     UIElement e = (UIElement)XamlReader.Parse(_xaml);
 
                     controlRoot.Children.Add(e);
+                    using (StreamWriter writer = File.CreateText(Path.Combine(Path.GetTempPath(), "atdl4net_xaml.xml")))
+                        writer.Write(sb.ToString());
                 }
                 catch (XamlParseException)
                 {

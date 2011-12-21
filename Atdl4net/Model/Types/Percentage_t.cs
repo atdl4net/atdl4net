@@ -23,6 +23,7 @@ using System;
 using System.Globalization;
 using Atdl4net.Diagnostics;
 using Atdl4net.Resources;
+using Atdl4net.Validation;
 
 namespace Atdl4net.Model.Types
 {
@@ -43,25 +44,23 @@ namespace Atdl4net.Model.Types
         /// </summary>
         public bool? MultiplyBy100 { get; set; }
 
+        #region AtdlValueType<T> Overrides
+
         /// <summary>
         /// Validates the supplied value in terms of the parameters constraints (e.g., MinValue, MaxValue, etc.).
         /// </summary>
         /// <param name="value">Value to validate, may be null in which case no validation is applied.</param>
-        /// <returns>Value passed in is returned if it is valid; otherwise an appropriate exception is thrown.</returns>
-        protected override decimal? ValidateValue(decimal? value)
+        /// <returns>ValidationResult indicating whether the supplied value is valid.</returns>
+        protected override ValidationResult ValidateValue(decimal? value)
         {
-            if (value != null)
+            if (value == null)
+                return ValidationResult.ValidResult;
+            else
             {
                 decimal wireValue = (MultiplyBy100 != true) ? (decimal)value / 100 : (decimal)value;
 
-                if (MaxValue != null && wireValue > MaxValue)
-                    throw ThrowHelper.New<ArgumentOutOfRangeException>(this, ErrorMessages.MaxValueExceeded, wireValue, MaxValue);
-
-                if (MinValue != null && wireValue < MinValue)
-                    throw ThrowHelper.New<ArgumentOutOfRangeException>(this, ErrorMessages.MinValueExceeded, wireValue, MinValue);
+                return base.ValidateValue(wireValue);
             }
-
-            return value;
         }
 
         /// <summary>
@@ -96,11 +95,29 @@ namespace Atdl4net.Model.Types
             if (Precision == null)
                 return adjustedValue.ToString(CultureInfo.InvariantCulture);
             else
-            {
-                string format = string.Format("F{0}", Precision);
-
-                return adjustedValue.ToString(format, CultureInfo.InvariantCulture);
-            }
+                return ((decimal)(Round(adjustedValue, (int)Precision))).ToString(CultureInfo.InvariantCulture);
         }
+
+        /// <summary>
+        /// Gets the value of this parameter type in its native (i.e., raw) form, such as int, char, string, etc. 
+        /// </summary>
+        /// <param name="applyWireValueFormat">If set to true, the value returned is adjusted to be in the 'format'
+        /// it would be if sent on the FIX wire.  In this case, we have to apply both Precision and the MultiplyBy100
+        /// flag.</param>
+        /// <returns>Native parameter value.</returns>
+        public override object GetNativeValue(bool applyWireValueFormat)
+        {
+            if (_value != null && applyWireValueFormat && MultiplyBy100 != true)
+            {
+                if (Precision != null)
+                    return Math.Round((decimal)_value / 100, (int)Precision, MidpointRounding.AwayFromZero);
+                else
+                    return _value / 100;
+            }
+            else
+                return _value;
+        }
+
+        #endregion
     }
 }

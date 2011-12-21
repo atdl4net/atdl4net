@@ -19,9 +19,9 @@
 //
 #endregion
 
-using Atdl4net.Model.Controls;
 using System.ComponentModel.Composition;
-using System.ComponentModel.Composition.Primitives;
+using Atdl4net.Configuration;
+using Atdl4net.Model.Controls;
 
 namespace Atdl4net.Wpf.View.DefaultRendering
 {
@@ -32,7 +32,7 @@ namespace Atdl4net.Wpf.View.DefaultRendering
         {
             string id = WpfControlRenderer.CleanName(control.Id);
 
-            if (GlobalSettings.View.Wpf.AutosizeDropdowns)
+            if (Atdl4netConfiguration.Settings.Wpf.View.AutoSizeDropDowns)
                 WpfControlRenderer.ComboBoxSizer.RegisterComboBox(id, control.ListItems);
 
             WpfControlRenderer.RenderLabelledControl<MultiSelectList_t>(writer, control, (c, gridCoordinate) =>
@@ -52,7 +52,7 @@ namespace Atdl4net.Wpf.View.DefaultRendering
                     writer.WriteAttribute("SelectionMode", "Multiple");
                     writer.WriteAttribute("VirtualizingStackPanel.IsVirtualizing","False");
 
-                    writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, string.Format("{0}Binding Path=Controls[{1}].Tooltip{2}", "{", id, "}"));
+                    writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, string.Format("{0}Binding Path=Controls[{1}].ToolTip{2}", "{", id, "}"));
                     writer.WriteAttribute("ItemContainerStyle", "{DynamicResource MultiSelectListItemStyle}");
                     writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, string.Format("{0}Binding Path=Controls[{1}].Enabled{2}", "{", id, "}"));
                     writer.WriteAttribute(WpfXmlWriterAttribute.Visibility, string.Format("{0}Binding Path=Controls[{1}].Visibility{2}", "{", id, "}"));

@@ -21,7 +21,7 @@
 
 using System.Collections.ObjectModel;
 using Atdl4net.Model.Elements;
-using Atdl4net.Model.Types.Support;
+using Atdl4net.Validation;
 
 namespace Atdl4net.Model.Collections
 {

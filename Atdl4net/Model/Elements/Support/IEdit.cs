@@ -19,6 +19,7 @@
 //
 #endregion
 
+using System.Collections.Generic;
 using Atdl4net.Model.Collections;
 using Atdl4net.Model.Enumerations;
 
@@ -86,5 +87,10 @@ namespace Atdl4net.Model.Elements.Support
         /// Evaluates this Edit based on the current field values.
         /// </summary>
         void Evaluate();
+
+        /// <summary>
+        /// Gets the set of sources for the data to be evaluated as part of this Edit.
+        /// </summary>
+        HashSet<string> Sources { get; }
     }
 }

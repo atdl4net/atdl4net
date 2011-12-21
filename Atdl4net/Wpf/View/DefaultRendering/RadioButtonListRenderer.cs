@@ -42,7 +42,7 @@ namespace Atdl4net.Wpf.View.DefaultRendering
                     if (!string.IsNullOrEmpty(c.Id))
                         writer.WriteAttribute(WpfXmlWriterAttribute.Name, id);
 
-                    writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, string.Format("{0}Binding Path=Controls[{1}].Tooltip{2}", "{", id, "}"));
+                    writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, string.Format("{0}Binding Path=Controls[{1}].ToolTip{2}", "{", id, "}"));
                     writer.WriteAttribute(WpfXmlWriterAttribute.Orientation, string.Format("{0}Binding Path=Controls[{1}].Orientation, Mode=OneWay{2}", "{", id, "}"));
                     writer.WriteAttribute(WpfXmlWriterAttribute.ItemsSource, string.Format("{0}Binding Path=Controls[{1}].ListItems{2}", "{", id, "}"));
                     writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, string.Format("{0}Binding Path=Controls[{1}].Enabled{2}", "{", id, "}"));

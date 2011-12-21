@@ -20,6 +20,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Atdl4net.Diagnostics;
 using Atdl4net.Model.Elements;
@@ -42,10 +43,22 @@ namespace Atdl4net.Model.Collections
         private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Collections");
 
         private bool _currentState;
+        private readonly HashSet<string> _sources = new HashSet<string>();
 
+        /// <summary>
+        /// Logic operator for this collection of Edits.
+        /// </summary>
         public LogicOperator_t? LogicOperator { get; set; }
 
+        /// <summary>
+        /// Current state of this collection of Edits.
+        /// </summary>
         public bool CurrentState { get { return _currentState; } }
+
+        /// <summary>
+        /// Gets the set of sources for the data to be evaluated as part of this collection of Edits.
+        /// </summary>
+        public HashSet<string> Sources { get { return _sources; } }
 
         /// <summary>
         /// Adds the specified item.
@@ -54,6 +67,9 @@ namespace Atdl4net.Model.Collections
         public new void Add(IEdit<T> item)
         {
             base.Add(item);
+
+            foreach (string source in item.Sources)
+                _sources.Add(source);
 
             _log.Debug(m=>m("Edit_t {0} added to EditEvaluatingCollection", item.ToString()));
         }

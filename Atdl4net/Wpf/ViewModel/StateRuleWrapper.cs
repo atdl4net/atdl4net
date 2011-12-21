@@ -22,6 +22,7 @@
 using System;
 using Atdl4net.Model;
 using Atdl4net.Model.Elements;
+using Atdl4net.Notification;
 using Atdl4net.Utility;
 using Common.Logging;
 

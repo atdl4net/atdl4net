@@ -77,17 +77,15 @@ namespace Atdl4net.Model.Elements
         public EditCollection Edits { get { return _edits; } }
 
         /// <summary>
-        /// Resolve all interdependencies e.g. edits to edit refs, control values to edits, etc.
+        /// Resolves all interdependencies e.g. edits to edit refs, control values to edits, etc.
         /// </summary>
         public void ResolveAll()
         {
             foreach (Strategy_t strategy in Strategies)
             {
-                foreach (Control_t control in strategy.Controls)
-                    control.StateRules.ResolveAll(strategy);
+                strategy.Controls.ResolveAll();
 
-                foreach (StrategyEdit_t strategyEdit in strategy.StrategyEdits)
-                    (strategyEdit as IResolvable<Strategy_t, IParameter>).Resolve(strategy, strategy.Parameters);
+                strategy.StrategyEdits.ResolveAll(strategy);
             }
         }
     }

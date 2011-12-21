@@ -19,26 +19,65 @@
 //
 #endregion
 
+using System;
 using Atdl4net.Model.Elements;
 using Atdl4net.Utility;
 
 namespace Atdl4net.Wpf.ViewModel
 {
-    public class StrategyViewModel
+    /// <summary>
+    /// View Model that provides the link between the Atdl4net Model (<see cref="Strategy_t"/>) and the 
+    /// View (<see cref="Atdl4netControl"/>).
+    /// </summary>
+    public class StrategyViewModel : IDisposable
     {
-        private Strategy_t _underlyingStrategy;
+        private bool _disposed;
 
+        /// <summary>
+        /// Gets the set of controls (<see cref="ControlWrapper"/>s) for this strategy (<see cref="StrategyViewModel"/>).
+        /// </summary>
         public ViewModelControlCollection Controls { get; private set; }
 
+        /// <summary>
+        /// Initializes a new <see cref="StrategyViewModel"/> 
+        /// </summary>
+        /// <param name="strategy"><see cref="Strategy_t"/> for this View Model.</param>
+        /// <param name="mode">Data entry mode.</param>
         public StrategyViewModel(Strategy_t strategy, DataEntryMode mode)
         {
-            _underlyingStrategy = strategy;
-
             Controls = new ViewModelControlCollection(strategy, mode);
-
-            Controls.Bind();
 
             Controls.RefreshState();
         }
+
+        #region IDisposable Members and support
+
+        void IDisposable.Dispose()
+        {
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Cleans up when this instance of <see cref="StrategyViewModel"/> is no longer required.
+        /// </summary>
+        /// <param name="disposing">True if this object is being disposed.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    (Controls as IDisposable).Dispose();
+
+                    Controls = null;
+                }
+
+                _disposed = true;
+            }
+        }
+
+        #endregion
     }
 }

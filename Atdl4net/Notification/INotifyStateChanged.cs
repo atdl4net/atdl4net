@@ -21,16 +21,16 @@
 
 using System;
 
-namespace Atdl4net.Wpf.ViewModel
+namespace Atdl4net.Notification
 {
-    public class StateChangedEventArgs : EventArgs
-    {
-        public bool OldState { get; set; }
-        public bool NewState { get; set; }
-    }
-
+    /// <summary>
+    /// Interface that types must implement in order to provide notification of change of state.
+    /// </summary>
     public interface INotifyStateChanged
     {
+        /// <summary>
+        /// Raised whenever state changes.
+        /// </summary>
         event EventHandler<StateChangedEventArgs> StateChanged;
     }
 }

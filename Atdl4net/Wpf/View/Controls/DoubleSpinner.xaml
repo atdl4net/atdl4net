@@ -49,11 +49,11 @@
                 </Grid.RowDefinitions>
                 <RepeatButton Name="innerUpButton" Margin="0,1,1,0" Grid.Row="0" FocusVisualStyle="{x:Null}" Background="GhostWhite" 
                               KeyboardNavigation.IsTabStop="False" Click="innerUpButton_Click" KeyDown="innerUpButton_KeyDown">
-                    <Path Fill="DarkSlateGray" Data="M 0 4 L 8 4 L 4 0 Z"/>
+                    <Path Fill="LightSlateGray" Data="M 0 4 L 8 4 L 4 0 Z"/>
                 </RepeatButton>
                 <RepeatButton Name="innerDownButton" Margin="0,0,1,1" Grid.Row="1" FocusVisualStyle="{x:Null}" Background="GhostWhite"
                               KeyboardNavigation.IsTabStop="False" Click="innerDownButton_Click" KeyDown="innerDownButton_KeyDown" >
-                    <Path Fill="DarkSlateGray" Data="M 0 0 L 4 4 L 8 0 Z"/>
+                    <Path Fill="LightSlateGray" Data="M 0 0 L 4 4 L 8 0 Z"/>
                 </RepeatButton>
             </Grid>
             <Grid Grid.Column="2">
@@ -63,11 +63,11 @@
                 </Grid.RowDefinitions>
                 <RepeatButton Name="outerUpButton" Margin="0,1,1,0" Grid.Row="0" FocusVisualStyle="{x:Null}" Background="GhostWhite" 
                               KeyboardNavigation.IsTabStop="False" Click="outerUpButton_Click" KeyDown="outerUpButton_KeyDown">
-                    <Path Fill="DarkSlateGray" Data="M 0 4 L 8 4 L 4 0 Z"/>
+                    <Path Fill="LightSlateGray" Data="M 0 4 L 8 4 L 4 0 Z"/>
                 </RepeatButton>
                 <RepeatButton Name="outerDownButton" Margin="0,0,1,1" Grid.Row="1" FocusVisualStyle="{x:Null}" Background="GhostWhite"
                               KeyboardNavigation.IsTabStop="False" Click="outerDownButton_Click" KeyDown="outerDownButton_KeyDown" >
-                    <Path Fill="DarkSlateGray" Data="M 0 0 L 4 4 L 8 0 Z"/>
+                    <Path Fill="LightSlateGray" Data="M 0 0 L 4 4 L 8 0 Z"/>
                 </RepeatButton>
             </Grid>
         </Grid>

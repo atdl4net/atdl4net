@@ -18,11 +18,13 @@
 //      http://www.gnu.org/licenses/.
 //
 #endregion
+
 using System;
 using System.Collections.ObjectModel;
 using Atdl4net.Model.Collections;
 using Atdl4net.Model.Elements;
 using Atdl4net.Model.Elements.Support;
+using Atdl4net.Notification;
 using Atdl4net.Utility;
 
 namespace Atdl4net.Wpf.ViewModel
@@ -32,12 +34,8 @@ namespace Atdl4net.Wpf.ViewModel
     // TODO: Write about threading model in the documentation
     public class ViewModelEditCollection : Collection<EditWrapper>, INotifyStateChanged, IBindable<ViewModelControlCollection>
     {
-        private EditEvaluatingCollection<Control_t> _underlyingCollection;
-
         public ViewModelEditCollection(EditEvaluatingCollection<Control_t> underlyingCollection)
         {
-            _underlyingCollection = underlyingCollection;
-
             foreach (IEdit<Control_t> item in underlyingCollection)
             {
                 EditWrapper wrapper = new EditWrapper(item);
@@ -60,7 +58,7 @@ namespace Atdl4net.Wpf.ViewModel
                 EventHandler<StateChangedEventArgs> stateChanged = StateChanged;
 
                 if (stateChanged != null)
-                    stateChanged(this, new StateChangedEventArgs() { NewState = newState, OldState = oldState });
+                    stateChanged(this, new StateChangedEventArgs(newState, oldState));
             }
         }
         

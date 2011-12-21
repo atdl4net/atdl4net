@@ -97,11 +97,29 @@ namespace Atdl4net.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The value &apos;{0}&apos; could not be converted to a valid value of type {1}..
+        /// </summary>
+        internal static string DataConversionError1 {
+            get {
+                return ResourceManager.GetString("DataConversionError1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The value &apos;{0}&apos; could not be converted to a valid value of type {1} as is required for the field {2}..
         /// </summary>
-        internal static string DataConversionError {
+        internal static string DataConversionError2 {
             get {
-                return ResourceManager.GetString("DataConversionError", resourceCulture);
+                return ResourceManager.GetString("DataConversionError2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This value cannot be converted into a valid {0}..
+        /// </summary>
+        internal static string DataConversionFailure {
+            get {
+                return ResourceManager.GetString("DataConversionFailure", resourceCulture);
             }
         }
         
@@ -216,11 +234,29 @@ namespace Atdl4net.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Exchange codes must conform to the ISO 10383 standard, i.e., be 4 characters in length.
+        /// </summary>
+        internal static string InvalidExchangeCode {
+            get {
+                return ResourceManager.GetString("InvalidExchangeCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The timestamp supplied, &apos;{0}&apos;, was not in a valid format..
         /// </summary>
         internal static string InvalidFIXTimeFormat {
             get {
                 return ResourceManager.GetString("InvalidFIXTimeFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Parameter {0} may not be set to value {1}; reason: {2}.
+        /// </summary>
+        internal static string InvalidGetParameterValue {
+            get {
+                return ResourceManager.GetString("InvalidGetParameterValue", resourceCulture);
             }
         }
         
@@ -248,6 +284,15 @@ namespace Atdl4net.Resources {
         internal static string InvalidNumericValue {
             get {
                 return ResourceManager.GetString("InvalidNumericValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to set parameter {0} to value {1} failed with error: {2}.
+        /// </summary>
+        internal static string InvalidParameterSetValue {
+            get {
+                return ResourceManager.GetString("InvalidParameterSetValue", resourceCulture);
             }
         }
         

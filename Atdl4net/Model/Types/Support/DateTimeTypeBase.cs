@@ -27,6 +27,7 @@ using Atdl4net.Model.Collections;
 using Atdl4net.Model.Controls.Support;
 using Atdl4net.Model.Elements.Support;
 using Atdl4net.Resources;
+using Atdl4net.Validation;
 
 namespace Atdl4net.Model.Types.Support
 {
@@ -51,19 +52,19 @@ namespace Atdl4net.Model.Types.Support
         /// Validates the supplied value in terms of the parameters constraints (e.g., MinValue, MaxValue, etc.).
         /// </summary>
         /// <param name="value">Value to validate, may be null in which case no validation is applied.</param>
-        /// <returns>Value passed in is returned if it is valid; otherwise an appropriate exception is thrown.</returns>
-        protected override DateTime? ValidateValue(DateTime? value)
+        /// <returns>ValidationResult indicating whether the supplied value is valid.</returns>
+        protected override ValidationResult ValidateValue(DateTime? value)
         {
             if (value != null)
             {
                 if (MaxValue != null && (DateTime)value > MaxValue)
-                    throw ThrowHelper.New<ArgumentOutOfRangeException>(this, ErrorMessages.MaxValueExceeded, value, MaxValue);
+                    return new ValidationResult(false, ErrorMessages.MaxValueExceeded, value, MaxValue);
 
                 if (MinValue != null && (DateTime)value < MinValue)
-                    throw ThrowHelper.New<ArgumentOutOfRangeException>(this, ErrorMessages.MinValueExceeded, value, MinValue);
+                    return new ValidationResult(false, ErrorMessages.MinValueExceeded, value, MinValue);
             }
 
-            return value;
+            return ValidationResult.ValidResult;
         }
 
         /// <summary>

@@ -47,10 +47,15 @@ namespace Atdl4net.Wpf.View.DefaultRendering
 
                     writer.WriteAttribute(WpfXmlWriterAttribute.Width, "120");
 
-                    writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, string.Format("{0}Binding Path=Controls[{1}].Tooltip{2}", "{", id, "}"));
-                    writer.WriteAttribute(WpfXmlWriterAttribute.Text, string.Format("{0}Binding Path=Controls[{1}].UiValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged{2}", "{", id, "}"));
+                    writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, string.Format("{0}Binding Path=ToolTip{1}", "{", "}"));
+                    writer.WriteAttribute(WpfXmlWriterAttribute.Text, string.Format("{0}Binding Path=UiValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged{1}", "{", "}"));
                     writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, string.Format("{0}Binding Path=Controls[{1}].Enabled{2}", "{", id, "}"));
                     writer.WriteAttribute(WpfXmlWriterAttribute.Visibility, string.Format("{0}Binding Path=Controls[{1}].Visibility{2}", "{", id, "}"));
+
+                    using (writer.New("http://schemas.microsoft.com/winfx/2006/xaml/presentation", "TextBox.DataContext"))
+                        using (writer.New("http://schemas.microsoft.com/winfx/2006/xaml/presentation", "Binding"))
+                            writer.WriteAttribute("Path", string.Format("Controls[{0}]", id));
+
                 }
             });
         }

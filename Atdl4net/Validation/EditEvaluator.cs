@@ -20,25 +20,36 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using Atdl4net.Model.Collections;
 using Atdl4net.Model.Elements;
-using Atdl4net.Model.Types.Support;
 using Atdl4net.Resources;
 using Atdl4net.Utility;
 using Common.Logging;
 using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 
-namespace Atdl4net.Model.Validation
+namespace Atdl4net.Validation
 {
     // TODO: Implement IDisposable
-    public class EditEvaluator<T> : IResolvable<Strategy_t, T> where T : class, IValueProvider
+    public abstract class EditEvaluator<T> : IResolvable<Strategy_t, T> where T : class, IValueProvider
     {
         private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Validation");
 
-        private const string ObjectDescription = "collection of Edits";
-
         private Edit_t<T> _edit;
         private EditRef_t<T> _editRef;
+
+        public HashSet<string> Sources
+        {
+            get
+            {
+                if (_editRef != null)
+                    return _editRef.Sources;
+                else if (_edit != null)
+                    return _edit.Sources;
+
+                throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.NeitherEditNorEditRefSetOnObject, this.GetType().Name);
+            }
+        }
 
         public bool CurrentState
         {
@@ -49,7 +60,7 @@ namespace Atdl4net.Model.Validation
                 else if (_editRef != null)
                     return _editRef.CurrentState;
 
-                throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.NeitherEditNorEditRefSetOnObject, ObjectDescription);
+                throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.NeitherEditNorEditRefSetOnObject, this.GetType().Name);
             }
         }
 
@@ -60,7 +71,7 @@ namespace Atdl4net.Model.Validation
             set
             {
                 if (_edit != null)
-                    throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.BothEditAndEditRefSetOnObject, ObjectDescription);
+                    throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.BothEditAndEditRefSetOnObject, this.GetType().Name);
 
                 _editRef = value;
             }
@@ -73,7 +84,7 @@ namespace Atdl4net.Model.Validation
             set
             {
                 if (_editRef != null)
-                    throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.BothEditAndEditRefSetOnObject, ObjectDescription);
+                    throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.BothEditAndEditRefSetOnObject, this.GetType().Name);
 
                 _edit = value;
             }
@@ -88,7 +99,7 @@ namespace Atdl4net.Model.Validation
             else if (_editRef != null)
                 _editRef.Evaluate();
             else
-                throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.NeitherEditNorEditRefSetOnObject, ObjectDescription);
+                throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.NeitherEditNorEditRefSetOnObject, this.GetType().Name);
 
             _log.Debug(m => m("EditEvaluator evaluated to state {0}", CurrentState.ToString().ToLower()));
         }

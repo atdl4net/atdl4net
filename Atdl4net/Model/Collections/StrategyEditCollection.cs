@@ -19,22 +19,27 @@
 //
 #endregion
 
+using System.Collections.ObjectModel;
+using System.Windows.Controls;
 using Atdl4net.Diagnostics;
 using Atdl4net.Diagnostics.Exceptions;
 using Atdl4net.Model.Elements;
-using System.Collections.ObjectModel;
+using Atdl4net.Model.Elements.Support;
+using Atdl4net.Utility;
+using Common.Logging;
 
 namespace Atdl4net.Model.Collections
 {
+    /// <summary>
+    /// Collection class of <see cref="StrategyEdit_t">StrategyEdit</see>s.
+    /// </summary>
     public class StrategyEditCollection : Collection<StrategyEdit_t>
     {
-        private Strategy_t _owner;
+        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Collections");
 
-        public StrategyEditCollection(Strategy_t owner)
-        {
-            _owner = owner;
-        }
-
+        /// <summary>
+        /// Validates all the <see cref="StrategyEdit_t">StrategyEdit</see>s in this collection.
+        /// </summary>
         public void ValidateAll()
         {
             foreach (StrategyEdit_t strategyEdit in Items)
@@ -44,6 +49,19 @@ namespace Atdl4net.Model.Collections
                 if (!strategyEdit.CurrentState)
                     throw ThrowHelper.New<ValidationException>(this, strategyEdit.ErrorMessage);
             }
+        }
+
+        protected override void InsertItem(int index, StrategyEdit_t item)
+        {
+            _log.Debug(m => m("StrategyEdit added"));
+
+            base.InsertItem(index, item);
+        }
+
+        public void ResolveAll(Strategy_t owningStrategy)
+        {
+            foreach (StrategyEdit_t strategyEdit in this)
+                (strategyEdit as IResolvable<Strategy_t, IParameter>).Resolve(owningStrategy, owningStrategy.Parameters);
         }
     }
 }

@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Atdl4net.Wpf.View.Controls"
+             xmlns:drawing="clr-namespace:System.Drawing;assembly=System.Drawing"
              mc:Ignorable="d" 
              Height="Auto" Width="Auto" Background="White"
              x:Name="controlRoot">
@@ -15,7 +16,7 @@
                     <ControlTemplate>
                         <Grid Name="MainGrid" Background="{TemplateBinding Background}">
                             <Viewbox>
-                                <Border BorderBrush="DarkSlateGray" BorderThickness="1" CornerRadius="1" Padding="1">
+                                <Border BorderBrush="{DynamicResource {x:Static drawing:SystemColors.ControlDark}}" BorderThickness="1" CornerRadius="1" Padding="1">
                                     <ContentPresenter
                   Margin="{TemplateBinding Control.Padding}"
                   HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}"
@@ -42,7 +43,7 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="1" Height="Auto">
-                <local:ClickSelectTextBox x:Name="hours" BorderThickness="0" MaxLength="2" Margin="0,1,0,0" Width="17" TextAlignment="Right" 
+                <local:ClickSelectTextBox x:Name="hours" BorderThickness="0" MaxLength="2" Margin="0,1,0,0" Width="20" TextAlignment="Right" 
                                         GotFocus="hours_GotFocus" KeyDown="hours_KeyDown">
                     <Binding ElementName="controlRoot" Path="Hours" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged"/>
                 </local:ClickSelectTextBox>
@@ -51,7 +52,7 @@
                 <TextBlock Text=":" Grid.RowSpan="2" Padding="0,1,0,0" Background="Transparent"/>
             </Grid>
             <Grid Grid.Column="3" Height="Auto">
-                <local:ClickSelectTextBox x:Name="minutes" BorderThickness="0"  MaxLength="2" Margin="0,1,4,0" Width="17"
+                <local:ClickSelectTextBox x:Name="minutes" BorderThickness="0"  MaxLength="2" Margin="0,1,4,0" Width="20"
                                         HorizontalAlignment="Right" GotFocus="minutes_GotFocus" KeyDown="minutes_KeyDown" >
                     <Binding ElementName="controlRoot" Path="Minutes" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged"/>
                 </local:ClickSelectTextBox>

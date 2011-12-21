@@ -19,14 +19,15 @@
 //
 #endregion
 
+using System.Collections.Generic;
 using Atdl4net.Diagnostics;
 using Atdl4net.Diagnostics.Exceptions;
 using Atdl4net.Model.Collections;
 using Atdl4net.Model.Elements.Support;
 using Atdl4net.Model.Enumerations;
-using Atdl4net.Model.Types.Support;
 using Atdl4net.Resources;
 using Atdl4net.Utility;
+using Atdl4net.Validation;
 using Common.Logging;
 
 namespace Atdl4net.Model.Elements
@@ -104,6 +105,11 @@ namespace Atdl4net.Model.Elements
         public bool CurrentState { get { return _referencedEdit.CurrentState; } }
 
         public EditEvaluatingCollection<T> Edits { get { return _referencedEdit.Edits; } }
+
+        /// <summary>
+        /// Gets the set of sources for the data to be evaluated as part of this StrategyEdit.
+        /// </summary>
+        public HashSet<string> Sources { get { return _referencedEdit.Sources; } }
 
         #endregion
 

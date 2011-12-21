@@ -30,7 +30,7 @@ namespace Atdl4net.Utility
     /// </summary>
     public static class StringExtensions
     {
-        private static readonly string TypeName = typeof(StringExtensions).Name;
+        private static readonly string ExceptionContext = typeof(StringExtensions).FullName;
 
         /// <summary>
         /// Gets the string representation of this enumerated type value.
@@ -41,16 +41,16 @@ namespace Atdl4net.Utility
         public static T ParseAsEnum<T>(this string value) where T : struct
         {
             if (string.IsNullOrEmpty(value))
-                throw ThrowHelper.New<ArgumentNullException>(TypeName, ErrorMessages.NullOrEmptyStringEnumParseFailure, typeof(T).Name);
+                throw ThrowHelper.New<ArgumentNullException>(ExceptionContext, ErrorMessages.NullOrEmptyStringEnumParseFailure, typeof(T).Name);
 
             T result;
 
             if (!typeof(T).IsEnum)
-                throw ThrowHelper.New<InvalidOperationException>(TypeName, InternalErrors.InvalidUseOfParseAsEnum);
+                throw ThrowHelper.New<InvalidOperationException>(ExceptionContext, InternalErrors.InvalidUseOfParseAsEnum);
 
 #if NET_40
             if (!Enum.TryParse<T>(value, true, out result))
-                throw ThrowHelper.New<ArgumentException>(TypeName, ErrorMessages.InvalidValueEnumParseFailure, value, typeof(T).Name);
+                throw ThrowHelper.New<ArgumentException>(ExceptionContext, ErrorMessages.InvalidValueEnumParseFailure, value, typeof(T).Name);
 #else
             try
             {
@@ -60,7 +60,7 @@ namespace Atdl4net.Utility
             {
                 // We don't Rethrow here as we want the error message (that may be shown to the user) to be consistent between the .NET 3.5 
                 // and .NET 4.0 implementations.
-                throw ThrowHelper.New<ArgumentException>(TypeName, ex, ErrorMessages.InvalidValueEnumParseFailure, value, typeof(T).Name);
+                throw ThrowHelper.New<ArgumentException>(ExceptionContext, ex, ErrorMessages.InvalidValueEnumParseFailure, value, typeof(T).Name);
             }
 #endif
 

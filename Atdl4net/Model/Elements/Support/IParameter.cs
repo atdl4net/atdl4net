@@ -24,6 +24,7 @@ using Atdl4net.Fix;
 using Atdl4net.Model.Collections;
 using Atdl4net.Model.Enumerations;
 using Atdl4net.Model.Types.Support;
+using Atdl4net.Validation;
 
 namespace Atdl4net.Model.Elements.Support
 {
@@ -110,7 +111,7 @@ namespace Atdl4net.Model.Elements.Support
         /// null if the control is not set to a value, or if it has explicitly been set via a state rule to {NULL}.
         /// </summary>
         /// <param name="control">Control to extract this parameter's value from.</param>
-        void SetValueFromControl(Control_t control);
+        ValidationResult SetValueFromControl(Control_t control);
 
         /// <summary>
         /// Gets/sets the wire value of this parameter.

@@ -19,33 +19,29 @@
 //
 #endregion
 
-namespace Atdl4net
+using System;
+using System.Linq;
+using Atdl4net.Wpf.ViewModel;
+
+namespace Atdl4net.Notification
 {
     /// <summary>
-    /// Provides the global settings for Atdl4net.
+    /// Event argument that provides information about the completion of a control value change.
     /// </summary>
-    public class GlobalSettings
+    public class ValueChangeCompletedEventArgs : EventArgs
     {
         /// <summary>
-        /// Provides the global View settings for Atdl4net.
+        /// Gets the control that this event relates to.
         /// </summary>
-        public class View
-        {
-            /// <summary>
-            /// Provides the WPF settings for Atdl4net.
-            /// </summary>
-            public class Wpf
-            {
-                static Wpf()
-                {
-                    AutosizeDropdowns = true;
-                }
+        public ControlWrapper Control { get; private set; }
 
-                /// <summary>
-                /// Indicates whether Atdl4net should auto-size to the width of the largest element or not.
-                /// </summary>
-                public static bool AutosizeDropdowns { get; set; }
-            }
+        /// <summary>
+        /// Initializes a new <see cref="ValueChangeCompletedEventArgs"/> with the supplied ControlWrapper.
+        /// </summary>
+        /// <param name="control">ControlWrapper for the control that this event relates to.</param>
+        public ValueChangeCompletedEventArgs(ControlWrapper control)
+        {
+            Control = control;
         }
     }
 }

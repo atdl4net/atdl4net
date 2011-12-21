@@ -25,6 +25,7 @@ using Atdl4net.Model.Collections;
 using Atdl4net.Model.Controls.Support;
 using Atdl4net.Model.Elements.Support;
 using Atdl4net.Resources;
+using Atdl4net.Validation;
 using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 
 namespace Atdl4net.Model.Types.Support
@@ -34,14 +35,16 @@ namespace Atdl4net.Model.Types.Support
     /// </summary>
     public abstract class NonNegativeIntegerTypeBase : AtdlValueType<uint>, IControlConvertible
     {
+        #region AtdlValueType<T> Overrides
+
         /// <summary>
         /// Validates the supplied value in terms of the parameters constraints (e.g., MinValue, MaxValue, etc.).
         /// </summary>
         /// <param name="value">Value to validate, may be null in which case no validation is applied.</param>
-        /// <returns>Value passed in is returned if it is valid; otherwise an appropriate exception is thrown.</returns>
-        protected override uint? ValidateValue(uint? value)
+        /// <returns>ValidationResult indicating whether the supplied value is valid.</returns>
+        protected override ValidationResult ValidateValue(uint? value)
         {
-            return value;
+            return ValidationResult.ValidResult;
         }
 
         /// <summary>
@@ -76,6 +79,17 @@ namespace Atdl4net.Model.Types.Support
         {
             return value.ToUInt32(hostParameter, CultureInfo.CurrentUICulture);
         }
+
+        /// <summary>
+        /// Gets the human-readable type name for use in error messages shown to the user.
+        /// </summary>
+        /// <returns>Human-readable type name.</returns>
+        protected override string GetHumanReadableTypeName()
+        {
+            return HumanReadableTypeNames.NumericType;
+        }
+
+        #endregion
 
         #region IControlConvertible Members
 

@@ -19,9 +19,9 @@
 //
 #endregion
 
-using Atdl4net.Model.Controls;
-
 using System.ComponentModel.Composition;
+using Atdl4net.Configuration;
+using Atdl4net.Model.Controls;
 
 namespace Atdl4net.Wpf.View.DefaultRendering
 {
@@ -32,7 +32,7 @@ namespace Atdl4net.Wpf.View.DefaultRendering
         {
             string id = WpfControlRenderer.CleanName(control.Id);
 
-            if (GlobalSettings.View.Wpf.AutosizeDropdowns)
+            if (Atdl4netConfiguration.Settings.Wpf.View.AutoSizeDropDowns)
                 WpfControlRenderer.ComboBoxSizer.RegisterComboBox(id, control.ListItems);
 
             WpfControlRenderer.RenderLabelledControl<DropDownList_t>(writer, control, (c, gridCoordinate) =>
@@ -44,14 +44,14 @@ namespace Atdl4net.Wpf.View.DefaultRendering
 
                     writer.WriteAttribute(WpfXmlWriterAttribute.Margin, "2");
 
-                    if (GlobalSettings.View.Wpf.AutosizeDropdowns)
+                    if (Atdl4netConfiguration.Settings.Wpf.View.AutoSizeDropDowns)
                         writer.WriteAttribute(WpfXmlWriterAttribute.Width,
                             string.Format("{0}Binding Source={1}StaticResource {2}{3},Path=[{4}]{5}", "{", "{", Atdl4net.Wpf.AtdlControl.ComboBoxSizerKey, "}", id, "}"));
 
                     if (!string.IsNullOrEmpty(id))
                         writer.WriteAttribute(WpfXmlWriterAttribute.Name, id);
 
-                    writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, string.Format("{0}Binding Path=Controls[{1}].Tooltip{2}", "{", id, "}"));
+                    writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, string.Format("{0}Binding Path=Controls[{1}].ToolTip{2}", "{", id, "}"));
                     writer.WriteAttribute(WpfXmlWriterAttribute.ItemsSource, string.Format("{0}Binding Path=Controls[{1}].ListItems{2}", "{", id, "}"));
                     writer.WriteAttribute(WpfXmlWriterAttribute.SelectedValue, string.Format("{0}Binding Path=Controls[{1}].SelectedValue{2}", "{", id, "}"));
                     writer.WriteAttribute(WpfXmlWriterAttribute.SelectedValuePath, "EnumId");

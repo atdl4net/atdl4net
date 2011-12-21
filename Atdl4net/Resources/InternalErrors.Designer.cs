@@ -124,7 +124,7 @@ namespace Atdl4net.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unexpected type {0} used in method that expects one of ({1})..
+        ///   Looks up a localized string similar to Unexpected type {0} used in method that expects one of {1}..
         /// </summary>
         internal static string UnexpectedArgumentType {
             get {

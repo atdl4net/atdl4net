@@ -20,8 +20,8 @@
 #endregion
 
 using System.Text;
-using Atdl4net.Model.Validation;
 using Atdl4net.Utility;
+using Atdl4net.Validation;
 using Common.Logging;
 
 namespace Atdl4net.Model.Elements

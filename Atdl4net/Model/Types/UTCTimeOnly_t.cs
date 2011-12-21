@@ -22,6 +22,7 @@
 using System;
 using Atdl4net.Fix;
 using Atdl4net.Model.Types.Support;
+using Atdl4net.Resources;
 
 namespace Atdl4net.Model.Types
 {
@@ -47,6 +48,15 @@ namespace Atdl4net.Model.Types
         protected override string[] GetDateTimeFormatStrings()
         {
             return _formatStrings;
+        }
+
+        /// <summary>
+        /// Gets the human-readable type name for use in error messages shown to the user.
+        /// </summary>
+        /// <returns>Human-readable type name.</returns>
+        protected override string GetHumanReadableTypeName()
+        {
+            return HumanReadableTypeNames.TimeType;
         }
     }
 }

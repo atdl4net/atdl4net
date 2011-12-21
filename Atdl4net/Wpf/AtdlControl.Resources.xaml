@@ -7,6 +7,37 @@
     <!--        <ComboBox x:Key="dummyComboBoxKey"/>
         <resources:WpfComboBoxSizer x:Key="atdl4netComboBoxSizerKey" ExampleComboBox="{StaticResource dummyComboBoxKey}" InitialComboWidth="28"/>  -->
 
+    <Style TargetType="{x:Type TextBox}">
+        <Style.Triggers>
+
+            <DataTrigger  Binding="{Binding IsValid}" Value="True">
+                <Setter Property="Background" Value="Red" />
+            </DataTrigger>
+
+        </Style.Triggers>
+        <!--
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Border x:Name="Bd" SnapsToDevicePixels="True" 
+                              Background="{TemplateBinding Background}" 
+                              BorderBrush="{TemplateBinding BorderBrush}"
+                              BorderThickness="{TemplateBinding BorderThickness}" >
+                        <ScrollViewer x:Name="PART_ContentHost" 
+                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <DataTrigger Binding="{Binding Path=IsValid}" Value="False">
+                            <Setter Property="BorderBrush" Value="Red"/>
+                            <Setter Property="BorderThickness" Value="2"/>
+                        </DataTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter> -->
+    </Style>
+    
+    
     <Style TargetType="{x:Type ItemsControl}">
         <Setter Property="ItemsPanel">
             <Setter.Value>

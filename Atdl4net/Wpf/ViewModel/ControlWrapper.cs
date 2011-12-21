@@ -27,10 +27,11 @@ using Atdl4net.Diagnostics.Exceptions;
 using Atdl4net.Model.Controls.Support;
 using Atdl4net.Model.Elements;
 using Atdl4net.Model.Elements.Support;
+using Atdl4net.Notification;
 using Atdl4net.Resources;
 using Atdl4net.Utility;
+using Atdl4net.Validation;
 using Common.Logging;
-
 #if !NET_40
 using Atdl4net.Model.Controls;
 #endif
@@ -58,7 +59,7 @@ namespace Atdl4net.Wpf.ViewModel
     /// Note also that list-based controls use <see cref="ListControlWrapper"/> instead as that class handles the communication
     /// of the state of list-based WPF to the <see cref="Atdl4net.Model.Types.Support.EnumState"/> type that holds the state of each selectable item
     /// within the control.</remarks>
-    public class ControlWrapper : INotifyPropertyChanged, INotifyValueChanged, IBindable<ViewModelControlCollection>
+    public class ControlWrapper : INotifyPropertyChanged, INotifyValueChanged, INotifyValueChangeCompleted, IBindable<ViewModelControlCollection>
     {
         private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Wpf.ViewModel");
 
@@ -67,6 +68,7 @@ namespace Atdl4net.Wpf.ViewModel
         private readonly DataEntryMode _dataEntryMode;
         private readonly IParameter _referencedParameter;
         private ViewModelStateRuleCollection _stateRules;
+        private readonly ControlValidationState _validationState;
 
         #region INotifyPropertyChanged Members
 
@@ -87,6 +89,15 @@ namespace Atdl4net.Wpf.ViewModel
 
         #endregion
 
+        #region INotifyValueChangeCompleted Members
+
+        /// <summary>
+        /// Raised when a value change has been fully processed.
+        /// </summary>
+        public event EventHandler<ValueChangeCompletedEventArgs> ValueChangeCompleted;
+
+        #endregion
+
         /// <summary>
         /// Initializes a new ControlWrapper using the supplied <see cref="Control_t"/> as underlying control and the 
         /// supplied <see cref="IParameter"/> as referenced parameter.
@@ -99,6 +110,8 @@ namespace Atdl4net.Wpf.ViewModel
             UnderlyingControl = control;
             _referencedParameter = referencedParameter;
             _dataEntryMode = mode;
+
+            _validationState = new ControlValidationState(control.Id);
         }
 
         /// <summary>
@@ -129,10 +142,10 @@ namespace Atdl4net.Wpf.ViewModel
                 wrapper = new RadioButtonWrapper(control as RadioButton_t, referencedParameter, mode);
             else
 #endif
-                if (control is ListControlBase)
-                    wrapper = ListControlWrapper.Create(control as ListControlBase, referencedParameter, mode);
-                else
-                    wrapper = new ControlWrapper(control, referencedParameter, mode);
+            if (control is ListControlBase)
+                wrapper = ListControlWrapper.Create(control as ListControlBase, referencedParameter, mode);
+            else
+                wrapper = new ControlWrapper(control, referencedParameter, mode);
 
             wrapper._stateRules = new ViewModelStateRuleCollection(wrapper, control.StateRules);
 
@@ -145,6 +158,11 @@ namespace Atdl4net.Wpf.ViewModel
         public Control_t UnderlyingControl { get; private set; }
 
         /// <summary>
+        /// Gets the ParameterRef of this ControlWrapper's underlying <see cref="Control_t"/>.
+        /// </summary>
+        public string ParameterRef { get { return UnderlyingControl.ParameterRef; } }
+
+        /// <summary>
         /// Gets the ID of this ControlWrapper's underlying <see cref="Control_t"/>.
         /// </summary>
         public string Id { get { return UnderlyingControl.Id; } }
@@ -152,7 +170,16 @@ namespace Atdl4net.Wpf.ViewModel
         /// <summary>
         /// Gets the tooltip for this control.
         /// </summary>
-        public string Tooltip { get { return UnderlyingControl.Tooltip; } }
+        public string ToolTip
+        {
+            get
+            {
+                if (_validationState.CurrentState)
+                    return UnderlyingControl.ToolTip;
+                else
+                    return _validationState.ErrorText;
+            }
+        }
 
         /// <summary>
         /// Gets/sets the user interface value for the <see cref="Control_t"/> that this ControlWrapper is responsible for.
@@ -163,7 +190,7 @@ namespace Atdl4net.Wpf.ViewModel
 
             set
             {
-                _log.Debug(m=>m("ControlWrapper for Control {0} value updated to '{1}' (data type {2}).",
+                _log.Debug(m => m("ControlWrapper for Control {0} value updated to '{1}' (data type {2}).",
                     Id, (value is ListItem_t) ? (value as ListItem_t).EnumId : value ?? "null", value != null ? value.GetType().Name : "N/A"));
 
                 if (UnderlyingControl.GetCurrentValue() != value)
@@ -257,29 +284,19 @@ namespace Atdl4net.Wpf.ViewModel
         }
 
         /// <summary>
+        /// Indicates whether this control value is currently valid, according to the StrategyEdits
+        /// attached to the parent strategy.
+        /// </summary>
+        public bool IsValid { get { return !_validationState.CurrentState; } }
+
+        /// <summary>
         /// Updates the value of the parameter that the underlying <see cref="Control_t"/> relates to.  If the Control_t
         /// has no underlying parameter, then no action is taken.
         /// </summary>
         public void UpdateParameterValue()
         {
-            if (_referencedParameter == null)
-                return;
-
-            //object value = ParameterValueConvertor.Convert(_underlyingControl, _underlyingControl.Value, _referencedParameter.Type);
-
-            //_referencedParameter.ControlValue = value;
-        }
-
-        /// <summary>
-        /// Updates the value of this ControlWrapper's underlying <see cref="Control_t"/> based on the current value of the
-        /// parameter that it relates to.  If the Control_t has no underlying parameter, then no action is taken.
-        /// </summary>
-        public void UpdateFromParameterValue()
-        {
-            if (_referencedParameter == null)
-                return;
-
-            //UnderlyingControl.SetValue(_referencedParameter.ControlValue);
+            if (_referencedParameter != null)
+                _validationState.ParameterValidationResult = _referencedParameter.SetValueFromControl(UnderlyingControl);
         }
 
         /// <summary>
@@ -295,7 +312,7 @@ namespace Atdl4net.Wpf.ViewModel
         }
 
         /// <summary>
-        /// Notify interested parties that the value of the user interface control has changed.
+        /// Notifies interested parties that the value of the user interface control has changed.
         /// </summary>
         /// <param name="oldValue">Old value before this change.</param>
         /// <param name="newValue">New value.</param>
@@ -309,6 +326,52 @@ namespace Atdl4net.Wpf.ViewModel
 
             if (valueChanged != null)
                 valueChanged(this, new ValueChangedEventArgs(Id, oldValue, newValue));
+
+            OnValueChangeCompleted();
+        }
+
+        /// <summary>
+        /// Notifies interested parties that a value change has been fully processed.
+        /// </summary>
+        /// <remarks>We have to use a separate event (as opposed to re-using the ValueChanged event)
+        /// because we cannot guarantee what order event subscribers will be called, and this 
+        /// notification must happen once the value change has been completely processed.</remarks>
+        protected virtual void OnValueChangeCompleted()
+        {
+            EventHandler<ValueChangeCompletedEventArgs> valueChangeCompleted = ValueChangeCompleted;
+
+            if (valueChangeCompleted != null)
+                valueChangeCompleted(this, new ValueChangeCompletedEventArgs(this));
+
+            _validationState.Evaluate();
+
+            // In case the validation state ErrorText has changed...
+            NotifyPropertyChanged("ToolTip");
+        }
+
+        private void StrategyEditStateChanged(object sender, Notification.StateChangedEventArgs e)
+        {
+            // In case the validation state ErrorText has changed...
+            NotifyPropertyChanged("UiValue");
+            NotifyPropertyChanged("ToolTip");
+
+            StrategyEditWrapper strategyEdit = sender as StrategyEditWrapper;
+
+            _log.Debug(m => m("Control {0}: {1} {2} {3}", Id, strategyEdit.InternalId, e.OldState, e.NewState));
+        }
+
+        internal void BindStrategyEdit(StrategyEditWrapper strategyEditWrapper)
+        {
+            strategyEditWrapper.StateChanged += new EventHandler<StateChangedEventArgs>(StrategyEditStateChanged);
+
+            _validationState.Add(strategyEditWrapper);
+        }
+
+        internal void UnbindStrategyEdit(StrategyEditWrapper strategyEditWrapper)
+        {
+            strategyEditWrapper.StateChanged -= new EventHandler<StateChangedEventArgs>(StrategyEditStateChanged);
+
+            _validationState.Remove(strategyEditWrapper);
         }
 
         #region IBindable<ViewControlCollection> Members
@@ -323,6 +386,6 @@ namespace Atdl4net.Wpf.ViewModel
             (_stateRules as IBindable<ViewModelControlCollection>).Bind(target);
         }
 
-        #endregion IBindable<ViewControlCollection> Members
+        #endregion
     }
 }

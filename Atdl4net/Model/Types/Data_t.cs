@@ -25,6 +25,7 @@ using Atdl4net.Model.Controls.Support;
 using Atdl4net.Model.Elements.Support;
 using Atdl4net.Model.Types.Support;
 using Atdl4net.Resources;
+using Atdl4net.Validation;
 using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 
 namespace Atdl4net.Model.Types
@@ -56,16 +57,16 @@ namespace Atdl4net.Model.Types
         /// Validates the supplied value in terms of the parameters constraints.
         /// </summary>
         /// <param name="value">Value to validate, may be null in which case no validation is applied.</param>
-        /// <returns>Value passed in.</returns>
-        protected override char[] ValidateValue(char[] value)
+        /// <returns>ValidationResult indicating whether the supplied value is valid.</returns>
+        protected override ValidationResult ValidateValue(char[] value)
         {
             if (MaxLength != null && value != null && value.Length > MaxLength)
-                throw ThrowHelper.New<ArgumentOutOfRangeException>(this, ErrorMessages.MaxLengthExceeded, value, MaxLength);
+                return new ValidationResult(false, ErrorMessages.MaxLengthExceeded, value, MaxLength);
 
             if (MinLength != null && value != null && value.Length < MinLength)
-                throw ThrowHelper.New<ArgumentOutOfRangeException>(this, ErrorMessages.MinLengthExceeded, value, MinLength);
+                return new ValidationResult(false, ErrorMessages.MinLengthExceeded, value, MinLength);
 
-            return value;
+            return ValidationResult.ValidResult;
         }
 
         /// <summary>
@@ -100,6 +101,15 @@ namespace Atdl4net.Model.Types
             string result = value != null ? value.ToString(hostParameter) : null;
 
             return result != null ? result.ToCharArray() : null;
+        }
+
+        /// <summary>
+        /// Gets the human-readable type name for use in error messages shown to the user.
+        /// </summary>
+        /// <returns>Human-readable type name.</returns>
+        protected override string GetHumanReadableTypeName()
+        {
+            return HumanReadableTypeNames.DataType;
         }
 
         #endregion

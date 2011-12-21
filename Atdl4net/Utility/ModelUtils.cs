@@ -26,9 +26,10 @@ using System.Reflection;
 
 namespace Atdl4net.Utility
 {
-    public sealed class ModelUtils
+    public static class ModelUtils
     {
-        private static IEnumerable<System.Type> _types;
+        private static readonly IEnumerable<Type> _types;
+        private static readonly Dictionary<string, MethodInfo> _methodInfoCache = new Dictionary<string, MethodInfo>();
 
         static ModelUtils()
         {
@@ -37,16 +38,27 @@ namespace Atdl4net.Utility
                      select t;
         }
 
-        private ModelUtils() { }
-
-        // TODO: May want to introduce caching to speed things up.
-        public static bool VisitHelper(object visitor, object target)
+        public static bool VisitHelper(Type visitorType, object visitor, object target)
         {
-            Type[] types = new Type[] { target.GetType() };
-            MethodInfo methodInfo = visitor.GetType().GetMethod("Visit", types);
+            Type targetParamType = target.GetType();
+            string searchString = string.Format("{0}:{1}", visitorType.FullName, targetParamType.FullName);
 
-            if (methodInfo == null)
-                return false;
+            MethodInfo methodInfo = null;
+
+            lock (_methodInfoCache)
+            {
+                if (!_methodInfoCache.TryGetValue(searchString, out methodInfo))
+                {
+                    Type[] types = new Type[] { targetParamType };
+
+                    methodInfo = visitor.GetType().GetMethod("Visit", types);
+
+                    if (methodInfo == null)
+                        return false;
+
+                    _methodInfoCache.Add(searchString, methodInfo);
+                }
+            }
 
             methodInfo.Invoke(visitor, new object[] { target });
 

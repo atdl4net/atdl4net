@@ -47,9 +47,11 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\VS2008-3.5\Dependencies\System.ComponentModel.Composition.dll</HintPath>
     </Reference>
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -88,8 +90,6 @@
     <Compile Include=".\Fix\FixTag.cs">
     </Compile>
     <Compile Include=".\Fix\NumInGroup.cs">
-    </Compile>
-    <Compile Include=".\GlobalSettings.cs">
     </Compile>
     <Compile Include=".\Model\Collections\ControlCollection.cs">
     </Compile>
@@ -271,10 +271,6 @@
     </Compile>
     <Compile Include=".\Model\Types\UTCTimestamp_t.cs">
     </Compile>
-    <Compile Include=".\Model\Validation\EditEvaluator.cs">
-    </Compile>
-    <Compile Include=".\Notification\INotifyStrategyLoad.cs">
-    </Compile>
     <Compile Include=".\Providers\FileProviderContext.cs">
     </Compile>
     <Compile Include=".\Providers\IStrategyProvider.cs">
@@ -305,6 +301,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>InternalErrors.resx</DependentUpon>
     </Compile>
+    <Compile Include=".\Resources\HumanReadableTypeNames.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>HumanReadableTypeNames.resx</DependentUpon>
+    </Compile>
     <Compile Include=".\Utility\DataEntryMode.cs">
     </Compile>
     <Compile Include=".\Utility\IBindable.cs">
@@ -325,10 +326,6 @@
     <Compile Include=".\Wpf\ViewModel\ControlWrapper.cs">
     </Compile>
     <Compile Include=".\Wpf\ViewModel\EditWrapper.cs">
-    </Compile>
-    <Compile Include=".\Wpf\ViewModel\INotifyStateChanged.cs">
-    </Compile>
-    <Compile Include=".\Wpf\ViewModel\INotifyValueChanged.cs">
     </Compile>
     <Compile Include=".\Wpf\ViewModel\ListControlWrapper.cs">
     </Compile>
@@ -460,6 +457,8 @@
     </Compile>
     <Compile Include=".\Xml\StrategiesReader.cs">
     </Compile>
+    <Compile Include="Configuration\Atdl4netConfiguration.cs" />
+    <Compile Include="Configuration\ConfigurationSectionHandler.cs" />
     <Compile Include="Diagnostics\Exceptions\InconsistentStrategyException.cs" />
     <Compile Include="Fix\FixDateTime.cs" />
     <Compile Include="Fix\FixDateTimeFormat.cs" />
@@ -490,8 +489,22 @@
     <Compile Include="Model\Types\Support\NonNegativeIntegerTypeBase.cs" />
     <Compile Include="Model\Types\Support\NonZeroPositiveIntegerTypeBase.cs" />
     <Compile Include="Model\Types\Support\Tenor.cs" />
-    <Compile Include="Model\Validation\IValueProvider.cs" />
+    <Compile Include="Notification\INotifyStateChanged.cs" />
+    <Compile Include="Notification\INotifyStrategyLoaded.cs" />
+    <Compile Include="Notification\INotifyValueChangeCompleted.cs" />
+    <Compile Include="Notification\INotifyValueChanged.cs" />
+    <Compile Include="Notification\StateChangedEventArgs.cs" />
+    <Compile Include="Notification\StrategyLoadedEventArgs.cs" />
+    <Compile Include="Notification\ValueChangeCompletedEventArgs.cs" />
+    <Compile Include="Notification\ValueChangedEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Validation\ControlValidationState.cs" />
+    <Compile Include="Validation\EditEvaluator.cs" />
+    <Compile Include="Validation\EditValueConverter.cs" />
+    <Compile Include="Validation\IValueProvider.cs" />
+    <Compile Include="Validation\ValidationResult.cs" />
+    <Compile Include="Wpf\ViewModel\StrategyEditWrapper.cs" />
+    <Compile Include="Wpf\ViewModel\ViewModelStrategyEditCollection.cs" />
     <Compile Include="Xml\Serialization\ValueConverter.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -528,6 +541,10 @@
     <EmbeddedResource Include=".\Resources\InternalErrors.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>InternalErrors.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\HumanReadableTypeNames.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>HumanReadableTypeNames.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

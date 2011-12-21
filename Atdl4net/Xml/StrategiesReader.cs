@@ -18,6 +18,7 @@
 //      http://www.gnu.org/licenses/.
 //
 #endregion
+
 using Atdl4net.Diagnostics;
 using Atdl4net.Diagnostics.Exceptions;
 using Atdl4net.Model.Elements;
@@ -34,7 +35,7 @@ using System.Xml;
 
 namespace Atdl4net.Xml
 {
-    public class StrategiesReader: INotifyStrategyLoad
+    public class StrategiesReader: INotifyStrategyLoaded
     {
         private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Xml.Serialization");
 
@@ -100,13 +101,13 @@ namespace Atdl4net.Xml
 
         private void NotifyStrategyLoaded(int index, int total, string strategyName)
         {
-            System.EventHandler<StrategyLoadEventArgs> strategyLoaded = StrategyLoaded;
+            System.EventHandler<StrategyLoadedEventArgs> strategyLoaded = StrategyLoaded;
 
             if (strategyLoaded != null)
-                strategyLoaded(this, new StrategyLoadEventArgs(index, total, strategyName));
+                strategyLoaded(this, new StrategyLoadedEventArgs(index, total, strategyName));
         }
 
-        public event System.EventHandler<StrategyLoadEventArgs> StrategyLoaded;
+        public event System.EventHandler<StrategyLoadedEventArgs> StrategyLoaded;
 
         #endregion
     }

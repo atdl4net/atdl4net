@@ -139,7 +139,7 @@
     <value>It was not possible to set the value of property {0} to the value '{1}' on the target object of type {2}.</value>
   </data>
   <data name="UnexpectedArgumentType" xml:space="preserve">
-    <value>Unexpected type {0} used in method that expects one of ({1}).</value>
+    <value>Unexpected type {0} used in method that expects one of {1}.</value>
   </data>
   <data name="UnexpectedArgumentValue" xml:space="preserve">
     <value>The value supplied {0} as an argument to this method was not expected and is not supported.</value>

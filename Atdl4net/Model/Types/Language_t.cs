@@ -24,7 +24,9 @@ using Atdl4net.Model.Controls.Support;
 using Atdl4net.Model.Elements.Support;
 using Atdl4net.Model.Reference;
 using Atdl4net.Model.Types.Support;
+using Atdl4net.Resources;
 using Atdl4net.Utility;
+using Atdl4net.Validation;
 
 namespace Atdl4net.Model.Types
 {
@@ -40,10 +42,10 @@ namespace Atdl4net.Model.Types
         /// is not possible for an IsoLanguageCode value to be invalid.
         /// </summary>
         /// <param name="value">Value to validate, may be null in which case no validation is applied.</param>
-        /// <returns>Value passed in.</returns>
-        protected override IsoLanguageCode? ValidateValue(IsoLanguageCode? value)
+        /// <returns>ValidationResult indicating whether the supplied value is valid.</returns>
+        protected override ValidationResult ValidateValue(IsoLanguageCode? value)
         {
-            return value;
+            return ValidationResult.ValidResult;
         }
 
         /// <summary>
@@ -78,6 +80,15 @@ namespace Atdl4net.Model.Types
             string wireValue = value.ToString(hostParameter);
 
             return !string.IsNullOrEmpty(wireValue) ? ConvertFromWireValueFormat(wireValue) : null;
+        }
+
+        /// <summary>
+        /// Gets the human-readable type name for use in error messages shown to the user.
+        /// </summary>
+        /// <returns>Human-readable type name.</returns>
+        protected override string GetHumanReadableTypeName()
+        {
+            return HumanReadableTypeNames.LanguageType;
         }
 
         #endregion

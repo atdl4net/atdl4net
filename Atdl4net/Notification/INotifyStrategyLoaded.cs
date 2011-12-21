@@ -20,19 +20,17 @@
 #endregion
 
 using System;
-using System.Linq;
 
-namespace Atdl4net.Model.Types.Support
+namespace Atdl4net.Notification
 {
     /// <summary>
-    /// Minimal interface that objects can support in order to make available a current value.
+    /// Interface that types must implement in order to notify strategy loaded events.
     /// </summary>
-    public interface IValueProvider
+    public interface INotifyStrategyLoaded
     {
         /// <summary>
-        /// Gets the current value of this object.
+        /// Raised whenever a new strategy has been loaded.
         /// </summary>
-        /// <returns>Object's current value.</returns>
-        object GetCurrentValue();
+        event EventHandler<StrategyLoadedEventArgs> StrategyLoaded;
     }
 }
