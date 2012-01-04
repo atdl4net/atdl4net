@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -23,6 +23,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Atdl4net.Fix;
 using Atdl4net.Wpf.ViewModel;
 using Common.Logging;
 
@@ -33,7 +34,7 @@ namespace Atdl4net.Validation
     /// </summary>
     public class ControlValidationState
     {
-        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Validation");
+        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Validation");
 
         private bool _currentState;
         private readonly string _controlId; 
@@ -81,7 +82,8 @@ namespace Atdl4net.Validation
         /// <summary>
         /// Evaluates all the <see cref="StrategyEdit_t"/>s for this control.
         /// </summary>
-        public void Evaluate()
+        /// <param name="additionalValues">Any additional FIX field values that may be required in the Edit evaluation.</param>
+        public void Evaluate(FixFieldValueProvider additionalValues)
         {
             _log.Debug(m => m("Evaluating ValidationState for control {0}, CurrentState = {1}", _controlId, _currentState.ToString().ToLower()));
 
@@ -91,7 +93,7 @@ namespace Atdl4net.Validation
             _currentState = _parameterValidationResult == null || _parameterValidationResult.IsValid;
 
             foreach (StrategyEditWrapper strategyEdit in _strategyEdits)
-                _currentState &= strategyEdit.Evaluate();
+                _currentState &= strategyEdit.Evaluate(additionalValues);
 
             _log.Debug(m => m("Evaluated ValidationState for control {0}, CurrentState = {1}", _controlId, _currentState.ToString().ToLower()));
         }

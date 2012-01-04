@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -18,7 +18,7 @@
 //      http://www.gnu.org/licenses/.
 //
 #endregion
-using System.Windows.Controls;
+
 using Atdl4net.Fix;
 using Atdl4net.Model.Collections;
 using Atdl4net.Utility;
@@ -33,9 +33,9 @@ namespace Atdl4net.Model.Elements
     {
         private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Elements");
 
-        private FixTagValuesCollection _inputValues;
+        private FixFieldValueProvider _inputValues;
+        private readonly ReadOnlyControlCollection _controls;
         private readonly StrategyEditCollection _strategyEdits = new StrategyEditCollection();
-        private ReadOnlyControlCollection _controls;
         private readonly ParameterCollection _parameters = new ParameterCollection();
         private readonly EditCollection _edits = new EditCollection();
         private readonly MarketCollection _markets = new MarketCollection();
@@ -43,19 +43,17 @@ namespace Atdl4net.Model.Elements
         private readonly SecurityTypeCollection _securityTypes = new SecurityTypeCollection();
 
         /// <summary>
+        /// Initializes a new <see cref="Strategy_t"/> instance.
+        /// </summary>
+        public Strategy_t()
+        {
+            _controls = new ReadOnlyControlCollection(this);
+        }
+
+        /// <summary>
         /// Gets a read-only list of the controls for this Strategy.
         /// </summary>
-        public ReadOnlyControlCollection Controls
-        {
-            get
-            {
-                // Lazy initialise as 'this' cannot be used in constructor.
-                if (_controls == null)
-                    _controls = new ReadOnlyControlCollection(this);
-
-                return _controls;
-            }
-        }
+        public ReadOnlyControlCollection Controls { get { return _controls; } }
 
         /// <summary>
         /// Gets/sets a description for this Strategy.
@@ -89,15 +87,15 @@ namespace Atdl4net.Model.Elements
         /// </summary>
         public FixTagValuesCollection InputValues
         {
-            get { return _inputValues; }
+            get { return _inputValues != null ? _inputValues.FixValues : null; }
 
             set
             {
-                _inputValues = value;
+                _inputValues = new FixFieldValueProvider(value, Parameters);
 
-                Parameters.InitializeValues(_inputValues);
+                Parameters.InitializeValues(value);
 
-                Controls.UpdateValuesFromParameters(Parameters);
+                Controls.UpdateValuesFromParameters(_inputValues);
             }
         }
 
@@ -115,10 +113,7 @@ namespace Atdl4net.Model.Elements
         /// (XFKA) is defined as an included market, the strategy will be applicable for all markets in The Americas and EMEA,
         /// as well as only the Fukuoka Stock Exchange in the APAC region.
         /// </summary>
-        public MarketCollection Markets
-        {
-            get { return _markets; }
-        }
+        public MarketCollection Markets { get { return _markets; } }
 
         /// <summary>
         /// Gets/sets the unique identifier of a Strategy. Strategy names must be unique per provider.
@@ -140,7 +135,7 @@ namespace Atdl4net.Model.Elements
         {
             Controls.UpdateParameterValues(Parameters);
 
-            StrategyEdits.ValidateAll();
+            StrategyEdits.ValidateAll(_inputValues == null ? FixFieldValueProvider.Empty : _inputValues);
 
             FixTagValuesCollection fixTagValues = Parameters.GetOutputValues();
 
@@ -155,11 +150,6 @@ namespace Atdl4net.Model.Elements
             _log.Debug(m => m("Strategy_t.GetOutputValues() returning: {0}", fixTagValues.ToString()));
 
             return fixTagValues;
-        }
-
-        public void ValidateStrategyEdits()
-        {
-            StrategyEdits.ValidateAll();
         }
 
         /// <summary>

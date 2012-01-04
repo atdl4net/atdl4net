@@ -462,12 +462,14 @@
     <Compile Include="Diagnostics\Exceptions\InconsistentStrategyException.cs" />
     <Compile Include="Fix\FixDateTime.cs" />
     <Compile Include="Fix\FixDateTimeFormat.cs" />
+    <Compile Include="Fix\FixFieldValueProvider.cs" />
     <Compile Include="Model\Atdl.cs" />
     <Compile Include="Model\Collections\ISimpleDictionary.cs" />
     <Compile Include="Model\Controls\Support\AtdlControlName.cs" />
     <Compile Include="Model\Controls\Support\BinaryControlBase.cs" />
     <Compile Include="Model\Controls\Support\EnumState.cs" />
     <Compile Include="Model\Controls\Support\IControlVisitor.cs" />
+    <Compile Include="Model\Controls\Support\InitializableControl.cs" />
     <Compile Include="Model\Controls\Support\IOrientableControl.cs" />
     <Compile Include="Model\Controls\Support\IParameterConvertible.cs" />
     <Compile Include="Model\Controls\Support\ListControlBase.cs" />

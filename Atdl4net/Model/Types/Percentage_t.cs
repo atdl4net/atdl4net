@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -53,15 +53,22 @@ namespace Atdl4net.Model.Types
         /// <returns>ValidationResult indicating whether the supplied value is valid.</returns>
         protected override ValidationResult ValidateValue(decimal? value)
         {
-            if (value == null)
-                return ValidationResult.ValidResult;
-            else
+            if (value != null)
             {
                 decimal wireValue = (MultiplyBy100 != true) ? (decimal)value / 100 : (decimal)value;
 
-                return base.ValidateValue(wireValue);
+                if (MaxValue != null && wireValue > MaxValue)
+                    return new ValidationResult(false, ErrorMessages.MaxValueExceeded, value, 
+                        (MultiplyBy100 != true) ? (decimal)MaxValue * 100 : (decimal)MaxValue);
+
+                if (MinValue != null && wireValue < MinValue)
+                    return new ValidationResult(false, ErrorMessages.MinValueExceeded, value, 
+                        (MultiplyBy100 != true) ? (decimal)MinValue * 100 : (decimal)MinValue);
             }
+
+            return ValidationResult.ValidResult;
         }
+
 
         /// <summary>
         /// Converts the supplied value from string format (as might be used on the FIX wire) into the type of the type

@@ -7,6 +7,7 @@
     <!--        <ComboBox x:Key="dummyComboBoxKey"/>
         <resources:WpfComboBoxSizer x:Key="atdl4netComboBoxSizerKey" ExampleComboBox="{StaticResource dummyComboBoxKey}" InitialComboWidth="28"/>  -->
 
+    <!--
     <Style TargetType="{x:Type TextBox}">
         <Style.Triggers>
 
@@ -15,7 +16,6 @@
             </DataTrigger>
 
         </Style.Triggers>
-        <!--
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TextBox">
@@ -34,8 +34,8 @@
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
-        </Setter> -->
-    </Style>
+        </Setter> 
+    </Style>-->
     
     
     <Style TargetType="{x:Type ItemsControl}">

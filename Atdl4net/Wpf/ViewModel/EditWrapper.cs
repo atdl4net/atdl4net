@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -22,6 +22,7 @@
 using System;
 using System.Linq;
 using Atdl4net.Diagnostics.Exceptions;
+using Atdl4net.Fix;
 using Atdl4net.Model.Elements;
 using Atdl4net.Model.Elements.Support;
 using Atdl4net.Notification;
@@ -68,7 +69,7 @@ namespace Atdl4net.Wpf.ViewModel
 
             bool previousState = _underlyingEdit.CurrentState;
 
-            _underlyingEdit.Evaluate();
+            _underlyingEdit.Evaluate(FixFieldValueProvider.Empty);
 
             NotifyStateChange(e.Id, previousState, _underlyingEdit.CurrentState);
         }
@@ -79,7 +80,7 @@ namespace Atdl4net.Wpf.ViewModel
 
             bool previousState = _underlyingEdit.CurrentState;
 
-            _underlyingEdit.Evaluate();
+            _underlyingEdit.Evaluate(FixFieldValueProvider.Empty);
 
             NotifyStateChange(e.Id, previousState, _underlyingEdit.CurrentState);
         }
@@ -88,7 +89,7 @@ namespace Atdl4net.Wpf.ViewModel
         {
             bool previousState = _underlyingEdit.CurrentState;
 
-            _underlyingEdit.Evaluate();
+            _underlyingEdit.Evaluate(FixFieldValueProvider.Empty);
 
             NotifyStateChange("Edits", previousState, _underlyingEdit.CurrentState);
         }

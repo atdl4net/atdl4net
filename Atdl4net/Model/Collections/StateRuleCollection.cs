@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -20,6 +20,7 @@
 #endregion
 
 using System.Collections.ObjectModel;
+using Atdl4net.Fix;
 using Atdl4net.Model.Elements;
 using Atdl4net.Utility;
 using Common.Logging;
@@ -52,7 +53,7 @@ namespace Atdl4net.Model.Collections
                 _log.Debug(m => m("Evaluating all {0} StateRule_t instances for control Id {1}", Items.Count,  _owner.Id));
 
             foreach (StateRule_t rule in this.Items)
-                rule.Evaluate();
+                rule.Evaluate(FixFieldValueProvider.Empty);
         }
 
         /// <summary>

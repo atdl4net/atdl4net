@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -22,15 +22,20 @@
 using System.ComponentModel.Composition;
 using Atdl4net.Configuration;
 using Atdl4net.Model.Controls;
+using Common.Logging;
 
 namespace Atdl4net.Wpf.View.DefaultRendering
 {
     [Export(typeof(IWpfControlRenderer<DropDownList_t>))]
     internal class DropDownListRenderer : IWpfControlRenderer<DropDownList_t>
     {
+        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Wpf.View");
+
         public void Render(WpfXmlWriter writer, DropDownList_t control)
         {
             string id = WpfControlRenderer.CleanName(control.Id);
+
+            _log.Debug(m => m("Rendering control {0} of type DropDownList_t using {1}", control.Id, this.GetType().FullName));
 
             if (Atdl4netConfiguration.Settings.Wpf.View.AutoSizeDropDowns)
                 WpfControlRenderer.ComboBoxSizer.RegisterComboBox(id, control.ListItems);

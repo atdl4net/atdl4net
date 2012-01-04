@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -21,6 +21,7 @@
 
 using System;
 using Atdl4net.Diagnostics;
+using Atdl4net.Fix;
 using Atdl4net.Model.Collections;
 using Atdl4net.Model.Controls.Support;
 using Atdl4net.Model.Elements.Support;
@@ -49,6 +50,8 @@ namespace Atdl4net.Model.Elements
         }
 
         #region Control_t Attributes
+
+        // NB InitValue is not defined at this level because its data type depends on the type of control.
 
         /// <summary>For implementing systems that support saving order templates or pre-populated orders for basket trading/list
         ///  trading this attribute specifies that the control should be disabled when the order screen is going to be saved as a
@@ -130,14 +133,6 @@ namespace Atdl4net.Model.Elements
             ModelUtils.VisitHelper(typeof(IControlVisitor), visitor, this);
         }
 
-        protected FixTagValuesCollection GetInputValues()
-        {
-            if (_owner != null && _owner.OwningStrategy != null)
-                return _owner.OwningStrategy.InputValues;
-            else
-                return null;
-        }
-
         #region IValueProvider Members
 
         /// <summary>
@@ -157,10 +152,16 @@ namespace Atdl4net.Model.Elements
         public abstract void SetValueFromParameter(IParameter parameter);
 
         /// <summary>
-        /// Loads the initial values for this control from the InitValue field, if supplied.
+        /// Loads the initial value for this control based on the InitPolicy, InitFixField and InitValue attributes.
         /// </summary>
-        public abstract void LoadDefault();
-
+        /// <param name="controlInitValueProvider">Value provider for initializing control values from InitFixField.</param>
+        /// <remarks>The spec states: 'If the value of the initPolicy attribute is undefined or equal to "UseValue" and the initValue attribute is 
+        /// defined then initialize with initValue.  If the value is equal to "UseFixField" then attempt to initialize with the value of 
+        /// the tag specified in the initFixField attribute. If the value is equal to "UseFixField" and it is not possible to access the 
+        /// value of the specified fix tag then revert to using initValue. If the value is equal to "UseFixField", the field is not accessible,
+        /// and initValue is not defined, then do not initialize.</remarks>
+        public abstract void LoadDefault(FixFieldValueProvider controlInitValueProvider);
+        
         #endregion
 
         #region IParentable<StrategyPanel_t> Members

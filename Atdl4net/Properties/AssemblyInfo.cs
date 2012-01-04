@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //   If you received this software under the commercial license, the terms of that license can be found in the
@@ -52,5 +52,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("1.1.0.1068")]
-[assembly: AssemblyFileVersion("1.1.0.1068")]
+[assembly: AssemblyVersion("1.1.0.1069")]
+[assembly: AssemblyFileVersion("1.1.0.1069")]

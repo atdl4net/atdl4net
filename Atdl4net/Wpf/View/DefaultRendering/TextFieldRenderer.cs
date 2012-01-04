@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -19,18 +19,22 @@
 //
 #endregion
 
-using Atdl4net.Model.Controls;
 using System.ComponentModel.Composition;
-using System.ComponentModel.Composition.Primitives;
+using Atdl4net.Model.Controls;
+using Common.Logging;
 
 namespace Atdl4net.Wpf.View.DefaultRendering
 {
     [Export(typeof(IWpfControlRenderer<TextField_t>))]
     internal class TextFieldRenderer : IWpfControlRenderer<TextField_t>
     {
+        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Wpf.View");
+
         public void Render(WpfXmlWriter writer, TextField_t control)
         {
             string id = WpfControlRenderer.CleanName(control.Id);
+
+            _log.Debug(m => m("Rendering control {0} of type TextField_t using {1}", control.Id, this.GetType().FullName));
 
             WpfControlRenderer.RenderLabelledControl<TextField_t>(writer, control, (c, gridCoordinate) =>
             {
@@ -39,7 +43,6 @@ namespace Atdl4net.Wpf.View.DefaultRendering
                     writer.WriteAttribute(WpfXmlWriterAttribute.GridColumn, gridCoordinate.Column.ToString());
                     writer.WriteAttribute(WpfXmlWriterAttribute.GridRow, gridCoordinate.Row.ToString());
 
-//                    writer.WriteAttribute(WpfXmlWriterAttribute.Margin, "2,0,2,0");
                     writer.WriteAttribute(WpfXmlWriterAttribute.Margin, "1");
 
                     if (!string.IsNullOrEmpty(c.Id))
@@ -47,15 +50,10 @@ namespace Atdl4net.Wpf.View.DefaultRendering
 
                     writer.WriteAttribute(WpfXmlWriterAttribute.Width, "120");
 
-                    writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, string.Format("{0}Binding Path=ToolTip{1}", "{", "}"));
-                    writer.WriteAttribute(WpfXmlWriterAttribute.Text, string.Format("{0}Binding Path=UiValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged{1}", "{", "}"));
+                    writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, string.Format("{0}Binding Path=Controls[{1}].ToolTip{2}", "{", id, "}"));
+                    writer.WriteAttribute(WpfXmlWriterAttribute.Text, string.Format("{0}Binding Path=Controls[{1}].UiValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged{2}", "{", id, "}"));
                     writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, string.Format("{0}Binding Path=Controls[{1}].Enabled{2}", "{", id, "}"));
                     writer.WriteAttribute(WpfXmlWriterAttribute.Visibility, string.Format("{0}Binding Path=Controls[{1}].Visibility{2}", "{", id, "}"));
-
-                    using (writer.New("http://schemas.microsoft.com/winfx/2006/xaml/presentation", "TextBox.DataContext"))
-                        using (writer.New("http://schemas.microsoft.com/winfx/2006/xaml/presentation", "Binding"))
-                            writer.WriteAttribute("Path", string.Format("Controls[{0}]", id));
-
                 }
             });
         }

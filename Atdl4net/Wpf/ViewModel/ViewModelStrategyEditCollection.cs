@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -24,7 +24,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Atdl4net.Model.Collections;
 using Atdl4net.Model.Elements;
-using Atdl4net.Notification;
 
 namespace Atdl4net.Wpf.ViewModel
 {
@@ -96,16 +95,5 @@ namespace Atdl4net.Wpf.ViewModel
         }
 
         #endregion
-
-        ///// <summary>
-        ///// Evaluates all the <see cref="StrategyEdit_t"/>s affected by the change in value of the specified parameter.
-        ///// </summary>
-        ///// <param name="parameterName">Name of parameter whose value has changed.</param>
-        //public void EvaluateAffected(string parameterName)
-        //{
-        //    IEnumerable<
-
-        //    throw new NotImplementedException();
-        //}
     }
 }

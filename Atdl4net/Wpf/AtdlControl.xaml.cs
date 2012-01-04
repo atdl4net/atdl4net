@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -104,11 +104,6 @@ namespace Atdl4net.Wpf
             set { SetValue(StrategyProperty, value); }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="source"></param>
-        /// <param name="e"></param>
         /// <remarks>This method does not throw exceptions as this causes issues with WPF data binding.  Instead it
         /// invokes the ExceptionOccurred event handler (if registered).</remarks>
         private static void OnStrategyPropertyChanged(DependencyObject source, DependencyPropertyChangedEventArgs e)
@@ -168,8 +163,8 @@ namespace Atdl4net.Wpf
                     UIElement e = (UIElement)XamlReader.Parse(_xaml);
 
                     controlRoot.Children.Add(e);
-                    using (StreamWriter writer = File.CreateText(Path.Combine(Path.GetTempPath(), "atdl4net_xaml.xml")))
-                        writer.Write(sb.ToString());
+                    //using (StreamWriter writer = File.CreateText(Path.Combine(Path.GetTempPath(), "atdl4net_xaml.xml")))
+                    //    writer.Write(sb.ToString());
                 }
                 catch (XamlParseException)
                 {

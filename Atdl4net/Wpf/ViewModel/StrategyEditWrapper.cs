@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -23,6 +23,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Atdl4net.Diagnostics;
+using Atdl4net.Fix;
 using Atdl4net.Model.Elements;
 using Atdl4net.Notification;
 using Atdl4net.Resources;
@@ -79,11 +80,12 @@ namespace Atdl4net.Wpf.ViewModel
         /// of state.
         /// </summary>
         /// <returns>State of this StrategyEdit after the evaluation.</returns>
-        public bool Evaluate()
+        /// <param name="additionalValues">Any additional FIX field values that may be required in the Edit evaluation.</param>
+        public bool Evaluate(FixFieldValueProvider additionalValues)
         {
             bool oldState = _underlyingStrategyEdit.CurrentState;
 
-            _underlyingStrategyEdit.Evaluate();
+            _underlyingStrategyEdit.Evaluate(additionalValues);
 
             bool newState = _underlyingStrategyEdit.CurrentState;
 

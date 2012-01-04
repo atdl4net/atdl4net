@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -91,11 +91,6 @@ namespace Atdl4net.Wpf.ViewModel
                 if (control is RadioButton_t)
                     RegisterRadioButton(control as RadioButton_t, controlWrapper as RadioButtonWrapper);
 #endif
-                //string targetParam = control.ParameterRef;
-
-                //if (targetParam != null)
-                //    _strategyEdits.Add(targetParam, 
-                //        from s in strategy.StrategyEdits where s.Sources.Contains(targetParam) select s);
             }
 
             _strategyEdits = new ViewModelStrategyEditCollection(strategy.StrategyEdits, this);
@@ -122,45 +117,10 @@ namespace Atdl4net.Wpf.ViewModel
 
         private void ControlValueChangeCompleted(object sender, ValueChangeCompletedEventArgs e)
         {
+            // Update the affected parameter
             if (e != null)
-            {
-                // Update the affected parameter
                 e.Control.UpdateParameterValue();
-
-                //_strategyEdits.EvaluateAffected(e.Control.ParameterRef);
-
-                //string parameter = e.Control.ParameterRef;
-
-                //var results = _strategyEdits[parameter].Evaluate();
-
-                ////StrategyEditC
-
-                ////ValidationResult[] results = _underlyingStrategy.ValidateAffectedStrategyEdits(parameter);
-
-                //ValidationResult[] results = _underlyingStrategy.ValidateStrategyEdits();
-
-                //ApplyValidationsToControls(results);
-
-                //foreach (var result in results)
-                //    _log.Debug(m => m("Control {0} value changed | result = {1} | {2}", e.Control.Id, result.IsValid, result.ErrorContent));
-            }
         }
-
-//        private void ApplyValidationsToControls(ValidationResult[] results)
-//        {
-//            foreach (var control in this)
-//            {
-//                string param = control.UnderlyingControl.ParameterRef;
-
-//                if (param != null)
-//                {
-////                    var resultsForControl = results.GetResultsByParam(param);
-
-
-
-//                }
-//            }
-//        }
 
 #if !NET_40
         private void RegisterRadioButton(RadioButton_t radioButton, RadioButtonWrapper controlWrapper)

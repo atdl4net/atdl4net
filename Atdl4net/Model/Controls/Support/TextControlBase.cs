@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -40,7 +40,7 @@ namespace Atdl4net.Model.Controls.Support
     /// <item><description><see cref="Atdl4net.Model.Controls.TextField_t"/></description></item>
     /// </list>
     /// </summary>
-    public abstract class TextControlBase : Control_t, IParameterConvertible
+    public abstract class TextControlBase : InitializableControl<string>
     {
         private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Controls");
 
@@ -58,16 +58,30 @@ namespace Atdl4net.Model.Controls.Support
         {
         }
 
-        /// <summary>The value used to pre-populate the GUI component when the order entry screen is initially rendered.</summary>
-        public string InitValue { get; set; }
+        #region InitializableControl<T> Overrides
 
         /// <summary>
-        /// Loads the InitValue for this control into the control value.
+        /// Attempts to load the supplied FIX field value into this control.
         /// </summary>
-        public override void LoadDefault()
+        /// <param name="value">Value to set this control to.</param>
+        /// <returns>true if it was possible to set the value of this control using the supplied value; false otherwise.</returns>
+        protected override bool LoadDefaultFromFixValue(string value)
+        {
+            _value = value;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Loads this control with any supplied InitValue. If InitValue is not supplied, then control value will
+        /// be set to default/empty value.
+        /// </summary>
+        protected override void LoadDefaultFromInitValue()
         {
             SetValue(InitValue);
         }
+
+        #endregion
 
         /// <summary>
         /// Sets the value of this control; either via a string or using the FIXatdl '{NULL}' value.
@@ -104,7 +118,7 @@ namespace Atdl4net.Model.Controls.Support
         {
             IControlConvertible value = parameter.GetValueForControl();
 
-            _value = value.ToString();
+            _value = value.ToString(CultureInfo.InvariantCulture);
 
             _log.Debug(m => m("Text control {0} value is now {1}", Id, _value));
         }

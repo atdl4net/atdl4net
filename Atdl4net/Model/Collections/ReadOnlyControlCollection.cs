@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -23,7 +23,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using Atdl4net.Diagnostics.Exceptions;
+using Atdl4net.Fix;
 using Atdl4net.Model.Elements;
 using Atdl4net.Model.Elements.Support;
 using Atdl4net.Resources;
@@ -100,7 +102,16 @@ namespace Atdl4net.Model.Collections
             }
         }
 
-        public void LoadDefaults()
+        /// <summary>
+        /// Loads the initial values for each control based on the InitPolicy, InitFixField and InitValue attributes.
+        /// </summary>
+        /// <param name="controlInitValueProvider">Value provider for initializing control values from InitFixField.</param>
+        /// <remarks>The spec states: 'If the value of the initPolicy attribute is undefined or equal to "UseValue" and the initValue attribute is 
+        /// defined then initialize with initValue.  If the value is equal to "UseFixField" then attempt to initialize with the value of 
+        /// the tag specified in the initFixField attribute. If the value is equal to "UseFixField" and it is not possible to access the 
+        /// value of the specified fix tag then revert to using initValue. If the value is equal to "UseFixField", the field is not accessible,
+        /// and initValue is not defined, then do not initialize.</remarks>
+        public void LoadDefaults(FixFieldValueProvider controlInitValueProvider)
         {
             Control_t control = null;
 
@@ -111,7 +122,7 @@ namespace Atdl4net.Model.Collections
                 {
                     control = thisControl;
 
-                    thisControl.LoadDefault();
+                    thisControl.LoadDefault(controlInitValueProvider);
                 }
             }
             catch (System.Exception ex)
@@ -147,13 +158,15 @@ namespace Atdl4net.Model.Collections
             }
         }
 
-        public void UpdateValuesFromParameters(ParameterCollection parameters)
+        public void UpdateValuesFromParameters(FixFieldValueProvider controlInitValueProvider)
         {
+            ParameterCollection parameters = controlInitValueProvider.Parameters;
+
             foreach (Control_t control in this)
             {
                 try
                 {
-                    control.LoadDefault();
+                    control.LoadDefault(controlInitValueProvider);
 
                     if (control.ParameterRef != null)
                     {
@@ -162,9 +175,13 @@ namespace Atdl4net.Model.Collections
 
                         IParameter parameter = parameters[control.ParameterRef];
 
-                        _log.Debug(m=>m("Updating control {0} value from parameter {1}", control.Id, parameter.Name));
+                        // We only want to update the control value if the parameter has a value
+                        if (parameter.GetCurrentValue() != null)
+                        {
+                            _log.Debug(m => m("Updating control {0} value from parameter {1}", control.Id, parameter.Name));
 
-                        control.SetValueFromParameter(parameter);
+                            control.SetValueFromParameter(parameter);
+                        }
                     }
                 }
                 catch (KeyNotFoundException ex)

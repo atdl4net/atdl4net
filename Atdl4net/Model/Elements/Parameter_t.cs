@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -81,6 +81,8 @@ namespace Atdl4net.Model.Elements
         /// </summary>
         public void Reset()
         {
+            _log.DebugFormat("Parameter_t<{0}> {1} reset.", typeof(T).Name, Name);
+
             _value = new T();
         }
 

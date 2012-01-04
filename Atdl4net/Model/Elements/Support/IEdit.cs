@@ -1,4 +1,4 @@
-#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
+#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -20,6 +20,7 @@
 #endregion
 
 using System.Collections.Generic;
+using Atdl4net.Fix;
 using Atdl4net.Model.Collections;
 using Atdl4net.Model.Enumerations;
 
@@ -84,9 +85,11 @@ namespace Atdl4net.Model.Elements.Support
         object Field2Value { get; }
 
         /// <summary>
-        /// Evaluates this Edit based on the current field values.
+        /// Evaluates this Edit based on the current field values and any additional FIX field values that this
+        /// Edit references.
         /// </summary>
-        void Evaluate();
+        /// <param name="additionalValues">Any additional FIX field values that may be required in the Edit evaluation.</param>
+        void Evaluate(FixFieldValueProvider additionalValues);
 
         /// <summary>
         /// Gets the set of sources for the data to be evaluated as part of this Edit.

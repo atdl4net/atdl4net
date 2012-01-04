@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -24,6 +24,7 @@ using System.ComponentModel;
 using System.Windows;
 using Atdl4net.Diagnostics;
 using Atdl4net.Diagnostics.Exceptions;
+using Atdl4net.Fix;
 using Atdl4net.Model.Controls.Support;
 using Atdl4net.Model.Elements;
 using Atdl4net.Model.Elements.Support;
@@ -66,9 +67,10 @@ namespace Atdl4net.Wpf.ViewModel
         private bool _visible = true;
         private bool _enabled = true;
         private readonly DataEntryMode _dataEntryMode;
-        private readonly IParameter _referencedParameter;
+        private FixFieldValueProvider _fixFieldValues;
         private ViewModelStateRuleCollection _stateRules;
         private readonly ControlValidationState _validationState;
+        private readonly IParameter _referencedParameter;
 
         #region INotifyPropertyChanged Members
 
@@ -148,6 +150,7 @@ namespace Atdl4net.Wpf.ViewModel
                 wrapper = new ControlWrapper(control, referencedParameter, mode);
 
             wrapper._stateRules = new ViewModelStateRuleCollection(wrapper, control.StateRules);
+            wrapper._fixFieldValues = new FixFieldValueProvider(underlyingStrategy.InputValues, underlyingStrategy.Parameters);
 
             return wrapper;
         }
@@ -343,7 +346,7 @@ namespace Atdl4net.Wpf.ViewModel
             if (valueChangeCompleted != null)
                 valueChangeCompleted(this, new ValueChangeCompletedEventArgs(this));
 
-            _validationState.Evaluate();
+            _validationState.Evaluate(_fixFieldValues);
 
             // In case the validation state ErrorText has changed...
             NotifyPropertyChanged("ToolTip");

@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -18,11 +18,11 @@
 //      http://www.gnu.org/licenses/.
 //
 #endregion
+
 using System;
 using Atdl4net.Diagnostics;
 using Atdl4net.Diagnostics.Exceptions;
 using Atdl4net.Model.Collections;
-using Atdl4net.Model.Elements;
 using Atdl4net.Model.Elements.Support;
 using Atdl4net.Model.Types.Support;
 using Atdl4net.Resources;
@@ -33,7 +33,7 @@ namespace Atdl4net.Model.Controls.Support
     /// <summary>
     /// Represents control elements within FIXatdl that can support one of two states (<see cref="CheckBox_t"/>, <see cref="RadioButton_t"/>).
     /// </summary>
-    public abstract class BinaryControlBase : Control_t
+    public abstract class BinaryControlBase : InitializableControl<bool?>
     {
         private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Controls");
 
@@ -57,15 +57,33 @@ namespace Atdl4net.Model.Controls.Support
         /// <summary>Output EnumID if unchecked/not selected.  Applicable when xsi:type is CheckBox_t or RadioButton_t.</summary>
         public string UncheckedEnumRef { get; set; }
 
-        /// <summary>The value used to pre-populate the GUI component when the order entry screen is initially rendered.</summary>
-        public bool? InitValue { get; set; }
-
-        #region Control_t Overrides
+        #region InitializableControl<T> Overrides
 
         /// <summary>
-        /// Loads the InitValue for this control into the control value.
+        /// Loads the supplied FIX field value into this control.
         /// </summary>
-        public override void LoadDefault()
+        /// <param name="value">Value to set this control to.</param>
+        protected override bool LoadDefaultFromFixValue(string value)
+        {
+            try
+            {
+                SetValue(value);
+
+                return true;
+            }
+            catch (InvalidFieldValueException ex)
+            {
+                _log.ErrorFormat("Unable to set control {0} from FIX field value '{1}'; reason: {2}", Id, value, ex.Message);
+
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Loads this control with any supplied InitValue. If InitValue is not supplied, then control value will
+        /// be set to default/empty value.
+        /// </summary>
+        protected override void LoadDefaultFromInitValue()
         {
             // Binary controls should have a default state of off if no InitValue is specified.
             if (InitValue != null)
@@ -73,6 +91,10 @@ namespace Atdl4net.Model.Controls.Support
             else
                 _value = false;
         }
+
+        #endregion
+
+        #region Control_t Overrides
 
         /// <summary>
         /// Gets the value of this control.  May be null.

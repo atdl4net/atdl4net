@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -24,6 +24,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Atdl4net.Diagnostics.Exceptions;
+using Atdl4net.Fix;
 using Atdl4net.Model.Collections;
 using Atdl4net.Model.Elements.Support;
 using Atdl4net.Model.Enumerations;
@@ -40,8 +41,21 @@ namespace Atdl4net.Model.Elements
     /// </summary>
     public class Edit_t
     {
+        /// <summary>
+        /// Gets/sets the first field name for comparison. When the edit is used within a StateRule, this field 
+        /// must refer to the ID of a Control. When the edit is used within a StrategyEdit, this field must refer 
+        /// to either the name of a parameter or a standard FIX field name. When referring to a standard FIX tag
+        /// then the name must be pre-pended with the string "FIX_", e.g. "FIX_OrderQty". Required the Operator is 
+        /// not null.
+        /// </summary>
         public string Field { get; set; }
 
+        /// <summary>
+        /// Gets/sets the optional second field name for comparison. When the edit is used within a StateRule, this field 
+        /// must refer to the ID of a Control. When the edit is used within a StrategyEdit, this field must refer 
+        /// to either the name of a parameter or a standard FIX field name. When referring to a standard FIX tag
+        /// then the name must be pre-pended with the string "FIX_", e.g. "FIX_OrderQty".
+        /// </summary>
         public string Field2 { get; set; }
 
         public string Id { get; set; }
@@ -65,14 +79,23 @@ namespace Atdl4net.Model.Elements
     /// </summary>
     public class Edit_t<T> : IEdit<T>, IResolvable<Strategy_t, T> where T : class, IValueProvider
     {
-        // Use Atdl4net.Model.Validation namespace rather than Atdl4net.Model.Elements for debugging purposes
-        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Validation");
+        // Use Atdl4net.Validation namespace rather than Atdl4net.Model.Elements for debugging purposes
+        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Validation");
 
         private bool _currentState;
         private T _fieldSource;
         private T _field2Source;
-        private readonly EditEvaluatingCollection<T> _edits = new EditEvaluatingCollection<T>();
-        private EditRefCollection<T> _editRefs;
+        private readonly EditEvaluatingCollection<T> _edits;
+        private readonly EditRefCollection<T> _editRefs;
+
+        /// <summary>
+        /// Initializes a new <see cref="Edit{T}"/> instance.
+        /// </summary>
+        public Edit_t()
+        {
+            _edits = new EditEvaluatingCollection<T>();
+            _editRefs = new EditRefCollection<T>(_edits);
+        }
 
         /// <summary>
         /// Provides a string representation of this Edit_t, primarily for debugging purposes.
@@ -108,17 +131,10 @@ namespace Atdl4net.Model.Elements
             return string.Format("{0})", text.Substring(0, text.Length - 2));
         }
 
-        public EditRefCollection<T> EditRefs
-        {
-            get
-            {
-                //Lazy initialize as 'this' cannot be used in constructor
-                if (_editRefs == null)
-                    _editRefs = new EditRefCollection<T>(_edits);
-
-                return _editRefs;
-            }
-        }
+        /// <summary>
+        /// Gets the collection of EditRefs for this Edit.
+        /// </summary>
+        public EditRefCollection<T> EditRefs { get { return _editRefs; } }
 
         /// <summary>
         /// Gets the set of sources for this Edit and its children.  As source is non-null Field or Field2 value.
@@ -224,22 +240,37 @@ namespace Atdl4net.Model.Elements
         }
 
         /// <summary>
-        /// Evaluates this Edit based on the current field values.
+        /// Evaluates this Edit based on the current field values and any supplied FIX field values.
         /// </summary>
-        public void Evaluate()
+        /// <param name="additionalValues">Any additional FIX field values that may be required in the Edit evaluation.</param>
+        public void Evaluate(FixFieldValueProvider additionalValues)
         {
             _log.Debug(m => m("Evaluating Edit_t {0}; current state is {1}", ToString(), _currentState.ToString().ToLower()));
 
             if (Operator != null)
             {
-                if (Operator == Operator_t.Exist || Operator == Operator_t.NotExist)
-                    _currentState = EvaluateExists();
-                else
-                    _currentState = EvaluateComparison();
+                object lhs = GetLhsValue(additionalValues);
+
+                switch (Operator)
+                {
+                    case Operator_t.Exist:
+                    case Operator_t.NotExist:
+                        _currentState = EvaluateExists(lhs);
+                        break;
+
+                    case Operator_t.Equal:
+                    case Operator_t.NotEqual:
+                        _currentState = EvaluateEquality(lhs, GetRhsValue(additionalValues, lhs));
+                        break;
+
+                    default:
+                        _currentState = EvaluateInequalityComparison(lhs as IComparable, GetRhsValue(additionalValues, lhs) as IComparable);
+                        break;
+                }
             }
             else if (LogicOperator != null)
             {
-                _edits.Evaluate();
+                _edits.Evaluate(additionalValues);
 
                 _currentState = _edits.CurrentState;
             }
@@ -251,8 +282,174 @@ namespace Atdl4net.Model.Elements
 
         #endregion IEdit_t Members
 
+        private bool EvaluateExists(object value)
+        {
+            bool checkingForExist = Operator == Operator_t.Exist;
+
+            bool empty = value == null || (value as string == string.Empty);
+
+            bool result = checkingForExist ? !empty : empty;
+
+            _log.Debug(m => m("Evaluated whether Field {0} {1} a value; result is {2} (value was '{3}')", Field,
+                checkingForExist ? "has" : "does not have", result.ToString().ToLower(), empty ? "N/A" : value));
+
+            return result;
+        }
+
+        private bool EvaluateEquality(object lhs, object rhs)
+        {
+            _log.Debug(m => m("Comparing values operand1={0}, operand2={1} for equality with operator {2}", lhs, rhs, Operator));
+
+            CheckForUnsupportedComparisons(lhs, rhs);
+
+            bool equal;
+
+            if (lhs == null)
+                equal = rhs == null || (rhs as string) == Atdl.NullValue;
+            else
+            {
+                IComparable comparableLhs = lhs as IComparable;
+                IComparable comparableRhs = rhs as IComparable;
+
+                if (comparableLhs != null && comparableRhs != null)
+                    equal = comparableLhs.CompareTo(comparableRhs) ==0;
+                else
+                    equal = lhs.Equals(rhs);
+            }
+
+            bool finalResult = Operator == Operator_t.Equal ? equal : !equal;
+
+            _log.Debug(m => m("Result of equality comparison = {0}", finalResult.ToString().ToLower()));
+
+            return finalResult;
+        }
+
+        private bool EvaluateInequalityComparison(IComparable lhs, IComparable rhs)
+        {
+            _log.Debug(m => m("Comparing values lhs='{0}', rhs='{1}' for inequality with operator {2}", lhs, rhs, Operator));
+
+            // It's not clear what the right thing is to do with a null LHS and an inequality operator
+            // so we return false anyway
+            if (lhs == null)
+            {
+                _log.Debug("Left hand side of inequality comparison is null so returning false");
+
+                return false;
+            }
+
+            int compareResult = lhs.CompareTo(rhs);
+
+            bool finalResult = false;
+
+            switch (Operator)
+            {
+                case Operator_t.GreaterThan:
+                    finalResult = compareResult > 0;
+                    break;
+
+                case Operator_t.GreaterThanOrEqual:
+                    finalResult = compareResult >= 0;
+                    break;
+
+                case Operator_t.LessThan:
+                    finalResult = compareResult < 0;
+                    break;
+
+                case Operator_t.LessThanOrEqual:
+                    finalResult = compareResult <= 0;
+                    break;
+            }
+
+            _log.Debug(m => m("Compared values '{0}' and '{1}' as part of Edit_t evaluation; result was {2}",
+                lhs, rhs, finalResult.ToString().ToLower()));
+
+            return finalResult;
+        }
+
+        private object GetLhsValue(FixFieldValueProvider additionalValues)
+        {
+            if (Field.StartsWith("FIX_"))
+                return GetFixFieldValue(additionalValues, Field);
+
+            object result;
+            object fieldValue = FieldValue;
+
+            // If the field value can be converted into a number, most likely it should be treated as one
+            // for comparison purposes
+            if (fieldValue is string)
+            {
+                decimal number;
+
+                if (decimal.TryParse(fieldValue as string, out number))
+                    result = number;
+                else
+                    result = fieldValue;
+            }
+            else
+                result = fieldValue;
+
+            return result;
+        }
+
+        private object GetRhsValue(FixFieldValueProvider additionalValues, object lhs)
+        {
+            if (Value != null)
+                return EditValueConverter.ConvertToComparableType(lhs, Value);
+
+            if (Field2 != null)
+            {
+                if (Field2.StartsWith("FIX_"))
+                    return GetFixFieldValue(additionalValues, Field2);
+
+                return Field2Value;
+            }
+
+            return null;
+        }
+
+        private void CheckForUnsupportedComparisons(object lhs, object rhs)
+        {
+            // We don't currently support comparisons for type 'Data_t' which is represented by a char[].
+            if (lhs is char[])
+                throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.UnsupportedComparisonOperation, Value, new string(lhs as char[]));
+
+            if (rhs is char[])
+                throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.UnsupportedComparisonOperation, Value, new string(rhs as char[]));
+        }
+
+        private static object GetFixFieldValue(FixFieldValueProvider additionalValues, string fixField)
+        {
+            object result;
+            string value;
+
+            bool gotValue = additionalValues.TryGetValue(fixField, out value);
+
+            // If the FIX value can be converted into a number, most likely it should be treated as one
+            // for comparison purposes
+            if (gotValue)
+            {
+                decimal number;
+
+                if (decimal.TryParse(value, out number))
+                    result = number;
+                else
+                    result = value;
+            }
+            else
+                result = null;
+
+            _log.Debug(m => m("Looked up FIX field {0} for comparison; field was {1}, value={2}",
+                fixField, gotValue ? "found" : "not found", gotValue ? result : "N/A"));
+
+            return result;
+        }
+
         #region IResolvable<Strategy_t> Members
 
+        /// <summary>
+        /// Resolves all interdependencies e.g. edits to edit refs, control values to edits, etc.  Called once
+        /// all strategies have been loaded as there may be dependencies on EditRefs at the global level.
+        /// </summary>
         void IResolvable<Strategy_t, T>.Resolve(Strategy_t strategy, ISimpleDictionary<T> sourceCollection)
         {
             (_edits as IResolvable<Strategy_t, T>).Resolve(strategy, sourceCollection);
@@ -275,77 +472,5 @@ namespace Atdl4net.Model.Elements
         }
 
         #endregion IResolvable<Strategy_t> Members
-
-        private bool EvaluateExists()
-        {
-            object fieldValue = FieldValue;
-
-            bool empty = fieldValue == null || (fieldValue as string == string.Empty);
-
-            bool result = (Operator == Operator_t.Exist) ? !empty : empty;
-
-            _log.Debug(m => m("Evaluated whether FieldValue {0} has a value; result is {1}", fieldValue, result));
-
-            return result;
-        }
-
-        private bool EvaluateComparison()
-        {
-            _log.Debug(m => m("Evaluating comparison operation of Edit_t {0}", this.ToString()));
-
-            IComparable operand1 = FieldValue as IComparable;
-            IComparable operand2;
-
-            if (Value != null)
-            {
-                // We don't currently support comparisions for type 'Data_t' which is represented by a char[].
-                if (FieldValue is char[])
-                    throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.UnsupportedComparisonOperation, Value, new string(FieldValue as char[]));
-
-                operand2 = EditValueConverter.ConvertToComparableType(FieldValue, Value);
-            }
-            else
-                operand2 = Field2Value as IComparable;
-
-            int compareResult;
-
-            if (FieldValue == null)
-                compareResult = (operand2 == null || object.Equals(operand2, Atdl.NullValue)) ? 0 : 1;
-            else
-                compareResult = operand1.CompareTo(operand2);
-
-            bool finalResult = false;
-
-            switch (Operator)
-            {
-                case Operator_t.Equal:
-                    finalResult = compareResult == 0;
-                    break;
-
-                case Operator_t.GreaterThan:
-                    finalResult = compareResult > 0;
-                    break;
-
-                case Operator_t.GreaterThanOrEqual:
-                    finalResult = compareResult >= 0;
-                    break;
-
-                case Operator_t.LessThan:
-                    finalResult = compareResult < 0;
-                    break;
-
-                case Operator_t.LessThanOrEqual:
-                    finalResult = compareResult <= 0;
-                    break;
-
-                case Operator_t.NotEqual:
-                    finalResult = compareResult != 0;
-                    break;
-            }
-
-            _log.Debug(m => m("Compared values '{0}' and '{1}' as part of Edit_t evaluation; result was {2}", operand1, operand2, finalResult.ToString().ToLower()));
-
-            return finalResult;
-        }
     }
 }

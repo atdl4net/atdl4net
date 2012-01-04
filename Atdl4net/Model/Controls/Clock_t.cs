@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -20,10 +20,11 @@
 #endregion
 
 using System;
+using System.Globalization;
 using Atdl4net.Diagnostics;
 using Atdl4net.Diagnostics.Exceptions;
 using Atdl4net.Fix;
-using Atdl4net.Model.Elements;
+using Atdl4net.Model.Controls.Support;
 using Atdl4net.Model.Elements.Support;
 using Atdl4net.Model.Types.Support;
 using Atdl4net.Resources;
@@ -34,7 +35,7 @@ namespace Atdl4net.Model.Controls
     /// <summary>
     /// Represents the Clock_t control element within FIXatdl.
     /// </summary>
-    public class Clock_t : Control_t
+    public class Clock_t : InitializableControl<DateTime?>
     {
         private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Controls");
 
@@ -55,19 +56,33 @@ namespace Atdl4net.Model.Controls
         /// xsi:type is Clock_t.</summary>
         public string LocalMktTz { get; set; }
 
-        /// <summary>The value used to pre-populate the GUI component when the order entry screen is initially rendered.</summary>
-        public DateTime? InitValue { get; set; }
-
         /// <summary>Defines the treatment of initValue time. 0: use initValue; 1: use current time if initValue time has passed.
         /// The default value is 0.</summary>
         public int? InitValueMode { get; set; }
 
-        #region Control_t Overrides
+        #region InitializableControl<T> Overrides
 
         /// <summary>
-        /// Loads the InitValue for this control into the control value.
+        /// Attempts to load the supplied FIX field value into this control.
         /// </summary>
-        public override void LoadDefault()
+        /// <param name="value">Value to set this control to.</param>
+        /// <returns>true if it was possible to set the value of this control using the supplied value; false otherwise.</returns>
+        protected override bool LoadDefaultFromFixValue(string value)
+        {
+            DateTime result;
+
+            bool parsed = FixDateTime.TryParse(value, CultureInfo.InvariantCulture, out result);
+
+            _value = parsed ? (DateTime?)result : null;
+
+            return parsed;
+        }
+
+        /// <summary>
+        /// Loads this control with any supplied InitValue. If InitValue is not supplied, then control value will
+        /// be set to default/empty value.
+        /// </summary>
+        protected override void LoadDefaultFromInitValue()
         {
             if (InitValue != null)
             {
@@ -79,6 +94,10 @@ namespace Atdl4net.Model.Controls
             else
                 _value = null;
         }
+
+        #endregion
+
+        #region Control_t Overrides
 
         /// <summary>
         /// Sets the value of this control using the value of the supplied parameter.

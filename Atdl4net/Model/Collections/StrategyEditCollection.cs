@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -20,9 +20,9 @@
 #endregion
 
 using System.Collections.ObjectModel;
-using System.Windows.Controls;
 using Atdl4net.Diagnostics;
 using Atdl4net.Diagnostics.Exceptions;
+using Atdl4net.Fix;
 using Atdl4net.Model.Elements;
 using Atdl4net.Model.Elements.Support;
 using Atdl4net.Utility;
@@ -40,11 +40,12 @@ namespace Atdl4net.Model.Collections
         /// <summary>
         /// Validates all the <see cref="StrategyEdit_t">StrategyEdit</see>s in this collection.
         /// </summary>
-        public void ValidateAll()
+        /// <param name="additionalValues">Any additional FIX field values that may be required in the Edit evaluation.</param>
+        public void ValidateAll(FixFieldValueProvider additionalValues)
         {
             foreach (StrategyEdit_t strategyEdit in Items)
             {
-                strategyEdit.Evaluate();
+                strategyEdit.Evaluate(additionalValues);
 
                 if (!strategyEdit.CurrentState)
                     throw ThrowHelper.New<ValidationException>(this, strategyEdit.ErrorMessage);
@@ -58,6 +59,10 @@ namespace Atdl4net.Model.Collections
             base.InsertItem(index, item);
         }
 
+        /// <summary>
+        /// Resolves all interdependencies e.g. edits to edit refs, control values to edits, etc.  Called once
+        /// all strategies have been loaded as there may be dependencies on EditRefs at the global level.
+        /// </summary>
         public void ResolveAll(Strategy_t owningStrategy)
         {
             foreach (StrategyEdit_t strategyEdit in this)

@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -21,6 +21,7 @@
 
 using System;
 using System.Collections.Generic;
+using Atdl4net.Fix;
 using Atdl4net.Model.Collections;
 using Atdl4net.Model.Elements;
 using Atdl4net.Resources;
@@ -33,7 +34,7 @@ namespace Atdl4net.Validation
     // TODO: Implement IDisposable
     public abstract class EditEvaluator<T> : IResolvable<Strategy_t, T> where T : class, IValueProvider
     {
-        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Validation");
+        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Validation");
 
         private Edit_t<T> _edit;
         private EditRef_t<T> _editRef;
@@ -90,14 +91,19 @@ namespace Atdl4net.Validation
             }
         }
 
-        public void Evaluate()
+        /// <summary>
+        /// Evaluates based on the current field values and any additional FIX field values that this EditEvaluator
+        /// references.
+        /// </summary>
+        /// <param name="additionalValues">Any additional FIX field values that may be required in the Edit evaluation.</param>
+        public void Evaluate(FixFieldValueProvider additionalValues)
         {
             _log.Debug(m => m("EditEvaluator evaluating state of Edit_t/EditRef_t; current state is {0}", CurrentState.ToString().ToLower()));
 
             if (_edit != null)
-                _edit.Evaluate();
+                _edit.Evaluate(additionalValues);
             else if (_editRef != null)
-                _editRef.Evaluate();
+                _editRef.Evaluate(additionalValues);
             else
                 throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.NeitherEditNorEditRefSetOnObject, this.GetType().Name);
 
@@ -106,6 +112,10 @@ namespace Atdl4net.Validation
 
         #region IResolvable<Strategy_t> Members
 
+        /// <summary>
+        /// Resolves all interdependencies e.g. edits to edit refs, control values to edits, etc.  Called once
+        /// all strategies have been loaded as there may be dependencies on EditRefs at the global level.
+        /// </summary>
         void IResolvable<Strategy_t, T>.Resolve(Strategy_t strategy, ISimpleDictionary<T> sourceCollection)
         {
             if (_editRef != null)

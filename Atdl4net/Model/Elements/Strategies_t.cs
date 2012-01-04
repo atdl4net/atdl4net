@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -77,7 +77,8 @@ namespace Atdl4net.Model.Elements
         public EditCollection Edits { get { return _edits; } }
 
         /// <summary>
-        /// Resolves all interdependencies e.g. edits to edit refs, control values to edits, etc.
+        /// Resolves all interdependencies e.g. edits to edit refs, control values to edits, etc.  Called once
+        /// all strategies have been loaded as there may be dependencies on EditRefs at the global level.
         /// </summary>
         public void ResolveAll()
         {

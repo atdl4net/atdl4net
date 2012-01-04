@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -23,6 +23,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Atdl4net.Diagnostics;
+using Atdl4net.Fix;
 using Atdl4net.Model.Elements;
 using Atdl4net.Model.Elements.Support;
 using Atdl4net.Model.Enumerations;
@@ -75,9 +76,11 @@ namespace Atdl4net.Model.Collections
         }
 
         /// <summary>
-        /// Evaluates this instance.
+        /// Evaluates this instance based on current field values and any additional FIX field values that this
+        /// EditEvaluatingCollection references.
         /// </summary>
-        public void Evaluate()
+        /// <param name="additionalValues">Any additional FIX field values that may be required in the Edit evaluation.</param>
+        public void Evaluate(FixFieldValueProvider additionalValues)
         {
             _log.Debug(m=>m("Evaluating EditEvaluatingCollection with {0} elements; current state = {1}", this.Count, _currentState.ToString().ToLower()));
 
@@ -93,7 +96,7 @@ namespace Atdl4net.Model.Collections
                 if (shortCircuit)
                     break;
 
-                item.Evaluate();
+                item.Evaluate(additionalValues);
 
                 switch (LogicOperator)
                 {

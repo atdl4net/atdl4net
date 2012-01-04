@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -23,7 +23,6 @@ using System;
 using Atdl4net.Diagnostics;
 using Atdl4net.Diagnostics.Exceptions;
 using Atdl4net.Model.Collections;
-using Atdl4net.Model.Elements;
 using Atdl4net.Model.Elements.Support;
 using Atdl4net.Model.Types.Support;
 using Atdl4net.Resources;
@@ -45,7 +44,7 @@ namespace Atdl4net.Model.Controls.Support
     /// <item><description>Slider_t</description></item>
     /// </list>
     /// </remarks>
-    public abstract class ListControlBase : Control_t
+    public abstract class ListControlBase : InitializableControl<string>
     {
         private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Controls");
 
@@ -68,24 +67,42 @@ namespace Atdl4net.Model.Controls.Support
         {
         }
 
-        /// <summary>
-        /// Gets/sets the InitValue for this control.  The type of this attribute for list controls is 
-        /// string and can contain either a single EnumID or a series of EnumIDs separated by spaces.
-        /// </summary>
-        public string InitValue { get; set; }
-
-        #region Control_t Overrides
+        #region InitializableControl<T> Overrides
 
         /// <summary>
-        /// Loads the initial values for this control from the InitValue field, if supplied.
+        /// Attempts to load the supplied FIX field value into this control.
         /// </summary>
-        public override void LoadDefault()
+        /// <param name="value">Value to set this control to.</param>
+        /// <returns>true if it was possible to set the value of this control using the supplied value; false otherwise.</returns>
+        /// <remarks>Although the method name might suggest that value is a FIX wire value, for list controls, this
+        /// parameter is in fact an enumID.</remarks>
+        protected override bool LoadDefaultFromFixValue(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                return false;
+
+            _value = new EnumState(ListItems.EnumIds);
+
+            _value.LoadInitValue(value);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Loads this control with any supplied InitValue. If InitValue is not supplied, then control value will
+        /// be set to default/empty value.
+        /// </summary>
+        protected override void LoadDefaultFromInitValue()
         {
             _value = new EnumState(ListItems.EnumIds);
 
             if (InitValue != null)
                 _value.LoadInitValue(InitValue);
         }
+
+        #endregion
+
+        #region Control_t Overrides
 
         /// <summary>
         /// Gets the value of this control as an EnumState.

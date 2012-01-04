@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -22,6 +22,7 @@
 using System.Collections.Generic;
 using Atdl4net.Diagnostics;
 using Atdl4net.Diagnostics.Exceptions;
+using Atdl4net.Fix;
 using Atdl4net.Model.Collections;
 using Atdl4net.Model.Elements.Support;
 using Atdl4net.Model.Enumerations;
@@ -37,8 +38,8 @@ namespace Atdl4net.Model.Elements
     /// </summary>
     public class EditRef_t<T> : IEdit<T>, IResolvable<Strategy_t, T> where T : class, IValueProvider
     {
-        // Use Atdl4net.Model.Validation namespace rather than Atdl4net.Model.Elements for debugging purposes
-        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Validation");
+        // Use Atdl4net.Validation namespace rather than Atdl4net.Model.Elements for debugging purposes
+        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Validation");
 
         private Edit_t<T> _referencedEdit;
 
@@ -61,9 +62,14 @@ namespace Atdl4net.Model.Elements
             return _referencedEdit != null ? _referencedEdit.ToString() : string.Empty;
         }
 
-        public void Evaluate()
+        /// <summary>
+        /// Evaluates this EditRef based on the current field values and any additional FIX field values that this
+        /// EditRef references.
+        /// </summary>
+        /// <param name="additionalValues">Any additional FIX field values that may be required in the Edit evaluation.</param>
+        public void Evaluate(FixFieldValueProvider additionalValues)
         {
-            _referencedEdit.Evaluate();
+            _referencedEdit.Evaluate(additionalValues);
         }
 
         #region IEdit_t Members

@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -19,18 +19,23 @@
 //
 #endregion
 
+using System.ComponentModel.Composition;
 using Atdl4net.Model.Controls;
 using Atdl4net.Wpf.View.Controls;
-using System.ComponentModel.Composition;
+using Common.Logging;
 
 namespace Atdl4net.Wpf.View.DefaultRendering
 {
     [Export(typeof(IWpfControlRenderer<CheckBoxList_t>))]
     public class CheckBoxListRenderer : IWpfControlRenderer<CheckBoxList_t>
     {
+        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Wpf.View");
+
         public void Render(WpfXmlWriter writer, CheckBoxList_t control)
         {
             string id = WpfControlRenderer.CleanName(control.Id);
+
+            _log.Debug(m => m("Rendering control {0} of type CheckBoxList_t using {1}", control.Id, this.GetType().FullName));
 
             WpfControlRenderer.RenderLabelledControl<CheckBoxList_t>(writer, control, (c, gridCoordinate) =>
             {

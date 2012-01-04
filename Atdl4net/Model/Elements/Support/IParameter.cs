@@ -1,4 +1,4 @@
-#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
+#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //

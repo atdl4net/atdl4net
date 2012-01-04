@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -20,6 +20,7 @@
 #endregion
 
 using System;
+using System.Runtime.Serialization;
 
 namespace Atdl4net.Diagnostics.Exceptions
 {
@@ -27,6 +28,12 @@ namespace Atdl4net.Diagnostics.Exceptions
     [Serializable]
     public class Atdl4netException : System.Exception
     {
+        /// <summary>Initializes a new instance of the Atdl4netException class; for serialization purposes only.</summary>
+        protected Atdl4netException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+
         /// <summary>Initializes a new instance of the Atdl4netException class with a specified error message.</summary>
         public Atdl4netException(string message)
             : base(message)

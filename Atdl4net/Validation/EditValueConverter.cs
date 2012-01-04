@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -49,8 +49,9 @@ namespace Atdl4net.Validation
         /// <exception cref="FormatException">Thrown if the value cannot be converted into a valid numeric type.</exception>
         public static IComparable ConvertToComparableType(object typeInstanceToMatch, string value)
         {
+            // If we don't have a valid type to convert to, then best leave the value alone.
             if (typeInstanceToMatch == null)
-                return null;
+                return value;
 
             string type = typeInstanceToMatch.GetType().FullName;
 

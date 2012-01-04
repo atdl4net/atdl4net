@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Cornerstone Technology Limited. http://atdl4net.org
+﻿#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
 //
 //   This software is released under both commercial and open-source licenses.
 //
@@ -18,12 +18,12 @@
 //      http://www.gnu.org/licenses/.
 //
 #endregion
+
 using System;
 using System.Globalization;
 using System.Linq;
 using Atdl4net.Diagnostics;
 using Atdl4net.Diagnostics.Exceptions;
-using Atdl4net.Model.Elements;
 using Atdl4net.Model.Elements.Support;
 using Atdl4net.Model.Types.Support;
 using Atdl4net.Resources;
@@ -34,7 +34,7 @@ namespace Atdl4net.Model.Controls.Support
     /// <summary>
     /// Represents control elements within FIXatdl that can optionally contain numeric values.
     /// </summary>
-    public class NumericControlBase : Control_t, IParameterConvertible
+    public class NumericControlBase : InitializableControl<decimal?>
     {
         private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Controls");
 
@@ -52,19 +52,41 @@ namespace Atdl4net.Model.Controls.Support
         {
         }
 
-        /// <summary>The value used to pre-populate the GUI component when the order entry screen is initially rendered.</summary>
-        public decimal? InitValue { get; set; }
-
-        #region Control_t Overrides
+        #region InitializableControl<T> Overrides
 
         /// <summary>
-        /// Loads the InitValue for this control into the control value.
+        /// Attempts to load the supplied FIX field value into this control.
         /// </summary>
-        public override void LoadDefault()
+        /// <param name="value">Value to set this control to.</param>
+        /// <returns>true if it was possible to set the value of this control using the supplied value; false otherwise.</returns>
+        protected override bool LoadDefaultFromFixValue(string value)
         {
-            if (InitValue != null)
-                _value = InitValue;
+            try
+            {
+                _value = Convert.ToDecimal(value, CultureInfo.InvariantCulture);
+
+                return true;
+            }
+            catch (FormatException)
+            {
+                _log.ErrorFormat("Unable to set control {0} to value '{0}' as the value could not be converted to a valid number", Id, value);
+
+                return false;
+            }
         }
+
+        /// <summary>
+        /// Loads this control with any supplied InitValue. If InitValue is not supplied, then control value will
+        /// be set to default/empty value.
+        /// </summary>
+        protected override void LoadDefaultFromInitValue()
+        {
+            _value = InitValue;
+        }
+
+        #endregion
+
+        #region Control_t Overrides
 
         /// <summary>
         /// Gets the value of this control.  May be null.
