@@ -337,19 +337,7 @@
     <Compile Include=".\Wpf\AtdlControl.xaml.cs">
       <DependentUpon>AtdlControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include=".\Wpf\ViewModel\ControlWrapper.cs">
-    </Compile>
-    <Compile Include=".\Wpf\ViewModel\EditWrapper.cs">
-    </Compile>
-    <Compile Include=".\Wpf\ViewModel\ListControlWrapper.cs">
-    </Compile>
-    <Compile Include=".\Wpf\ViewModel\ListItemWrapper.cs">
-    </Compile>
     <Compile Include=".\Wpf\ViewModel\RadioButtonGroupManager.cs">
-    </Compile>
-    <Compile Include=".\Wpf\ViewModel\RadioButtonWrapper.cs">
-    </Compile>
-    <Compile Include=".\Wpf\ViewModel\StateRuleWrapper.cs">
     </Compile>
     <Compile Include=".\Wpf\ViewModel\StrategyViewModel.cs">
     </Compile>
@@ -521,7 +509,14 @@
     <Compile Include="Validation\EditValueConverter.cs" />
     <Compile Include="Validation\IValueProvider.cs" />
     <Compile Include="Validation\ValidationResult.cs" />
-    <Compile Include="Wpf\ViewModel\StrategyEditWrapper.cs" />
+    <Compile Include="Wpf\ViewModel\ControlViewModel.cs" />
+    <Compile Include="Wpf\ViewModel\EditViewModel.cs" />
+    <Compile Include="Wpf\ViewModel\IInitialValueProvider.cs" />
+    <Compile Include="Wpf\ViewModel\ListControlViewModel.cs" />
+    <Compile Include="Wpf\ViewModel\ListItemViewModel.cs" />
+    <Compile Include="Wpf\ViewModel\RadioButtonViewModel.cs" />
+    <Compile Include="Wpf\ViewModel\StateRuleViewModel.cs" />
+    <Compile Include="Wpf\ViewModel\StrategyEditViewModel.cs" />
     <Compile Include="Wpf\ViewModel\ViewModelStrategyEditCollection.cs" />
     <Compile Include="Xml\Serialization\ValueConverter.cs" />
   </ItemGroup>
