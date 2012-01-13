@@ -112,19 +112,19 @@ namespace Atdl4net.Wpf.ViewModel
         #region IBindable<ViewControlCollection> Members
 
         // TODO: Provide a means to unbind (probably through dispose)
-        void IBindable<ViewModelControlCollection>.Bind(ViewModelControlCollection target)
+        void IBindable<ViewModelControlCollection>.Bind(ViewModelControlCollection controls)
         {
             if (_edits != null && _edits.Count > 0)
             {
-                (_edits as IBindable<ViewModelControlCollection>).Bind(target);
+                (_edits as IBindable<ViewModelControlCollection>).Bind(controls);
             }
             else
             {
                 if (!string.IsNullOrEmpty(_underlyingEdit.Field))
                 {
-                    if (target.Contains(_underlyingEdit.Field))
+                    if (controls.Contains(_underlyingEdit.Field))
                     {
-                        ControlViewModel targetControl = target[_underlyingEdit.Field];
+                        ControlViewModel targetControl = controls[_underlyingEdit.Field];
 
                         (targetControl as INotifyValueChanged).ValueChanged += new EventHandler<ValueChangedEventArgs>(OnFieldValueChanged);
                     }
@@ -134,9 +134,9 @@ namespace Atdl4net.Wpf.ViewModel
 
                 if (!string.IsNullOrEmpty(_underlyingEdit.Field2))
                 {
-                    if (target.Contains(_underlyingEdit.Field2))
+                    if (controls.Contains(_underlyingEdit.Field2))
                     {
-                        ControlViewModel targetControl = target[_underlyingEdit.Field2];
+                        ControlViewModel targetControl = controls[_underlyingEdit.Field2];
 
                         (targetControl as INotifyValueChanged).ValueChanged += new EventHandler<ValueChangedEventArgs>(OnField2ValueChanged);
                     }

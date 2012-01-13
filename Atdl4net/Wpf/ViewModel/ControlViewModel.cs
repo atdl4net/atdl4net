@@ -65,6 +65,7 @@ namespace Atdl4net.Wpf.ViewModel
     {
         private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Wpf.ViewModel");
 
+        private bool _currentlyEvaluating = false;
         private bool _visible = true;
         private bool _enabled = true;
         private bool _firstValidationStateChangeNotification = true;
@@ -121,7 +122,7 @@ namespace Atdl4net.Wpf.ViewModel
         /// <param name="control">Underlying Control_t for this ControlViewModel.</param>
         /// <param name="mode">Data entry mode (create/amend/view).</param>
         /// <returns></returns>
-        public static ControlViewModel Create(Strategy_t underlyingStrategy, Control_t control, DataEntryMode mode)
+        public static ControlViewModel Create(Strategy_t underlyingStrategy, Control_t control, IInitialValueProvider initialValueProvider, DataEntryMode mode)
         {
             IParameter referencedParameter = null;
 
@@ -148,7 +149,7 @@ namespace Atdl4net.Wpf.ViewModel
                 controlViewModel = new ControlViewModel(control, referencedParameter, mode);
 
             controlViewModel._stateRules = new ViewModelStateRuleCollection(controlViewModel, control.StateRules);
-            controlViewModel._fixFieldValues = new FixFieldValueProvider(underlyingStrategy.InputValues, underlyingStrategy.Parameters);
+            controlViewModel._fixFieldValues = new FixFieldValueProvider(initialValueProvider, underlyingStrategy.Parameters);
 
             return controlViewModel;
         }
@@ -205,7 +206,6 @@ namespace Atdl4net.Wpf.ViewModel
 
                     UnderlyingControl.SetValue(value);
 
-                    NotifyPropertyChanged("UiValue");
                     NotifyValueChanged(oldValue, value);
                 }
             }
@@ -274,7 +274,7 @@ namespace Atdl4net.Wpf.ViewModel
         /// Indicates whether this control value is currently valid, according to the StrategyEdits
         /// attached to the parent strategy and the control validations.
         /// </summary>
-        public bool IsValid { get { return !_validationState.CurrentState; } }
+        public bool IsValid { get { return _validationState.CurrentState; } }
 
         /// <summary>
         /// Resets the state of this ControlViewModel, i.e., Enabled = true, Visible = true;
@@ -293,6 +293,11 @@ namespace Atdl4net.Wpf.ViewModel
             _log.Debug(m => m("Refreshing state for control with ID {0}", Id));
 
             _stateRules.RefreshState();
+
+            if (_referencedParameter != null && _referencedParameter.IsSet)
+                NotifyValueChanged(null, UnderlyingControl.GetCurrentValue());
+            else
+                RefreshUiState(true);
         }
 
         /// <summary>
@@ -328,6 +333,8 @@ namespace Atdl4net.Wpf.ViewModel
         {
             _log.Debug(m => m("Control {0} value changed from '{1}' to '{2}'", Id, oldValue, newValue));
 
+            NotifyPropertyChanged("UiValue");
+
             EventHandler<ValueChangedEventArgs> valueChanged = ValueChanged;
 
             if (valueChanged != null)
@@ -344,46 +351,72 @@ namespace Atdl4net.Wpf.ViewModel
         /// notification must happen once the value change has been completely processed.</remarks>
         protected virtual void OnValueChangeCompleted()
         {
-            EventHandler<ValueChangeCompletedEventArgs> valueChangeCompleted = ValueChangeCompleted;
-
-            if (valueChangeCompleted != null)
-                valueChangeCompleted(this, new ValueChangeCompletedEventArgs(this));
-
-            bool previousState = _validationState.CurrentState;
-
-            _validationState.Evaluate(_fixFieldValues);
-
-            bool newState = _validationState.CurrentState;
-
-            // We always notify the first state change notification even if the state hasn't changed from the default value (true)
-            if (_firstValidationStateChangeNotification || previousState != newState)
+            try
             {
-                _firstValidationStateChangeNotification = false;
+                _currentlyEvaluating = true;
 
-                NotifyValidationStateChanged(newState);
+                bool previousState = _validationState.CurrentState;
+
+                _log.Debug(m => m("Processing value change completed; validation state ahead of evaluation is {0}", previousState.ToString().ToLower()));
+
+                EventHandler<ValueChangeCompletedEventArgs> valueChangeCompleted = ValueChangeCompleted;
+
+                if (valueChangeCompleted != null)
+                    valueChangeCompleted(this, new ValueChangeCompletedEventArgs(this));
+
+                _validationState.Evaluate(_fixFieldValues);
+
+                bool newState = _validationState.CurrentState;
+
+                // We always notify the first state change notification even if the state hasn't changed from the default value (true)
+                if (_firstValidationStateChangeNotification || previousState != newState)
+                {
+                    _log.Debug(m => m("Notifying validation state change; was {0}, now is {1}", previousState.ToString().ToLower(), newState.ToString().ToLower()));
+
+                    _firstValidationStateChangeNotification = false;
+
+                    NotifyValidationStateChanged(newState);
+                }
+
+                RefreshUiState(false);
             }
-
-            // In case the validation state ErrorText has changed...
-            NotifyPropertyChanged("ToolTip");
+            finally
+            {
+                _currentlyEvaluating = false;
+            }
         }
 
         private void NotifyValidationStateChanged(bool isValid)
         {
-            EventHandler<ValidationStateChangedEventArgs>validationStateChanged = ValidationStateChanged;
+            EventHandler<ValidationStateChangedEventArgs> validationStateChanged = ValidationStateChanged;
 
-            if (validationStateChanged !=null)
+            if (validationStateChanged != null)
                 validationStateChanged(this, new ValidationStateChangedEventArgs(Id, isValid));
         }
 
         private void StrategyEditStateChanged(object sender, Notification.StateChangedEventArgs e)
         {
-            // In case the validation state ErrorText has changed...
-            NotifyPropertyChanged("UiValue");
-            NotifyPropertyChanged("ToolTip");
-
             StrategyEditViewModel strategyEdit = sender as StrategyEditViewModel;
 
-            _log.Debug(m => m("Control {0}: {1} {2} {3}", Id, strategyEdit.InternalId, e.OldState, e.NewState));
+            _log.Debug(m => m("StrategyEdit ({0}) state changed for control {1}; was {2}, now is {3}",
+                strategyEdit.InternalId, Id, e.OldState.ToString().ToLower(), e.NewState.ToString().ToLower()));
+
+            // To save the property changed notifications being raised multiple times during and evaluation,
+            // ignore this event if that is what we're doing.  (The primary purpose of this event is to handle
+            // the scenario where another control is changing value.)
+            if (!_currentlyEvaluating)
+                RefreshUiState(false);
+            else
+                _log.Debug("Ignoring StrategyEdit change notification as this control's value change is currently being processed");
+        }
+
+        private void RefreshUiState(bool includeValue)
+        {
+            NotifyPropertyChanged("IsValid");
+            NotifyPropertyChanged("ToolTip");
+
+            if (includeValue)
+                NotifyPropertyChanged("UiValue");
         }
 
         internal void BindStrategyEdit(StrategyEditViewModel strategyEditViewModel)

@@ -61,6 +61,11 @@ namespace Atdl4net.Model.Types.Support
         #region IParameterType Members
 
         /// <summary>
+        /// Indicates whether this parameter has been set to a value other than null.
+        /// </summary>
+        public bool IsSet { get { return (ConstValue ?? _value) != null; } }
+
+        /// <summary>
         /// Gets the value of this parameter as seen by the Control_t that references it.  May be null if the 
         /// parameter has no value, for example if it has explicitly been set via a state rule to {NULL}.
         /// </summary>

@@ -38,7 +38,6 @@ namespace Atdl4net.Model.Elements
     {
         private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Elements");
 
-        private FixFieldValueProvider _inputValues;
         private readonly ReadOnlyControlCollection _controls;
         private readonly StrategyEditCollection _strategyEdits = new StrategyEditCollection();
         private readonly ParameterCollection _parameters = new ParameterCollection();
@@ -88,23 +87,6 @@ namespace Atdl4net.Model.Elements
         public string ImageLocation { get; set; }
 
         /// <summary>
-        /// Gets/sets the input FIX values to be used when populating this Strategy, using the FIX_ mechanism.
-        /// </summary>
-        public FixTagValuesCollection InputValues
-        {
-            get { return _inputValues != null ? _inputValues.FixValues : null; }
-
-            set
-            {
-                _inputValues = new FixFieldValueProvider(value, Parameters);
-
-                Parameters.InitializeValues(value);
-
-                Controls.UpdateValuesFromParameters(Parameters, _inputValues);
-            }
-        }
-
-        /// <summary>
         /// This element defines the markets/exchanges (by ISO 10383 MIC Code) to which the strategy is applicable. If no 
         /// Markets element is defined then the strategy is applicable for ALL markets. If a market is defined and has its 
         /// 'inclusion' attribute set to "Include", then it is implied that the strategy is applicable for ONLY that market.  
@@ -129,55 +111,6 @@ namespace Atdl4net.Model.Elements
         /// Gets/sets the tag which contains the sequence number of a particular order of a basket.
         /// </summary>
         public FixTag? OrderSequenceTag { get; set; }
-
-        /// <summary>
-        /// Gets the output FIX tags and values based on the current state of the Strategy.  Note that if any StrategyEdit is
-        /// invalid, then a <see cref="ValidationException"/> is thrown.
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="ValidationException">Thrown if any StrategyEdit is invalid.</exception>
-        public FixTagValuesCollection GetOutputValues()
-        {
-            IList<ValidationResult> validationResults;
-
-            if (!Controls.TryUpdateParameterValues(Parameters, false, out validationResults))
-            {
-                StringBuilder sb = new StringBuilder();
-
-                foreach (ValidationResult result in validationResults)
-                    sb.AppendFormat("{0}\n", result.ErrorText);
-
-                string errorText = sb.ToString();
-
-                throw ThrowHelper.New<InvalidFieldValueException>(this, sb.ToString().Substring(0, errorText.Length - 1));
-            }
-
-            if (!StrategyEdits.ValidateAll(_inputValues == null ? FixFieldValueProvider.Empty : _inputValues, false))
-            {
-                StringBuilder sb = new StringBuilder();
-
-                foreach (StrategyEdit_t strategyEdit in (from se in StrategyEdits where !se.CurrentState select se))
-                    sb.AppendFormat("{0}\n", strategyEdit.ErrorMessage);
-
-                string errorText = sb.ToString();
-
-                throw ThrowHelper.New<ValidationException>(this, sb.ToString().Substring(0, errorText.Length - 1));
-            }
-
-            FixTagValuesCollection fixTagValues = Parameters.GetOutputValues();
-
-            if (Parent != null)
-            {
-                fixTagValues.Add(Parent.StrategyIdentifierTag, WireValue);
-
-                if (Parent.VersionIdentifierTag != null)
-                    fixTagValues.Add((FixTag)Parent.VersionIdentifierTag, Version);
-            }
-
-            _log.Debug(m => m("Strategy_t.GetOutputValues() returning: {0}", fixTagValues.ToString()));
-
-            return fixTagValues;
-        }
 
         /// <summary>
         /// Gets the collection of Parameters for this Strategy.

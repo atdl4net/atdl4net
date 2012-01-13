@@ -234,6 +234,15 @@ namespace Atdl4net.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The value supplied for this date or time field could not be interpreted as a valid date or time..
+        /// </summary>
+        internal static string InvalidDateOrTimeValueUnknown {
+            get {
+                return ResourceManager.GetString("InvalidDateOrTimeValueUnknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Exchange codes must conform to the ISO 10383 standard, i.e., be 4 characters in length.
         /// </summary>
         internal static string InvalidExchangeCode {
@@ -428,6 +437,15 @@ namespace Atdl4net.Resources {
         internal static string NoStrategyPanelsInStrategy {
             get {
                 return ResourceManager.GetString("NoStrategyPanelsInStrategy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The current operation cannot be completed as no strategy has been selected..
+        /// </summary>
+        internal static string NoStrategySelectedError {
+            get {
+                return ResourceManager.GetString("NoStrategySelectedError", resourceCulture);
             }
         }
         

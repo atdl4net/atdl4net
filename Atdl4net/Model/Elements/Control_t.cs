@@ -136,7 +136,8 @@ namespace Atdl4net.Model.Elements
         #region IValueProvider Members
 
         /// <summary>
-        /// Gets the current value of this control, for use in Edits as part of StateRules.
+        /// Gets the current value of this control, for use in Edits as part of StateRules but also used internally in the
+        /// View Model.
         /// </summary>
         /// <returns>Current value of this control; may be null.</returns>
         public abstract object GetCurrentValue();
@@ -161,7 +162,7 @@ namespace Atdl4net.Model.Elements
         /// value of the specified fix tag then revert to using initValue. If the value is equal to "UseFixField", the field is not accessible,
         /// and initValue is not defined, then do not initialize.</remarks>
         public abstract void LoadDefault(FixFieldValueProvider controlInitValueProvider);
-        
+
         #endregion
 
         #region IParentable<StrategyPanel_t> Members

@@ -31,6 +31,9 @@ namespace Atdl4net.Wpf.ViewModel
     /// </summary>
     public class StrategyViewModel : IDisposable
     {
+        public const string ComboBoxSizerKey = "atdl4netComboBoxSizerKey";
+        public const string DataContextKey = "atdl4netViewModelKey";
+
         private bool _disposed;
 
         /// <summary>
@@ -43,11 +46,11 @@ namespace Atdl4net.Wpf.ViewModel
         /// </summary>
         /// <param name="strategy"><see cref="Strategy_t"/> for this View Model.</param>
         /// <param name="mode">Data entry mode.</param>
-        public StrategyViewModel(Strategy_t strategy, DataEntryMode mode)
+        public StrategyViewModel(Strategy_t strategy, IInitialValueProvider initialValueProvider, DataEntryMode mode)
         {
-            Controls = new ViewModelControlCollection(strategy, mode);
+            Controls = new ViewModelControlCollection(strategy, initialValueProvider, mode);
 
-            Controls.RefreshState();
+            //Controls.RefreshState();
         }
 
         #region IDisposable Members and support

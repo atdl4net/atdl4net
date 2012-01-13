@@ -144,6 +144,12 @@ namespace Atdl4net.Model.Elements
         public Use_t Use { get; set; }
 
         /// <summary>
+        /// Indicates whether this parameter has been set to a value other than null.
+        /// </summary>
+        public bool IsSet { get { return _value.IsSet; } }
+
+
+        /// <summary>
         /// Gets the value of this parameter as seen by the Control_t that references it.  May be null if the 
         /// parameter has no value, for example if it has explicitly been set via a state rule to {NULL}.
         /// </summary>

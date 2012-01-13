@@ -369,6 +369,7 @@
     <Compile Include="Validation\EditValueConverter.cs" />
     <Compile Include="Validation\ControlValidationState.cs" />
     <Compile Include="Validation\ValidationResult.cs" />
+    <Compile Include="Wpf\ViewModel\IInitialValueProvider.cs" />
     <Compile Include="Wpf\ViewModel\StrategyEditViewModel.cs" />
     <Compile Include="Wpf\ViewModel\ViewModelStrategyEditCollection.cs" />
     <Compile Include="Xml\Serialization\ValueConverter.cs">

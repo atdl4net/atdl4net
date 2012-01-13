@@ -85,5 +85,10 @@ namespace Atdl4net.Model.Types.Support
         /// Resets this parameter value to its default state.
         /// </summary>
         void Reset();
+
+        /// <summary>
+        /// Indicates whether this parameter value has been set to a value other than null.
+        /// </summary>
+        bool IsSet { get; }
     }
 }

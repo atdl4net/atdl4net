@@ -22,6 +22,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Atdl4net.Fix;
 using Atdl4net.Model.Elements;
 using Atdl4net.Notification;
 using Atdl4net.Utility;
@@ -78,11 +79,11 @@ namespace Atdl4net.Wpf.ViewModel
         /// </summary>
         /// <param name="strategy">Strategy that the underlying controls belong to.</param>
         /// <param name="mode">Data entry mode.</param>
-        public ViewModelControlCollection(Strategy_t strategy, DataEntryMode mode)
+        public ViewModelControlCollection(Strategy_t strategy, IInitialValueProvider initialValueProvider, DataEntryMode mode)
         {
             foreach (Control_t control in strategy.Controls)
             {
-                ControlViewModel controlViewModel = ControlViewModel.Create(strategy, control, mode);
+                ControlViewModel controlViewModel = ControlViewModel.Create(strategy, control, initialValueProvider, mode);
 
                 Add(controlViewModel);
 

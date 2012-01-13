@@ -36,10 +36,9 @@ namespace Atdl4net.Validation
     {
         private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Validation");
 
-        private bool _currentState;
+        private ValidationResult _parameterValidationResult;
         private readonly string _controlId;
         private readonly List<StrategyEditViewModel> _strategyEdits = new List<StrategyEditViewModel>();
-        private ValidationResult _parameterValidationResult;
 
         /// <summary>
         /// Initializes a new <see cref="ControlValidationState"/>.
@@ -48,13 +47,25 @@ namespace Atdl4net.Validation
         public ControlValidationState(string controlId)
         {
             _controlId = controlId;
-            _currentState = true;
         }
 
         /// <summary>
         /// Gets the current state of this set of StrategyEdits.
         /// </summary>
-        public bool CurrentState { get { return _currentState; } }
+        /// <remarks>The state cannot be cached within this class as it depends on the states of each
+        /// StrategyEdit, which may have changed since our Evaluate method was called.</remarks>
+        public bool CurrentState
+        {
+            get
+            {
+                bool state = (_parameterValidationResult == null || _parameterValidationResult.IsValid);
+
+                foreach (StrategyEditViewModel strategyEdit in _strategyEdits)
+                    state &= strategyEdit.CurrentState;
+
+                return state;
+            }
+        }
 
         /// <summary>
         /// Used to hold the results obtained from the parameter set and validation operation.
@@ -83,19 +94,20 @@ namespace Atdl4net.Validation
         /// Evaluates all the <see cref="StrategyEdit_t"/>s for this control.
         /// </summary>
         /// <param name="additionalValues">Any additional FIX field values that may be required in the Edit evaluation.</param>
+        /// <remarks>See <see cref="CurrentState"/> for an explanation of why we don't cache the state locally within the class.</remarks>
         public void Evaluate(FixFieldValueProvider additionalValues)
         {
-            _log.Debug(m => m("Evaluating ValidationState for control {0}, CurrentState = {1}", _controlId, _currentState.ToString().ToLower()));
+            _log.Debug(m => m("Evaluating ValidationState for control {0}, CurrentState = {1}", _controlId, CurrentState.ToString().ToLower()));
 
             // Evaluating the StrategyEdits may give us meaningless information if the parameter value
             // didn't validate, but we go ahead and do it anyway because failing to do leaves us in an
             // indeterminate state from this value change.
-            _currentState = _parameterValidationResult == null || _parameterValidationResult.IsValid;
+            bool state = (_parameterValidationResult == null || _parameterValidationResult.IsValid);
 
             foreach (StrategyEditViewModel strategyEdit in _strategyEdits)
-                _currentState &= strategyEdit.Evaluate(additionalValues);
+                state &= strategyEdit.Evaluate(additionalValues);
 
-            _log.Debug(m => m("Evaluated ValidationState for control {0}, CurrentState = {1}", _controlId, _currentState.ToString().ToLower()));
+            _log.Debug(m => m("Evaluated ValidationState for control {0}, CurrentState = {1}", _controlId, state.ToString().ToLower()));
         }
 
         /// <summary>

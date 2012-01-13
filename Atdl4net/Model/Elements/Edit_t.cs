@@ -81,6 +81,7 @@ namespace Atdl4net.Model.Elements
     {
         // Use Atdl4net.Validation namespace rather than Atdl4net.Model.Elements for debugging purposes
         private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Validation");
+        private static readonly bool isPartOfStrategyEdit = typeof(T) == typeof(IParameter);
 
         private bool _currentState;
         private T _fieldSource;
@@ -95,6 +96,10 @@ namespace Atdl4net.Model.Elements
         {
             _edits = new EditEvaluatingCollection<T>();
             _editRefs = new EditRefCollection<T>(_edits);
+
+            // For StrategyEdits, we want to start with the assumption that the current state of this
+            // Edit is true (i.e., valid) before it has been evaluated
+            _currentState = isPartOfStrategyEdit ? true : false;
         }
 
         /// <summary>

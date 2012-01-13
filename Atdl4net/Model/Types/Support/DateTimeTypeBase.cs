@@ -53,10 +53,14 @@ namespace Atdl4net.Model.Types.Support
         /// </summary>
         /// <param name="value">Value to validate, may be null in which case no validation is applied.</param>
         /// <returns>ValidationResult indicating whether the supplied value is valid.</returns>
+        /// <remarks>DateTime.MaxValue (a date and time at the end of the year 9999) is used to indicate an invalid date or time.</remarks>
         protected override ValidationResult ValidateValue(DateTime? value)
         {
             if (value != null)
             {
+                if (value == DateTime.MaxValue)
+                    return new ValidationResult(false, ErrorMessages.InvalidDateOrTimeValueUnknown);
+
                 if (MaxValue != null && (DateTime)value > MaxValue)
                     return new ValidationResult(false, ErrorMessages.MaxValueExceeded, value, MaxValue);
 

@@ -293,4 +293,10 @@
   <data name="DataConversionFailure" xml:space="preserve">
     <value>This value cannot be converted into a valid {0}.</value>
   </data>
+  <data name="NoStrategySelectedError" xml:space="preserve">
+    <value>The current operation cannot be completed as no strategy has been selected.</value>
+  </data>
+  <data name="InvalidDateOrTimeValueUnknown" xml:space="preserve">
+    <value>The value supplied for this date or time field could not be interpreted as a valid date or time.</value>
+  </data>
 </root>

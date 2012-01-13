@@ -22,6 +22,7 @@
 using System.ComponentModel.Composition;
 using Atdl4net.Configuration;
 using Atdl4net.Model.Controls;
+using Atdl4net.Wpf.ViewModel;
 using Common.Logging;
 
 namespace Atdl4net.Wpf.View.DefaultRendering
@@ -47,12 +48,11 @@ namespace Atdl4net.Wpf.View.DefaultRendering
                     writer.WriteAttribute(WpfXmlWriterAttribute.GridColumn, gridCoordinate.Column.ToString());
                     writer.WriteAttribute(WpfXmlWriterAttribute.GridRow, gridCoordinate.Row.ToString());
 
-//                    writer.WriteAttribute(WpfXmlWriterAttribute.Margin, "1");
                     writer.WriteAttribute(WpfXmlWriterAttribute.Margin, "1,3,1,3");
 
                     if (Atdl4netConfiguration.Settings.Wpf.View.AutoSizeDropDowns)
                         writer.WriteAttribute(WpfXmlWriterAttribute.Width,
-                            string.Format("{{Binding Source={{StaticResource {0}}},Path=[{1}]}}", Atdl4net.Wpf.AtdlControl.ComboBoxSizerKey, id));
+                            string.Format("{{Binding Source={{StaticResource {0}}},Path=[{1}]}}", StrategyViewModel.ComboBoxSizerKey, id));
 
                     writer.WriteAttribute(WpfXmlWriterAttribute.IsEditable, "True");
 

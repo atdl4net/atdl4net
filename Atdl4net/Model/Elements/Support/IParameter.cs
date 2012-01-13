@@ -117,5 +117,10 @@ namespace Atdl4net.Model.Elements.Support
         /// Gets/sets the wire value of this parameter.
         /// </summary>
         string WireValue { get; set; }
+
+        /// <summary>
+        /// Indicates whether this parameter has been set to a value other than null.
+        /// </summary>
+        bool IsSet { get; }
     }
 }

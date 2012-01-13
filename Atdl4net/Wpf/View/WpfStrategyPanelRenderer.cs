@@ -19,13 +19,6 @@
 //
 #endregion
 
-using Atdl4net.Diagnostics.Exceptions;
-using Atdl4net.Model.Collections;
-using Atdl4net.Model.Elements;
-using Atdl4net.Model.Enumerations;
-using Atdl4net.Resources;
-using Atdl4net.Utility;
-using Atdl4net.Wpf.View.DefaultRendering;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -34,41 +27,26 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Xml;
+using Atdl4net.Diagnostics.Exceptions;
+using Atdl4net.Model.Collections;
+using Atdl4net.Model.Elements;
+using Atdl4net.Model.Enumerations;
+using Atdl4net.Resources;
+using Atdl4net.Utility;
+using Atdl4net.Wpf.View.DefaultRendering;
+using Atdl4net.Wpf.ViewModel;
 using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 
 namespace Atdl4net.Wpf.View
 {
-    public class WpfStrategyPanelRenderer
+    public static class WpfStrategyPanelRenderer
     {
         public const string ExceptionContext = "WpfStrategyPanelRenderer";
 
-        public static readonly string AtdlDataContext = string.Format("{0}StaticResource {1}{2}", "{", Atdl4net.Wpf.AtdlControl.DataContextKey, "}");
+        public static readonly string AtdlDataContext = string.Format("{0}StaticResource {1}{2}", "{", StrategyViewModel.DataContextKey, "}");
         public static readonly string CollapsedVisibility = Enum.GetName(typeof(Visibility), Visibility.Collapsed);
         public static readonly string VisibleVisibility = Enum.GetName(typeof(Visibility), Visibility.Visible);
-
-        public static string CustomControlRenderer { get; set; }
-
-        public WpfStrategyPanelRenderer()
-        { 
-        }
-
-        public static void Render(Strategy_t strategy, XmlWriter writer, WpfComboBoxSizer sizer)
-        {
-            if (strategy.StrategyLayout == null)
-                throw ThrowHelper.New<RenderingException>(ExceptionContext, ErrorMessages.NoStrategyLayoutSupplied);
-
-            StrategyPanel_t rootPanel = strategy.StrategyLayout.StrategyPanel;
-
-            if (rootPanel == null)
-                throw ThrowHelper.New<RenderingException>(ExceptionContext, ErrorMessages.NoStrategyPanelsInStrategy);
-
-            WpfXmlWriter wpfWriter = new WpfXmlWriter(writer);
-
-            // TODO: Move this somewhere better
-            WpfControlRenderer controlRenderer = new WpfControlRenderer(wpfWriter, sizer);
-
-            // TODO: Move this elsewhere
-            System.Type[] defaultRenderers = new System.Type[] {
+        private static readonly Type[] _defaultRenderers = new Type[] {
                 typeof(DefaultRendering.DefaultNamespaceProvider),
                 typeof(DefaultRendering.CheckBoxListRenderer),
                 typeof(DefaultRendering.CheckBoxRenderer),
@@ -86,7 +64,26 @@ namespace Atdl4net.Wpf.View
                 typeof(DefaultRendering.SliderRenderer),
                 typeof(DefaultRendering.TextFieldRenderer) };
 
-            CompositionContainer defaultContainer = new CompositionContainer(new TypeCatalog(defaultRenderers));
+        public static string CustomControlRenderer { get; set; }
+
+        public static void Render(Strategy_t strategy, XmlWriter writer, WpfComboBoxSizer sizer)
+        {
+            if (strategy.StrategyLayout == null)
+                throw ThrowHelper.New<RenderingException>(ExceptionContext, ErrorMessages.NoStrategyLayoutSupplied);
+
+            StrategyPanel_t rootPanel = strategy.StrategyLayout.StrategyPanel;
+
+            if (rootPanel == null)
+                throw ThrowHelper.New<RenderingException>(ExceptionContext, ErrorMessages.NoStrategyPanelsInStrategy);
+
+            WpfXmlWriter wpfWriter = new WpfXmlWriter(writer);
+
+            // TODO: Move this somewhere better
+            WpfControlRenderer controlRenderer = new WpfControlRenderer(wpfWriter, sizer);
+
+            // TODO: Move this elsewhere
+
+            CompositionContainer defaultContainer = new CompositionContainer(new TypeCatalog(_defaultRenderers));
 
             if (!string.IsNullOrEmpty(CustomControlRenderer))
             {

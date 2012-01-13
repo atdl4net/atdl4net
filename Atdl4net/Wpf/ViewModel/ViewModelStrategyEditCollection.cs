@@ -52,8 +52,8 @@ namespace Atdl4net.Wpf.ViewModel
                 Add(strategyEditViewModel);
 
                 strategyEditViewModel.Bind(from c in _controls 
-                                         where c.ParameterRef != null && strategyEdit.Sources.Contains(c.ParameterRef) 
-                                         select c);
+                                           where c.ParameterRef != null && strategyEdit.Sources.Contains(c.ParameterRef) 
+                                           select c);
             }
         }
 
