@@ -75,6 +75,8 @@ namespace Atdl4net.Model.Types.Support
         /// <param name="hostParameter"><see cref="IParameter"/> that hosts this value.</param>
         /// <param name="value">Value to convert, may be null.</param>
         /// <returns>If input value is not null, returns value converted to T?; null otherwise.</returns>
+        /// <remarks>Used when setting a parameter value from a control (or anything else that
+        /// implements <see cref="IParameterConvertible"/>).</remarks>
         protected override uint? ConvertToNativeType(IParameter hostParameter, IParameterConvertible value)
         {
             return value.ToUInt32(hostParameter, CultureInfo.CurrentUICulture);

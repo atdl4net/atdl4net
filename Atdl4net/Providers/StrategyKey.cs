@@ -25,7 +25,7 @@ namespace Atdl4net.Providers
 {
     public class StrategyKey
     {
-        private Guid _key = Guid.NewGuid();
+        private readonly Guid _key = Guid.NewGuid();
 
         public override string ToString()
         {

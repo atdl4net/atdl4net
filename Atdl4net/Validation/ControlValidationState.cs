@@ -37,8 +37,8 @@ namespace Atdl4net.Validation
         private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Validation");
 
         private bool _currentState;
-        private readonly string _controlId; 
-        private readonly List<StrategyEditWrapper> _strategyEdits = new List<StrategyEditWrapper>();
+        private readonly string _controlId;
+        private readonly List<StrategyEditViewModel> _strategyEdits = new List<StrategyEditViewModel>();
         private ValidationResult _parameterValidationResult;
 
         /// <summary>
@@ -62,19 +62,19 @@ namespace Atdl4net.Validation
         public ValidationResult ParameterValidationResult { set { _parameterValidationResult = value; } }
 
         /// <summary>
-        /// Adds the supplied StrategyEditWrapper to this <see cref="ControlValidationState"/>.
+        /// Adds the supplied StrategyEditViewModel to this <see cref="ControlValidationState"/>.
         /// </summary>
-        /// <param name="strategyEdit"><see cref="StrategyEditWrapper"/> to add to this <see cref="ControlValidationState"/>.</param>
-        public void Add(StrategyEditWrapper strategyEdit)
+        /// <param name="strategyEdit"><see cref="StrategyEditViewModel"/> to add to this <see cref="ControlValidationState"/>.</param>
+        public void Add(StrategyEditViewModel strategyEdit)
         {
             _strategyEdits.Add(strategyEdit);
         }
 
         /// <summary>
-        /// Removes the supplied StrategyEditWrapper from this <see cref="ControlValidationState"/>.
+        /// Removes the supplied StrategyEditViewModel from this <see cref="ControlValidationState"/>.
         /// </summary>
-        /// <param name="strategyEdit"><see cref="StrategyEditWrapper"/> to remove from this <see cref="ControlValidationState"/>.</param>
-        public void Remove(StrategyEditWrapper strategyEdit)
+        /// <param name="strategyEdit"><see cref="StrategyEditViewModel"/> to remove from this <see cref="ControlValidationState"/>.</param>
+        public void Remove(StrategyEditViewModel strategyEdit)
         {
             _strategyEdits.Remove(strategyEdit);
         }
@@ -92,7 +92,7 @@ namespace Atdl4net.Validation
             // indeterminate state from this value change.
             _currentState = _parameterValidationResult == null || _parameterValidationResult.IsValid;
 
-            foreach (StrategyEditWrapper strategyEdit in _strategyEdits)
+            foreach (StrategyEditViewModel strategyEdit in _strategyEdits)
                 _currentState &= strategyEdit.Evaluate(additionalValues);
 
             _log.Debug(m => m("Evaluated ValidationState for control {0}, CurrentState = {1}", _controlId, _currentState.ToString().ToLower()));
@@ -107,7 +107,7 @@ namespace Atdl4net.Validation
             {
                 StringBuilder sb = new StringBuilder();
 
-                IEnumerable<StrategyEditWrapper> strategyEditsInError = from s in _strategyEdits where !s.CurrentState select s;
+                IEnumerable<StrategyEditViewModel> strategyEditsInError = from s in _strategyEdits where !s.CurrentState select s;
 
                 int count = strategyEditsInError.Count();
 
@@ -119,7 +119,7 @@ namespace Atdl4net.Validation
                         sb.AppendLine();
                 }
 
-                foreach (StrategyEditWrapper strategyEdit in (from s in _strategyEdits where !s.CurrentState select s))
+                foreach (StrategyEditViewModel strategyEdit in (from s in _strategyEdits where !s.CurrentState select s))
                 {
                     sb.Append(strategyEdit.ErrorMessage);
 

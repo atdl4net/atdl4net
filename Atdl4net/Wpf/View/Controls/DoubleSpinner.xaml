@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Atdl4net.Wpf.View.Controls"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" Name="controlRoot">
     <UserControl.Resources>
         <Style TargetType="{x:Type RepeatButton}">
@@ -13,7 +14,7 @@
                     <ControlTemplate>
                         <Grid Name="MainGrid" Background="{TemplateBinding Background}">
                             <Viewbox>
-                                <Border BorderBrush="DarkSlateGray" BorderThickness="1" CornerRadius="1" Padding="1">
+                                <Border BorderBrush="LightSlateGray" BorderThickness="0" CornerRadius="1" Padding="1">
                                     <ContentPresenter Margin="{TemplateBinding Control.Padding}"
                                           HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}"
                                           VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}"
@@ -29,7 +30,7 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    <Border BorderThickness="1" BorderBrush="Gray" CornerRadius="1" Background="White" >
+    <Border BorderThickness="0" BorderBrush="LightSlateGray" CornerRadius="1" Background="White" >
         <Grid Width="Auto" Height="Auto" x:Name="rootGrid" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -39,7 +40,8 @@
             <Grid Grid.Column="0" Height="Auto">
                 <local:ClickSelectTextBox x:Name="value" BorderThickness="0" Margin="0,1,0,0" TextAlignment="Left" 
                                         KeyDown="value_KeyDown">
-                    <Binding ElementName="controlRoot" Path="Value" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged"/>
+                    <Binding ElementName="controlRoot" Path="Value" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged"
+                             TargetNullValue="{x:Static sys:String.Empty}"/>
                 </local:ClickSelectTextBox>
             </Grid>
             <Grid Grid.Column="1">
@@ -49,11 +51,11 @@
                 </Grid.RowDefinitions>
                 <RepeatButton Name="innerUpButton" Margin="0,1,1,0" Grid.Row="0" FocusVisualStyle="{x:Null}" Background="GhostWhite" 
                               KeyboardNavigation.IsTabStop="False" Click="innerUpButton_Click" KeyDown="innerUpButton_KeyDown">
-                    <Path Fill="LightSlateGray" Data="M 0 4 L 8 4 L 4 0 Z"/>
+                    <Path Fill="DarkSlateGray" Data="M 0 4 L 8 4 L 4 0 Z"/>
                 </RepeatButton>
                 <RepeatButton Name="innerDownButton" Margin="0,0,1,1" Grid.Row="1" FocusVisualStyle="{x:Null}" Background="GhostWhite"
                               KeyboardNavigation.IsTabStop="False" Click="innerDownButton_Click" KeyDown="innerDownButton_KeyDown" >
-                    <Path Fill="LightSlateGray" Data="M 0 0 L 4 4 L 8 0 Z"/>
+                    <Path Fill="DarkSlateGray" Data="M 0 0 L 4 4 L 8 0 Z"/>
                 </RepeatButton>
             </Grid>
             <Grid Grid.Column="2">
@@ -63,11 +65,11 @@
                 </Grid.RowDefinitions>
                 <RepeatButton Name="outerUpButton" Margin="0,1,1,0" Grid.Row="0" FocusVisualStyle="{x:Null}" Background="GhostWhite" 
                               KeyboardNavigation.IsTabStop="False" Click="outerUpButton_Click" KeyDown="outerUpButton_KeyDown">
-                    <Path Fill="LightSlateGray" Data="M 0 4 L 8 4 L 4 0 Z"/>
+                    <Path Fill="DarkSlateGray" Data="M 0 4 L 8 4 L 4 0 Z"/>
                 </RepeatButton>
                 <RepeatButton Name="outerDownButton" Margin="0,0,1,1" Grid.Row="1" FocusVisualStyle="{x:Null}" Background="GhostWhite"
                               KeyboardNavigation.IsTabStop="False" Click="outerDownButton_Click" KeyDown="outerDownButton_KeyDown" >
-                    <Path Fill="LightSlateGray" Data="M 0 0 L 4 4 L 8 0 Z"/>
+                    <Path Fill="DarkSlateGray" Data="M 0 0 L 4 4 L 8 0 Z"/>
                 </RepeatButton>
             </Grid>
         </Grid>

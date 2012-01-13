@@ -20,7 +20,6 @@
 #endregion
 
 using System;
-using Atdl4net.Diagnostics;
 using Atdl4net.Model.Controls.Support;
 using Atdl4net.Model.Enumerations;
 using Common.Logging;

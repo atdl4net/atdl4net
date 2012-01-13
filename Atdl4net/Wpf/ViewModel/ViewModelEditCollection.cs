@@ -32,17 +32,17 @@ namespace Atdl4net.Wpf.ViewModel
     // TODO: Set up CollectionBase<T> for classes that override Add etc.
     // TODO: Make the collection implement IDisposable so you can clean up eventhandlers etc.
     // TODO: Write about threading model in the documentation
-    public class ViewModelEditCollection : Collection<EditWrapper>, INotifyStateChanged, IBindable<ViewModelControlCollection>
+    public class ViewModelEditCollection : Collection<EditViewModel>, INotifyStateChanged, IBindable<ViewModelControlCollection>
     {
         public ViewModelEditCollection(EditEvaluatingCollection<Control_t> underlyingCollection)
         {
             foreach (IEdit<Control_t> item in underlyingCollection)
             {
-                EditWrapper wrapper = new EditWrapper(item);
+                EditViewModel editViewModel = new EditViewModel(item);
 
-                wrapper.StateChanged  += new EventHandler<StateChangedEventArgs>(OnMemberStateChanged);
+                editViewModel.StateChanged  += new EventHandler<StateChangedEventArgs>(OnMemberStateChanged);
 
-                Add(wrapper);
+                Add(editViewModel);
             }
         }
 

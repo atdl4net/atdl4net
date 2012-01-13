@@ -18,8 +18,8 @@
 //      http://www.gnu.org/licenses/.
 //
 #endregion
+
 using System;
-using System.Collections.Generic;
 using Atdl4net.Model.Elements.Support;
 using Atdl4net.Validation;
 

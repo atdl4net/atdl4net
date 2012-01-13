@@ -27,7 +27,7 @@ namespace Atdl4net.Providers
 {
     public class StrategyInfoCollection : ObservableCollection<StrategyInfo>
     {
-        private Dictionary<StrategyKey, StrategyInfo> _strategyDictionary = new Dictionary<StrategyKey, StrategyInfo>();
+        private readonly Dictionary<StrategyKey, StrategyInfo> _strategyDictionary = new Dictionary<StrategyKey, StrategyInfo>();
 
         protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
         {

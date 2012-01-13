@@ -53,11 +53,6 @@ namespace Atdl4net.Model.Types.Support
         protected T? _value;
 
         /// <summary>
-        /// Human-readable name of this type.
-        /// </summary>
-        protected readonly string _humanReadableTypeName;
-
-        /// <summary>
         /// Gets/sets an optional constant value for this parameter.
         /// </summary>
         /// <value>The const value.</value>
@@ -185,13 +180,21 @@ namespace Atdl4net.Model.Types.Support
         /// <returns>Native parameter value.</returns>
         public virtual object GetNativeValue(bool applyWireValueFormat)
         {
-            return _value;
+            return ConstValue != null ? ConstValue : _value;
         }
 
         /// <summary>
         /// Gets the human-readable name of this type.
         /// </summary>
         public string HumanReadableTypeName { get { return GetHumanReadableTypeName(); } }
+
+        /// <summary>
+        /// Resets this parameter value to its default state.
+        /// </summary>
+        public void Reset()
+        {
+            _value = null;
+        }
 
         #endregion
 
@@ -225,6 +228,8 @@ namespace Atdl4net.Model.Types.Support
         /// <param name="hostParameter"><see cref="IParameter"/> that hosts this value.</param>
         /// <param name="value">Value to convert, may be null.</param>
         /// <returns>If input value is not null, returns value converted to T?; null otherwise.</returns>
+        /// <remarks>Used when setting a parameter value from a control (or anything else that
+        /// implements <see cref="IParameterConvertible"/>).</remarks>
         protected abstract T? ConvertToNativeType(IParameter hostParameter, IParameterConvertible value);
 
         /// <summary>

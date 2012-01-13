@@ -19,6 +19,8 @@
 //
 #endregion
 
+using System.Collections.Generic;
+using System.Linq;
 using Atdl4net.Model.Elements;
 using Atdl4net.Notification;
 using Atdl4net.Xml;
@@ -49,11 +51,16 @@ namespace Atdl4net.Providers
             _strategiesDictionary[context.ProviderId] = strategies;
         }
 
+        public Strategies_t GetStrategiesByProvider(string providerId)
+        {
+            return _strategiesDictionary[providerId];
+        }
+
         public Strategy_t GetStrategyByName(string providerId, string name)
         {
             Strategies_t strategies = _strategiesDictionary[providerId];
 
-            return strategies.Strategies[name];
+            return strategies[name];
         }
 
         #region IStrategyProvider Members

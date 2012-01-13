@@ -18,10 +18,15 @@
 //      http://www.gnu.org/licenses/.
 //
 #endregion
-
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Atdl4net.Diagnostics;
+using Atdl4net.Diagnostics.Exceptions;
 using Atdl4net.Fix;
 using Atdl4net.Model.Collections;
 using Atdl4net.Utility;
+using Atdl4net.Validation;
 using Common.Logging;
 
 namespace Atdl4net.Model.Elements
@@ -95,7 +100,7 @@ namespace Atdl4net.Model.Elements
 
                 Parameters.InitializeValues(value);
 
-                Controls.UpdateValuesFromParameters(_inputValues);
+                Controls.UpdateValuesFromParameters(Parameters, _inputValues);
             }
         }
 
@@ -133,9 +138,31 @@ namespace Atdl4net.Model.Elements
         /// <exception cref="ValidationException">Thrown if any StrategyEdit is invalid.</exception>
         public FixTagValuesCollection GetOutputValues()
         {
-            Controls.UpdateParameterValues(Parameters);
+            IList<ValidationResult> validationResults;
 
-            StrategyEdits.ValidateAll(_inputValues == null ? FixFieldValueProvider.Empty : _inputValues);
+            if (!Controls.TryUpdateParameterValues(Parameters, false, out validationResults))
+            {
+                StringBuilder sb = new StringBuilder();
+
+                foreach (ValidationResult result in validationResults)
+                    sb.AppendFormat("{0}\n", result.ErrorText);
+
+                string errorText = sb.ToString();
+
+                throw ThrowHelper.New<InvalidFieldValueException>(this, sb.ToString().Substring(0, errorText.Length - 1));
+            }
+
+            if (!StrategyEdits.ValidateAll(_inputValues == null ? FixFieldValueProvider.Empty : _inputValues, false))
+            {
+                StringBuilder sb = new StringBuilder();
+
+                foreach (StrategyEdit_t strategyEdit in (from se in StrategyEdits where !se.CurrentState select se))
+                    sb.AppendFormat("{0}\n", strategyEdit.ErrorMessage);
+
+                string errorText = sb.ToString();
+
+                throw ThrowHelper.New<ValidationException>(this, sb.ToString().Substring(0, errorText.Length - 1));
+            }
 
             FixTagValuesCollection fixTagValues = Parameters.GetOutputValues();
 

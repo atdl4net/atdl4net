@@ -33,7 +33,7 @@ namespace Atdl4net.Wpf.ViewModel
     public class RadioButtonGroupManager
     {
         private readonly string _groupName;
-        private readonly List<RadioButtonWrapper> _radioButtonWrappers = new List<RadioButtonWrapper>();
+        private readonly List<RadioButtonViewModel> _radioButtonViewModels = new List<RadioButtonViewModel>();
 
         /// <summary>
         /// Initializes a new instance of <see cref="RadioButtonGroupManager"/> with the specified radio button
@@ -51,25 +51,25 @@ namespace Atdl4net.Wpf.ViewModel
         public string GroupName { get { return _groupName; } }
 
         /// <summary>
-        /// Registers a radio button via its <see cref="RadioButtonWrapper"/> with this RadionButtonGroupManager.
+        /// Registers a radio button via its <see cref="RadioButtonViewModel"/> with this RadionButtonGroupManager.
         /// </summary>
-        /// <param name="radioButtonWrapper">Reference to the RadioButtonWrapper to register.</param>
-        public void RegisterRadioButton(RadioButtonWrapper radioButtonWrapper)
+        /// <param name="radioButtonViewModel">Reference to the RadioButtonViewModel to register.</param>
+        public void RegisterRadioButton(RadioButtonViewModel radioButtonViewModel)
         {
-            _radioButtonWrappers.Add(radioButtonWrapper);
+            _radioButtonViewModels.Add(radioButtonViewModel);
         }
 
         /// <summary>
         /// Updates the states of all radio buttons within the radio button group based on the state of the
-        /// radio button specified by the supplied <see cref="RadioButtonWrapper"/>.
+        /// radio button specified by the supplied <see cref="RadioButtonViewModel"/>.
         /// </summary>
-        /// <param name="activeButtonWrapper"></param>
-        public void UpdateRadioButtons(RadioButtonWrapper activeButtonWrapper)
+        /// <param name="activeButtonViewModel"></param>
+        public void UpdateRadioButtons(RadioButtonViewModel activeButtonViewModel)
         {
-            foreach (RadioButtonWrapper radioButtonWrapper in _radioButtonWrappers)
+            foreach (RadioButtonViewModel radioButtonViewModel in _radioButtonViewModels)
             {
-                if (radioButtonWrapper.Id != activeButtonWrapper.Id)
-                    radioButtonWrapper.UiValue = false;
+                if (radioButtonViewModel.Id != activeButtonViewModel.Id)
+                    radioButtonViewModel.UiValue = false;
             }
         }
     }

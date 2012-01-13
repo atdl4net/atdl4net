@@ -84,12 +84,21 @@ namespace Atdl4net.Model.Types.Support
         }
 
         /// <summary>
-        /// Gets the hash code for this instance.
+        /// Serves as a hash function for this type.  Overridden because Equals(object) is overridden.
         /// </summary>
-        /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
+        /// <returns>A hash code for the current Object.</returns>
+        /// <remarks>The value 251 is used here because it is a prime number, helpful for generating unique hash values.</remarks>
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            unchecked // No issue with int overflow
+            {
+                int hashCode = ((Year * 251) + Month) * 251;
+
+                hashCode = (Day != null) ? (hashCode + (ushort)Day) * 251 : hashCode * 251;
+                hashCode = (Week != null) ? (hashCode + (ushort)Week) * 251 : hashCode * 251;
+
+                return hashCode;
+            }
         }
 
         /// <summary>

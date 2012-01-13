@@ -30,7 +30,7 @@ namespace Atdl4net.Wpf.View
 
         private struct AttributeInformation
         {
-            public string Name;
+            public readonly string Name;
 
             public AttributeInformation(string name)
             {
@@ -40,8 +40,8 @@ namespace Atdl4net.Wpf.View
 
         private struct TagInformation
         {
-            public string Name;
-            public string Namespace;
+            public readonly string Name;
+            public readonly string Namespace;
 
             public TagInformation(string name) : this(name, null) { }
 
@@ -108,7 +108,7 @@ namespace Atdl4net.Wpf.View
 
         #endregion WpfEnclosingTagHelper helper class
 
-        private XmlWriter _writer;
+        private readonly XmlWriter _writer;
         private static AttributeInformation[] _attributeInformation;
         private static TagInformation[] _tagInformation;
 
@@ -220,12 +220,14 @@ namespace Atdl4net.Wpf.View
             _attributeInformation[(int)WpfXmlWriterAttribute.Header] = new AttributeInformation("Header");
             _attributeInformation[(int)WpfXmlWriterAttribute.HeaderVisibility] = new AttributeInformation("HeaderVisibility");
             _attributeInformation[(int)WpfXmlWriterAttribute.Height] = new AttributeInformation("Height");
+            _attributeInformation[(int)WpfXmlWriterAttribute.HorizontalAlignment] = new AttributeInformation("HorizontalAlignment");
             _attributeInformation[(int)WpfXmlWriterAttribute.Increment] = new AttributeInformation("Increment");
             _attributeInformation[(int)WpfXmlWriterAttribute.InnerIncrement] = new AttributeInformation("InnerIncrement");
             _attributeInformation[(int)WpfXmlWriterAttribute.IsChecked] = new AttributeInformation("IsChecked");
             _attributeInformation[(int)WpfXmlWriterAttribute.IsEditable] = new AttributeInformation("IsEditable");
             _attributeInformation[(int)WpfXmlWriterAttribute.IsEnabled] = new AttributeInformation("IsEnabled");
             _attributeInformation[(int)WpfXmlWriterAttribute.IsExpanded] = new AttributeInformation("IsExpanded");
+            _attributeInformation[(int)WpfXmlWriterAttribute.ItemContainerStyle] = new AttributeInformation("ItemContainerStyle");
             _attributeInformation[(int)WpfXmlWriterAttribute.ItemsSource] = new AttributeInformation("ItemsSource");
             _attributeInformation[(int)WpfXmlWriterAttribute.Margin] = new AttributeInformation("Margin");
             _attributeInformation[(int)WpfXmlWriterAttribute.Name] = new AttributeInformation("Name");
@@ -235,11 +237,13 @@ namespace Atdl4net.Wpf.View
             _attributeInformation[(int)WpfXmlWriterAttribute.SelectedItem] = new AttributeInformation("SelectedItem");
             _attributeInformation[(int)WpfXmlWriterAttribute.SelectedValue] = new AttributeInformation("SelectedValue");
             _attributeInformation[(int)WpfXmlWriterAttribute.SelectedValuePath] = new AttributeInformation("SelectedValuePath");
+            _attributeInformation[(int)WpfXmlWriterAttribute.SelectionMode] = new AttributeInformation("SelectionMode");
             _attributeInformation[(int)WpfXmlWriterAttribute.Target] = new AttributeInformation("Target");
             _attributeInformation[(int)WpfXmlWriterAttribute.Text] = new AttributeInformation("Text");
             _attributeInformation[(int)WpfXmlWriterAttribute.ToolTip] = new AttributeInformation("ToolTip");
             _attributeInformation[(int)WpfXmlWriterAttribute.Time] = new AttributeInformation("Time");
             _attributeInformation[(int)WpfXmlWriterAttribute.Value] = new AttributeInformation("Value");
+            _attributeInformation[(int)WpfXmlWriterAttribute.VirtualizingStackPanel_IsVirtualizing] = new AttributeInformation("VirtualizingStackPanel.IsVirtualizing");
             _attributeInformation[(int)WpfXmlWriterAttribute.Visibility] = new AttributeInformation("Visibility");
             _attributeInformation[(int)WpfXmlWriterAttribute.Width] = new AttributeInformation("Width");
         }

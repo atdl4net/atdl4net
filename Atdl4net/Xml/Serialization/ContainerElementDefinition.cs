@@ -20,7 +20,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Xml.Linq;
 
 namespace Atdl4net.Xml.Serialization

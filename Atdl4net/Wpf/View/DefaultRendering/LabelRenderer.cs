@@ -38,12 +38,14 @@ namespace Atdl4net.Wpf.View.DefaultRendering
 
             using (writer.New(WpfXmlWriterTag.Label))
             {
+                writer.WriteAttribute(WpfXmlWriterAttribute.Margin, "1,3,1,3");
+
                 WpfControlRenderer.WriteGridAttribute(writer, control);
 
-                writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, string.Format("{0}Binding Path=Controls[{1}].ToolTip{2}", "{", control.Id, "}"));
-                writer.WriteAttribute(WpfXmlWriterAttribute.Content, string.Format("{0}Binding Path=Controls[{1}].UiValue{2}", "{", id, "}"));
-                writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, string.Format("{0}Binding Path=Controls[{1}].Enabled{2}", "{", id, "}"));
-                writer.WriteAttribute(WpfXmlWriterAttribute.Visibility, string.Format("{0}Binding Path=Controls[{1}].Visibility{2}", "{", id, "}"));
+                writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, string.Format("{{Binding Path=Controls[{0}].ToolTip}}", id));
+                writer.WriteAttribute(WpfXmlWriterAttribute.Content, string.Format("{{Binding Path=Controls[{0}].UiValue}}", id));
+                writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, string.Format("{{Binding Path=Controls[{0}].Enabled}}", id));
+                writer.WriteAttribute(WpfXmlWriterAttribute.Visibility, string.Format("{{Binding Path=Controls[{0}].Visibility}}", id));
             }
         }
     }

@@ -26,7 +26,7 @@ namespace Atdl4net.Model.Collections
 {
     public class StrategyCollection : KeyedCollection<string, Strategy_t>
     {
-        private Strategies_t _owner;
+        private readonly Strategies_t _owner;
 
         public StrategyCollection(Strategies_t owner)
         {

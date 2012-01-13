@@ -22,7 +22,9 @@
 using System;
 using System.Linq;
 using Atdl4net.Model.Collections;
+using Atdl4net.Model.Elements;
 using Atdl4net.Model.Elements.Support;
+using Atdl4net.Model.Types;
 using Common.Logging;
 
 namespace Atdl4net.Fix
@@ -93,6 +95,8 @@ namespace Atdl4net.Fix
 
                     retrieved = parameter.EnumPairs.TryParseWireValue(wireValue, out result);
                 }
+                else if (parameter is Parameter_t<Percentage_t>)
+                    ProcessPercentageValue(parameter as Parameter_t<Percentage_t>, ref result);
 
                 _log.Debug(m => m("FIX enumerated value lookup for field {0} returning {1}; value = '{2}'", fixField,
                     retrieved.ToString().ToLower(), retrieved ? result : "N/A"));
@@ -123,6 +127,21 @@ namespace Atdl4net.Fix
             value = retrieved ? result : null;
 
             return retrieved;
+        }
+
+        private void ProcessPercentageValue(Parameter_t<Percentage_t> parameter, ref string value)
+        {
+            bool adjustmentNeeded = parameter.Value.MultiplyBy100 != true;
+
+            if (adjustmentNeeded)
+            {
+                decimal decimalValue;
+
+                if (decimal.TryParse(value, out decimalValue))
+                    value = (decimalValue * 100).ToString("0.####");
+                else
+                    value = string.Empty;
+            }
         }
     }
 }

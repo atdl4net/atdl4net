@@ -36,11 +36,11 @@ using Common.Logging;
 namespace Atdl4net.Wpf.ViewModel
 {
     /// <summary>
-    /// Wrapper class for all FIXatdl list-based controls; part of the View Model for Atdl4net.
+    /// View model class for all FIXatdl list-based controls; part of the View Model for Atdl4net.
     /// </summary>
-    /// <remarks>Each list-based control within a strategy is wrapped with a ListControlWrapper, this provides the glue between the actual WPF
+    /// <remarks>Each list-based control within a strategy is wrapped with a ListControlViewModel, this provides the glue between the actual WPF
     /// control (ListBox, ComboBox, etc.) and the <see cref="Control_t"/> itself.  WPF databinding is used to link the WPF control state
-    /// to its ListControlWrapper.  The list of FIXatdl controls that use ListControlWrapper is as follows:
+    /// to its ListControlViewModel.  The list of FIXatdl controls that use ListControlViewModel is as follows:
     /// <list type="bullet">
     /// <item><description><see cref="Atdl4net.Model.Controls.CheckBoxList_t"/></description></item>
     /// <item><description><see cref="Atdl4net.Model.Controls.DropDownList_t"/></description></item>
@@ -50,53 +50,53 @@ namespace Atdl4net.Wpf.ViewModel
     /// <item><description><see cref="Atdl4net.Model.Controls.SingleSelectList_t"/></description></item>
     /// <item><description><see cref="Atdl4net.Model.Controls.Slider_t"/></description></item>
     /// </list><br/>
-    /// There are two ways that a WPF control can notify the ListControlWrapper of updates to its state.
+    /// There are two ways that a WPF control can notify the ListControlViewModel of updates to its state.
     /// <list type="number">
     /// <item><description>Via the <see cref="SelectedValue"/> property of this class.  As a rule, this applies to all list-based
     /// controls that can only have one item selected at a time (i.e., DropDownList_t, EditableDropDownList_, SingleSelectList_, Slider_t)
     /// but it does not apply to RadioButtonList_t as the custom control for this type uses a WPF Selector for its implementation.</description></item>
-    /// <item><description>Via the <see cref="ListItemWrapper.IsSelected"/> property of the <see cref="ListItemWrapper"/> class.  This applies 
+    /// <item><description>Via the <see cref="ListItemViewModel.IsSelected"/> property of the <see cref="ListItemViewModel"/> class.  This applies 
     /// to all list-based controls that can have more than one item selected at a time (i.e., CheckBoxList_t, MultiSelectList_t) plus
     /// RadioButtonList_t as detailed above.</description></item>
     /// </list><br/>
-    /// Note that ListControlWrappers do not hold value information; the value of each control is always held in the Control_t.
-    /// ListControlWrappers do however hold the user interface state of each control (i.e., visibility, enabled/disabled).<br/><br/>
-    /// Note also that non-list-based controls use <see cref="ControlWrapper"/> instead.</remarks>
-    public class ListControlWrapper : ControlWrapper
+    /// Note that ListControlViewModels do not hold value information; the value of each control is always held in the Control_t.
+    /// ListControlViewModels do however hold the user interface state of each control (i.e., visibility, enabled/disabled).<br/><br/>
+    /// Note also that non-list-based controls use <see cref="ControlViewModel"/> instead.</remarks>
+    public class ListControlViewModel : ControlViewModel
     {
         private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Wpf.ViewModel");
 
         private string _controlText; // Used to support EditableDropDownList only
         private ViewModelListItemCollection _listItems;
 
-        private ListControlWrapper(ListControlBase control, IParameter referencedParameter, DataEntryMode mode)
+        private ListControlViewModel(ListControlBase control, IParameter referencedParameter, DataEntryMode mode)
             : base(control as Control_t, referencedParameter, mode)
         {
         }
 
         /// <summary>
-        /// Factory method for creating new ListControlWrapper instances.
+        /// Factory method for creating new ListControlViewModel instances.
         /// </summary>
-        /// <param name="control">Underlying list-based Control_t (of type <see cref="ListControlBase"/>) for this ControlWrapper.</param>
+        /// <param name="control">Underlying list-based Control_t (of type <see cref="ListControlBase"/>) for this ControlViewModel.</param>
         /// <param name="referencedParameter">Parameter that the specified Control_t relates to.  May be null.</param>
         /// <param name="mode">Data entry mode (create/amend/view).</param>
         /// <returns></returns>
-        public static ListControlWrapper Create(ListControlBase control, IParameter referencedParameter, DataEntryMode mode)
+        public static ListControlViewModel Create(ListControlBase control, IParameter referencedParameter, DataEntryMode mode)
         {
-            ListControlWrapper controlWrapper = new ListControlWrapper(control, referencedParameter, mode);
+            ListControlViewModel controlViewModel = new ListControlViewModel(control, referencedParameter, mode);
 
-            controlWrapper._listItems = ViewModelListItemCollection.Create(controlWrapper);
+            controlViewModel._listItems = ViewModelListItemCollection.Create(controlViewModel);
 
-            return controlWrapper;
+            return controlViewModel;
         }
 
         /// <summary>
-        /// Gets the collection of <see cref="ListItem_t"/>s for this ControlWrapper's control.
+        /// Gets the collection of <see cref="ListItem_t"/>s for this ControlViewModel's control.
         /// </summary>
         public ViewModelListItemCollection ListItems { get { return _listItems; } }
 
         /// <summary>
-        /// Gets the orientation of this ControlWrapper's control.  (Only applicable to controls that can be presented horizontally or vertically).
+        /// Gets the orientation of this ControlViewModel's control.  (Only applicable to controls that can be presented horizontally or vertically).
         /// </summary>
         public Orientation Orientation
         {
@@ -139,7 +139,7 @@ namespace Atdl4net.Wpf.ViewModel
                         throw ThrowHelper.New<InternalErrorException>(this, InternalErrors.UnexpectedNullReference, "state (from UnderlyingControl.GetCurrentValue())",
                             "Atdl4net.Model.Types.Support.EnumState");
 
-                    _log.Debug(m => m("SelectedValue changed; updating ListControlWrapper from {0} with EnumID {1}", state.ToString(), value));
+                    _log.Debug(m => m("SelectedValue changed; updating ListControlViewModel from {0} with EnumID {1}", state.ToString(), value));
 
                     state.ClearAll();
 
@@ -220,7 +220,7 @@ namespace Atdl4net.Wpf.ViewModel
                 bool isString = value is string;
                 bool isEnumState = value is EnumState;
 
-                _log.Debug(m => m("Updating UiValue of ListControlWrapper for control type {0}", UnderlyingControl.GetType().Name));
+                _log.Debug(m => m("Updating UiValue of ListControlViewModel for control type {0}", UnderlyingControl.GetType().Name));
 
                 // Either we have been passed a string, which is either arbitrary text (EditableDropDownList only) or
                 // is the FIXatdl {NULL} value or we've been passed an EnumID value via a StateRule...
@@ -232,7 +232,7 @@ namespace Atdl4net.Wpf.ViewModel
 
                     if (state != null)
                     {
-                        _log.Debug(m => m("Updating UiValue of ListControlWrapper from {0} with value {1}", state.ToString(), newValue));
+                        _log.Debug(m => m("Updating UiValue of ListControlViewModel from {0} with value {1}", state.ToString(), newValue));
 
                         if (newValue == Atdl.NullValue)
                             state.ClearAll();
@@ -251,7 +251,7 @@ namespace Atdl4net.Wpf.ViewModel
                 {
                     state = value as EnumState;
 
-                    _log.Debug(m => m("Updating UiValue of ListControlWrapper from {0} to {1}", oldState.ToString(), state.ToString()));
+                    _log.Debug(m => m("Updating UiValue of ListControlViewModel from {0} to {1}", oldState.ToString(), state.ToString()));
                 }
                 // ... or we're being cleared by a parameter (TODO: verify this is to be expected)....
                 else if (value == null)

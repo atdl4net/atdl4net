@@ -83,7 +83,7 @@ namespace Atdl4net.Model.Elements
         {
             _log.DebugFormat("Parameter_t<{0}> {1} reset.", typeof(T).Name, Name);
 
-            _value = new T();
+            _value.Reset();
         }
 
         /// <summary>Gets/sets the DefinedByFIX property, which indicates whether the parameter is a redefinition of a 

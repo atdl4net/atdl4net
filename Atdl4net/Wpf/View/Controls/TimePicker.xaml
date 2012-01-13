@@ -16,7 +16,7 @@
                     <ControlTemplate>
                         <Grid Name="MainGrid" Background="{TemplateBinding Background}">
                             <Viewbox>
-                                <Border BorderBrush="{DynamicResource {x:Static drawing:SystemColors.ControlDark}}" BorderThickness="1" CornerRadius="1" Padding="1">
+                                <Border BorderBrush="{DynamicResource {x:Static drawing:SystemColors.ControlDark}}" BorderThickness="1" CornerRadius="2" Padding="1">
                                     <ContentPresenter
                   Margin="{TemplateBinding Control.Padding}"
                   HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}"
@@ -33,7 +33,7 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    <Border BorderThickness="1" BorderBrush="Gray" CornerRadius="1" Background="White" >
+    <Border BorderThickness="0" BorderBrush="Gray" CornerRadius="2" Background="White" >
         <Grid Width="Auto" Height="Auto" x:Name="rootGrid" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>

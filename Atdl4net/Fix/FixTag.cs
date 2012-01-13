@@ -30,7 +30,7 @@ namespace Atdl4net.Fix
     /// </summary>
     public struct FixTag
     {
-        int _value;
+        private readonly int _value;
 
         /// <summary>
         /// Initializes a new instance of FixTag.

@@ -39,6 +39,9 @@ namespace Atdl4net.Model.Enumerations
         EuropeMiddleEastAfrica = 2,
 
         /// <summary>The Asia Pacific and Japan region.</summary>
-        AsiaPacificJapan = 4
+        AsiaPacificJapan = 4,
+
+        /// <summary>All regions.</summary>
+        All = Region.AsiaPacificJapan | Region.EuropeMiddleEastAfrica | Region.TheAmericas
     }
 }

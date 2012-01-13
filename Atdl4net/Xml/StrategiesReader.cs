@@ -49,7 +49,7 @@ namespace Atdl4net.Xml
 
             Strategies_t strategies = LoadStrategies(document);
 
-            _log.DebugFormat("{0} strategies loaded from file '{1}'.", strategies.Strategies.Count, strategyFilePath);
+            _log.DebugFormat("{0} strategies loaded from file '{1}'.", strategies.Count, strategyFilePath);
 
             return strategies;
         }
@@ -69,7 +69,7 @@ namespace Atdl4net.Xml
 #endif
             Strategies_t strategies = LoadStrategies(document);
 
-            _log.DebugFormat("{0} strategies loaded from stream.", strategies.Strategies.Count);
+            _log.DebugFormat("{0} strategies loaded from stream.", strategies.Count);
 
             return strategies;
         }

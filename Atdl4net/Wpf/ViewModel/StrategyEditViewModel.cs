@@ -31,17 +31,17 @@ using Atdl4net.Resources;
 namespace Atdl4net.Wpf.ViewModel
 {
     /// <summary>
-    /// View model wrapper for <see cref="StrategyEdit_t">StrategyEdit</see>s.
+    /// View model class for <see cref="StrategyEdit_t">StrategyEdit</see>s.
     /// </summary>
-    public class StrategyEditWrapper
+    public class StrategyEditViewModel
     {
         private readonly StrategyEdit_t _underlyingStrategyEdit;
 
         /// <summary>
-        /// Initializes a new <see cref="StrategyEditWrapper"/> with the supplied underlying <see cref="StrategyEdit_t"/>.
+        /// Initializes a new <see cref="StrategyEditViewModel"/> with the supplied underlying <see cref="StrategyEdit_t"/>.
         /// </summary>
-        /// <param name="underlyingStrategyEdit"><see cref="StrategyEdit_t"/> that this wrapper is responsible for.  May not be null.</param>
-        public StrategyEditWrapper(StrategyEdit_t underlyingStrategyEdit)
+        /// <param name="underlyingStrategyEdit"><see cref="StrategyEdit_t"/> that this view model is responsible for.  May not be null.</param>
+        public StrategyEditViewModel(StrategyEdit_t underlyingStrategyEdit)
         {
             if (underlyingStrategyEdit == null)
                 throw ThrowHelper.New<ArgumentNullException>(this, InternalErrors.UnexpectedNullReference, "underlyingStrategyEdit", "StrategyEdit_t");
@@ -96,25 +96,25 @@ namespace Atdl4net.Wpf.ViewModel
         }
 
         /// <summary>
-        /// Binds the supplied set of ControlWrappers to this StrategyEditWrapper.
+        /// Binds the supplied set of ControlViewModels to this StrategyEditViewModel.
         /// </summary>
-        /// <param name="controlWrappers"><see cref="IEnumerable<ControlWrapper>"/> containing the set of ControlWrappers
+        /// <param name="controlViewModels"><see cref="IEnumerable<ControlViewModel>"/> containing the set of ControlViewModels
         /// that this StrategyEdit sources its data from.</param>
-        public void Bind(IEnumerable<ControlWrapper> controlWrappers)
+        public void Bind(IEnumerable<ControlViewModel> controlViewModels)
         {
-            foreach (ControlWrapper controlWrapper in controlWrappers)
-                controlWrapper.BindStrategyEdit(this);
+            foreach (ControlViewModel controlViewModel in controlViewModels)
+                controlViewModel.BindStrategyEdit(this);
         }
 
         /// <summary>
-        /// Binds the supplied set of ControlWrappers to this StrategyEditWrapper.
+        /// Binds the supplied set of ControlViewModels to this StrategyEditViewModel.
         /// </summary>
-        /// <param name="controlWrappers"><see cref="IEnumerable<ControlWrapper>"/> containing the set of ControlWrappers
+        /// <param name="controlViewModels"><see cref="IEnumerable<ControlViewModel>"/> containing the set of ControlViewModels
         /// that this StrategyEdit sources its data from.</param>
-        public void Unbind(IEnumerable<ControlWrapper> controlWrappers)
+        public void Unbind(IEnumerable<ControlViewModel> controlViewModels)
         {
-            foreach (ControlWrapper controlWrapper in controlWrappers)
-                controlWrapper.UnbindStrategyEdit(this);
+            foreach (ControlViewModel controlViewModel in controlViewModels)
+                controlViewModel.UnbindStrategyEdit(this);
         }
 
         private void NotifyStateChanged(bool oldState, bool newState)

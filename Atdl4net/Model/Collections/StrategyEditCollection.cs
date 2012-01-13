@@ -41,15 +41,26 @@ namespace Atdl4net.Model.Collections
         /// Validates all the <see cref="StrategyEdit_t">StrategyEdit</see>s in this collection.
         /// </summary>
         /// <param name="additionalValues">Any additional FIX field values that may be required in the Edit evaluation.</param>
-        public void ValidateAll(FixFieldValueProvider additionalValues)
+        /// <param name="shortCircuit">If true, this method returns as soon as any error is found; if false, all StrategyEdits
+        /// are evaluated before the method returns.</param>
+        public bool ValidateAll(FixFieldValueProvider additionalValues, bool shortCircuit)
         {
+            bool valid = true;
+
             foreach (StrategyEdit_t strategyEdit in Items)
             {
                 strategyEdit.Evaluate(additionalValues);
 
                 if (!strategyEdit.CurrentState)
-                    throw ThrowHelper.New<ValidationException>(this, strategyEdit.ErrorMessage);
+                {
+                    if (shortCircuit)
+                        return false;
+
+                    valid = false;
+                }
             }
+
+            return valid;
         }
 
         protected override void InsertItem(int index, StrategyEdit_t item)

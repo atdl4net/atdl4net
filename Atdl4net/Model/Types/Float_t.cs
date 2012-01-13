@@ -118,6 +118,8 @@ namespace Atdl4net.Model.Types
         /// <param name="hostParameter">Parameter that this value belongs to.</param>
         /// <param name="value">Value to convert, may be null.</param>
         /// <returns>If input value is not null, returns value converted to T?; null otherwise.</returns>
+        /// <remarks>Used when setting a parameter value from a control (or anything else that
+        /// implements <see cref="IParameterConvertible"/>).</remarks>
         protected override decimal? ConvertToNativeType(IParameter hostParameter, IParameterConvertible value)
         {
             return value.ToDecimal(hostParameter, CultureInfo.CurrentUICulture);
@@ -132,10 +134,12 @@ namespace Atdl4net.Model.Types
         /// <returns>Native parameter value.</returns>
         public override object GetNativeValue(bool applyWireValueFormat)
         {
-            if (_value != null && applyWireValueFormat && Precision != null)
-                return Round(_value, (int)Precision);
+            decimal? value = ConstValue != null ? ConstValue : _value;
+
+            if (value != null && applyWireValueFormat && Precision != null)
+                return Round(value, (int)Precision);
             else
-                return _value;
+                return value;
         }
 
         /// <summary>
@@ -176,7 +180,7 @@ namespace Atdl4net.Model.Types
         /// </summary>
         /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
         /// <returns>A string value equivalent to the value of this instance.  May be null.</returns>
-        public string ToString(IFormatProvider provider)
+        public virtual string ToString(IFormatProvider provider)
         {
             decimal? value = ConstValue ?? _value;
 
@@ -188,7 +192,7 @@ namespace Atdl4net.Model.Types
         /// </summary>
         /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
         /// <returns>A nullable decimal equivalent to the value of this instance.</returns>
-        public decimal? ToDecimal()
+        public virtual decimal? ToDecimal()
         {
             return ConstValue ?? _value;
         }

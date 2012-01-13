@@ -21,9 +21,8 @@
 
 using System;
 using System.Globalization;
-using Atdl4net.Diagnostics;
-using Atdl4net.Resources;
-using Atdl4net.Validation;
+using Atdl4net.Model.Controls.Support;
+using Atdl4net.Model.Elements.Support;
 
 namespace Atdl4net.Model.Types
 {
@@ -47,30 +46,6 @@ namespace Atdl4net.Model.Types
         #region AtdlValueType<T> Overrides
 
         /// <summary>
-        /// Validates the supplied value in terms of the parameters constraints (e.g., MinValue, MaxValue, etc.).
-        /// </summary>
-        /// <param name="value">Value to validate, may be null in which case no validation is applied.</param>
-        /// <returns>ValidationResult indicating whether the supplied value is valid.</returns>
-        protected override ValidationResult ValidateValue(decimal? value)
-        {
-            if (value != null)
-            {
-                decimal wireValue = (MultiplyBy100 != true) ? (decimal)value / 100 : (decimal)value;
-
-                if (MaxValue != null && wireValue > MaxValue)
-                    return new ValidationResult(false, ErrorMessages.MaxValueExceeded, value, 
-                        (MultiplyBy100 != true) ? (decimal)MaxValue * 100 : (decimal)MaxValue);
-
-                if (MinValue != null && wireValue < MinValue)
-                    return new ValidationResult(false, ErrorMessages.MinValueExceeded, value, 
-                        (MultiplyBy100 != true) ? (decimal)MinValue * 100 : (decimal)MinValue);
-            }
-
-            return ValidationResult.ValidResult;
-        }
-
-
-        /// <summary>
         /// Converts the supplied value from string format (as might be used on the FIX wire) into the type of the type
         /// parameter for this type.  This implementation adjusts for the fact that percentage values are typically
         /// shown as whole numbers (5, 10, 15) on the user interface but sent over the FIX wire as decimals (0.05, 0.1, 0.15).
@@ -81,7 +56,7 @@ namespace Atdl4net.Model.Types
         {
             decimal? decimalValue = base.ConvertFromWireValueFormat(value);
 
-            return (MultiplyBy100 != true) ? (decimal)decimalValue : (decimal)decimalValue * 100;
+            return (MultiplyBy100 == true) ? (decimal)decimalValue / 100 : (decimal)decimalValue;
         }
 
         /// <summary>
@@ -97,12 +72,31 @@ namespace Atdl4net.Model.Types
             if (value == null)
                 return null;
 
-            decimal adjustedValue = (MultiplyBy100 != true) ? (decimal)value / 100 : (decimal)value;
+            decimal adjustedValue = (MultiplyBy100 == true) ? (decimal)value * 100 : (decimal)value;
 
             if (Precision == null)
                 return adjustedValue.ToString(CultureInfo.InvariantCulture);
             else
                 return ((decimal)(Round(adjustedValue, (int)Precision))).ToString(CultureInfo.InvariantCulture);
+        }
+
+        /// <summary>
+        /// Converts the supplied value to the type parameter type (T?) for this class.
+        /// </summary>
+        /// <param name="hostParameter">Parameter that this value belongs to.</param>
+        /// <param name="value">Value to convert, may be null.</param>
+        /// <returns>If input value is not null, returns value converted to T?; null otherwise.</returns>
+        /// <remarks>Used when setting a parameter value from a control (or anything else that
+        /// implements <see cref="IParameterConvertible"/>).<br/><br/>
+        /// Unlike all other (non-enumerated) control/parameter relationships, Percentage_t does not have a 
+        /// one-to-one mapping with its associated control value as the control will typically contain a user-oriented 
+        /// format (e.g., 25) when the parameter must contain the true value (i.e., 0.25, assuming multiplyBy100 
+        /// is not set to true).</remarks>
+        protected override decimal? ConvertToNativeType(IParameter hostParameter, IParameterConvertible value)
+        {
+            decimal? convertedValue = value.ToDecimal(hostParameter, CultureInfo.CurrentUICulture);
+
+            return (convertedValue != null) ? convertedValue /= 100 : null;
         }
 
         /// <summary>
@@ -114,15 +108,52 @@ namespace Atdl4net.Model.Types
         /// <returns>Native parameter value.</returns>
         public override object GetNativeValue(bool applyWireValueFormat)
         {
-            if (_value != null && applyWireValueFormat && MultiplyBy100 != true)
+            decimal? value = ConstValue != null ? ((MultiplyBy100 == true) ? ConstValue / 100 : ConstValue) : _value;
+
+            if (value != null && applyWireValueFormat)
             {
+                decimal adjustedValue = (MultiplyBy100 == true) ? (decimal)value * 100 : (decimal)value;
+
                 if (Precision != null)
-                    return Math.Round((decimal)_value / 100, (int)Precision, MidpointRounding.AwayFromZero);
+                    return Math.Round(adjustedValue, (int)Precision, MidpointRounding.AwayFromZero);
                 else
-                    return _value / 100;
+                    return adjustedValue;
             }
             else
-                return _value;
+                return value;
+        }
+
+        #endregion
+
+        #region IControlConvertible Members
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent nullable decimal value using the specified culture-specific formatting information.
+        /// </summary>
+        /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
+        /// <returns>A nullable decimal equivalent to the value of this instance.</returns>
+        public override decimal? ToDecimal()
+        {
+            decimal? value = ConstValue ?? _value;
+
+            if (value == null || MultiplyBy100 == true)
+                return value;
+
+            // As we are multiplying a decimal, we do this slightly ugly manipulation to remove the trailing zeroes that
+            // the multiplication produces
+            return decimal.Parse(((decimal)value * 100).ToString("G29"));
+        }
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent string value using the specified culture-specific formatting information.
+        /// </summary>
+        /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
+        /// <returns>A string value equivalent to the value of this instance.  May be null.</returns>
+        public override string ToString(IFormatProvider provider)
+        {
+            decimal? value = ToDecimal();
+
+            return (value != null) ? ((decimal)value).ToString(provider) : null;
         }
 
         #endregion

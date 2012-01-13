@@ -29,52 +29,57 @@ using Atdl4net.Model.Elements;
 namespace Atdl4net.Wpf.ViewModel
 {
     /// <summary>
-    /// Collection of <see cref="ListItemWrapper"/>s that correspond to a set of <see cref="ListItem_t"/>s for a given 
+    /// Collection of <see cref="ListItemViewModel"/>s that correspond to a set of <see cref="ListItem_t"/>s for a given 
     /// control.  This is part of the View Model for Atdl4net.
     /// </summary>
-    public class ViewModelListItemCollection : KeyedCollection<string, ListItemWrapper>
+    public class ViewModelListItemCollection : KeyedCollection<string, ListItemViewModel>
     {
         private readonly bool  _controlIsRadioButtonList;
-        private readonly ListControlWrapper _owningControlWrapper;
+        private readonly ListControlViewModel _owningControlViewModel;
 
-        private ViewModelListItemCollection(ListControlWrapper controlWrapper, bool controlIsRadioButtonList)
+        private ViewModelListItemCollection(ListControlViewModel controlViewModel, bool controlIsRadioButtonList)
         {
-            _owningControlWrapper = controlWrapper;
+            _owningControlViewModel = controlViewModel;
             _controlIsRadioButtonList = controlIsRadioButtonList;
         }
 
         /// <summary>
-        /// Factory method for creating new ViewModelListItemCollection instances, based on the supplied <see cref="ListControlWrapper"/>.
+        /// Factory method for creating new ViewModelListItemCollection instances, based on the supplied <see cref="ListControlViewModel"/>.
         /// </summary>
-        /// <param name="controlWrapper">ListControlWrapper that represents the list-based control that contains the set
+        /// <param name="controlViewModel">ListControlViewModel that represents the list-based control that contains the set
         /// of <see cref="ListItem_t"/>s that this ViewModelListItemCollection relates to.</param>
         /// <returns>A new ViewModelListItemCollection instance.  May be an empty collection.</returns>
-        public static ViewModelListItemCollection Create(ListControlWrapper controlWrapper)
+        public static ViewModelListItemCollection Create(ListControlViewModel controlViewModel)
         {
-            bool controlIsRadioButtonList = controlWrapper.UnderlyingControl is RadioButtonList_t;
+            bool controlIsRadioButtonList = controlViewModel.UnderlyingControl is RadioButtonList_t;
 
-            ViewModelListItemCollection collection = new ViewModelListItemCollection(controlWrapper, controlIsRadioButtonList);
+            ViewModelListItemCollection collection = new ViewModelListItemCollection(controlViewModel, controlIsRadioButtonList);
 
             // Make a unique group name for use with RadioButtonLists to ensure individual radio buttons are mutually exclusive.
             string groupName = Guid.NewGuid().ToString();
 
-            foreach (ListItem_t item in (controlWrapper.UnderlyingControl as ListControlBase).ListItems)
+            foreach (ListItem_t item in (controlViewModel.UnderlyingControl as ListControlBase).ListItems)
             {
-                ListItemWrapper wrapper = new ListItemWrapper(collection, item);
+                ListItemViewModel listItem = new ListItemViewModel(collection, item);
 
                 if (controlIsRadioButtonList)
-                    wrapper.GroupName = groupName;
+                    listItem.GroupName = groupName;
 
-                collection.Add(wrapper);
+                collection.Add(listItem);
             }
 
             return collection;
         }
 
         /// <summary>
+        /// Indicates whether the control that this collection of list items belongs to has a mandatory parameter.
+        /// </summary>
+        public bool IsRequiredParameter { get { return _owningControlViewModel.IsRequiredParameter; } }
+
+        /// <summary>
         /// Gets the ID of the control that this set of ListItems belong to.
         /// </summary>
-        public string Id { get { return _owningControlWrapper.Id; } }
+        public string Id { get { return _owningControlViewModel.Id; } }
 
         /// <summary>
         /// Attempts to get the EnumID for the supplied UiRep.
@@ -86,11 +91,11 @@ namespace Atdl4net.Wpf.ViewModel
         {
             enumId = null;
 
-            foreach (ListItemWrapper wrapper in this)
+            foreach (ListItemViewModel listItem in this)
             {
-                if (wrapper.UiRep == uiRep)
+                if (listItem.UiRep == uiRep)
                 {
-                    enumId = wrapper.EnumId;
+                    enumId = listItem.EnumId;
 
                     break;
                 }
@@ -100,11 +105,11 @@ namespace Atdl4net.Wpf.ViewModel
         }
 
         /// <summary>
-        /// Gets the EnumID from the supplied <see cref="ListItemWrapper"/>; this acts as the key into this collection.
+        /// Gets the EnumID from the supplied <see cref="ListItemViewModel"/>; this acts as the key into this collection.
         /// </summary>
-        /// <param name="item">ListItemWrapper to retrieve the key from.</param>
-        /// <returns>EnumID for the supplied ListItemWrapper.</returns>
-        protected override string GetKeyForItem(ListItemWrapper item)
+        /// <param name="item">ListItemViewModel to retrieve the key from.</param>
+        /// <returns>EnumID for the supplied ListItemViewModel.</returns>
+        protected override string GetKeyForItem(ListItemViewModel item)
         {
             return item.EnumId;
         }
@@ -116,10 +121,10 @@ namespace Atdl4net.Wpf.ViewModel
         /// <returns>State of the ListItem for the given EnumID.</returns>
         public bool GetValue(string enumId)
         {
-            if (_owningControlWrapper.UiValue == null)
+            if (_owningControlViewModel.UiValue == null)
                 return false;
             
-            return (_owningControlWrapper.UiValue as EnumState)[enumId];
+            return (_owningControlViewModel.UiValue as EnumState)[enumId];
         }
 
 
@@ -130,7 +135,7 @@ namespace Atdl4net.Wpf.ViewModel
         /// <param name="value">New state value for the specified ListItem.</param>
         public void SetValue(string enumId, bool value)
         {
-            EnumState state = _owningControlWrapper.UiValue as EnumState;
+            EnumState state = _owningControlViewModel.UiValue as EnumState;
 
             // If this is a pseudo-radio button group, and a radio button has been selected (value = true),
             // then all other radio buttons must be de-selected.
@@ -139,14 +144,14 @@ namespace Atdl4net.Wpf.ViewModel
                 state.ClearAll();
 
                 // Loop round notifying each element that it is now de-selected
-                foreach (ListItemWrapper item in this.Items)
+                foreach (ListItemViewModel item in this.Items)
                     if (item.EnumId != enumId)
                         item.IsSelected = false;
             }
 
             state[enumId] = value;
 
-            _owningControlWrapper.UiValue = state;
+            _owningControlViewModel.UiValue = state;
         }
 
         /// <summary>
@@ -157,8 +162,8 @@ namespace Atdl4net.Wpf.ViewModel
         {
             StringBuilder sb = new StringBuilder();
 
-            foreach (ListItemWrapper wrapper in this.Items)
-                sb.AppendFormat("[{0}, {1}, {2}]", wrapper.EnumId, wrapper.UiRep, wrapper.IsSelected);
+            foreach (ListItemViewModel listItem in this.Items)
+                sb.AppendFormat("[{0}, {1}, {2}]", listItem.EnumId, listItem.UiRep, listItem.IsSelected);
 
             return sb.ToString();
         }

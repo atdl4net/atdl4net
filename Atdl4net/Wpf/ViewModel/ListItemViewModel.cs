@@ -25,21 +25,21 @@ using System.ComponentModel;
 namespace Atdl4net.Wpf.ViewModel
 {
     /// <summary>
-    /// Wrapper class for <see cref="ListItem_t"/>, part of the View Model for Atdl4net.
+    /// View model class for <see cref="ListItem_t"/>, part of the View Model for Atdl4net.
     /// </summary>
-    public class ListItemWrapper : INotifyPropertyChanged
+    public class ListItemViewModel : INotifyPropertyChanged
     {
         private readonly ListItem_t _underlyingListItem;
         private readonly ViewModelListItemCollection _owningCollection;
 
         /// <summary>
-        /// Initializes a new instance of <see cref="ListItemWrapper"/>, specifying the ViewModelListItemCollection 
-        /// that this ListItemWrapper belongs to and the underlying <see cref="ListItem_t"/>.
+        /// Initializes a new instance of <see cref="ListItemViewModel"/>, specifying the ViewModelListItemCollection 
+        /// that this ListItemViewModel belongs to and the underlying <see cref="ListItem_t"/>.
         /// </summary>
-        /// <param name="owningCollection">Collection of ListItemWrappers, which corresponds to the set of ListItems
+        /// <param name="owningCollection">Collection of ListItemViewModels, which corresponds to the set of ListItems
         /// for a control.</param>
-        /// <param name="listItem">ListItem_t that this ListItemWrapper is responsible for.</param>
-        public ListItemWrapper(ViewModelListItemCollection owningCollection, ListItem_t listItem)
+        /// <param name="listItem">ListItem_t that this ListItemViewModel is responsible for.</param>
+        public ListItemViewModel(ViewModelListItemCollection owningCollection, ListItem_t listItem)
         {
             _owningCollection = owningCollection;
             _underlyingListItem = listItem;
@@ -61,7 +61,7 @@ namespace Atdl4net.Wpf.ViewModel
         public string AutomationId { get { return string.Format("{0}:{1}", _owningCollection.Id, EnumId); } }
 
         /// <summary>
-        /// Gets/sets the selection state (true/false) of the ListItem that this ListItemWrapper is responsible for.
+        /// Gets/sets the selection state (true/false) of the ListItem that this ListItemViewModel is responsible for.
         /// </summary>
         public bool IsSelected
         {
@@ -79,12 +79,12 @@ namespace Atdl4net.Wpf.ViewModel
         }
 
         /// <summary>
-        /// Gets the UiRep for this ListItemWrapper's underlying ListItem.
+        /// Gets the UiRep for this ListItemViewModel's underlying ListItem.
         /// </summary>
         public string UiRep { get { return _underlyingListItem.UiRep; } }
 
         /// <summary>
-        /// Gets the EnumID for this ListItemWrapper's underlying ListItem.
+        /// Gets the EnumID for this ListItemViewModel's underlying ListItem.
         /// </summary>
         public string EnumId { get { return _underlyingListItem.EnumId; } }
 
@@ -94,12 +94,17 @@ namespace Atdl4net.Wpf.ViewModel
         public string GroupName { get; set; }
 
         /// <summary>
-        /// Provides a string representation of this ListItemWrapper, primarily for debugging purposes.
+        /// Indicates whether the control that this list item belongs to has a mandatory parameter.
+        /// </summary>
+        public bool IsRequiredParameter { get { return _owningCollection.IsRequiredParameter; } }
+
+        /// <summary>
+        /// Provides a string representation of this ListItemViewModel, primarily for debugging purposes.
         /// </summary>
         /// <returns>String representation of this instance.</returns>
         public override string ToString()
         {
-            return string.Format("ListItemWrapper[{0}, {1}, {2}]", EnumId, UiRep, IsSelected);
+            return string.Format("ListItemViewModel[{0}, {1}, {2}]", EnumId, UiRep, IsSelected);
         }
 
         private void NotifyPropertyChanged(string propertyName)

@@ -80,5 +80,10 @@ namespace Atdl4net.Model.Types.Support
         /// Gets the human-readable name of this type.
         /// </summary>
         string HumanReadableTypeName { get; }
+
+        /// <summary>
+        /// Resets this parameter value to its default state.
+        /// </summary>
+        void Reset();
     }
 }

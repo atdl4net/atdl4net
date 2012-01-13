@@ -30,7 +30,7 @@ namespace Atdl4net.Fix
     /// </summary>
     public struct NumInGroup
     {
-        int _value;
+        private readonly int _value;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NumInGroup"/> struct.

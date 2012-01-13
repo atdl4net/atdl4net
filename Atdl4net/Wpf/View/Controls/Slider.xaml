@@ -3,9 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" Name="userControl">
-    <Border Name="borderControl" CornerRadius="2" BorderThickness="1" BorderBrush="#44AAAAAA">
-        <Grid Name="gridControl">
+             mc:Ignorable="d" Name="sliderRoot">
+    <Border Name="borderControl" CornerRadius="1" BorderThickness="0" BorderBrush="{Binding BorderBrush, ElementName=sliderRoot}">
+        <Grid Name="gridControl" Background="{Binding Background, ElementName=sliderRoot}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>

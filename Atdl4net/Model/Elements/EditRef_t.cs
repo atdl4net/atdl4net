@@ -131,7 +131,7 @@ namespace Atdl4net.Model.Elements
             }
             else
             {
-                Strategies_t strategies = (strategy.Parent as Strategies_t);
+                Strategies_t strategies = strategy.Parent;
 
                 if (strategies != null && strategies.Edits.Contains(Id))
                 {

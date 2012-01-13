@@ -96,7 +96,7 @@
     </Compile>
     <Compile Include=".\Model\Collections\EnumPairCollection.cs">
     </Compile>
-    <Compile Include=".\Model\Collections\FixTagValuesCollection.cs">
+    <Compile Include="Fix\FixTagValuesCollection.cs">
     </Compile>
     <Compile Include="Configuration\Atdl4netConfiguration.cs" />
     <Compile Include="Fix\FixFieldValueProvider.cs" />
@@ -104,6 +104,7 @@
     <Compile Include="Notification\INotifyValueChangeCompleted.cs" />
     <Compile Include="Notification\StateChangedEventArgs.cs" />
     <Compile Include="Notification\StrategyLoadedEventArgs.cs" />
+    <Compile Include="Notification\ValidationStateChangedEventArgs.cs" />
     <Compile Include="Notification\ValueChangeCompletedEventArgs.cs" />
     <Compile Include="Notification\ValueChangedEventArgs.cs" />
     <Compile Include="Configuration\ConfigurationSectionHandler.cs" />
@@ -368,30 +369,30 @@
     <Compile Include="Validation\EditValueConverter.cs" />
     <Compile Include="Validation\ControlValidationState.cs" />
     <Compile Include="Validation\ValidationResult.cs" />
-    <Compile Include="Wpf\ViewModel\StrategyEditWrapper.cs" />
+    <Compile Include="Wpf\ViewModel\StrategyEditViewModel.cs" />
     <Compile Include="Wpf\ViewModel\ViewModelStrategyEditCollection.cs" />
     <Compile Include="Xml\Serialization\ValueConverter.cs">
     </Compile>
     <Compile Include=".\Wpf\AtdlControl.xaml.cs">
       <DependentUpon>AtdlControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include=".\Wpf\ViewModel\ControlWrapper.cs">
+    <Compile Include="Wpf\ViewModel\ControlViewModel.cs">
     </Compile>
-    <Compile Include=".\Wpf\ViewModel\EditWrapper.cs">
+    <Compile Include="Wpf\ViewModel\EditViewModel.cs">
     </Compile>
     <Compile Include="Notification\INotifyStateChanged.cs">
     </Compile>
     <Compile Include="Notification\INotifyValueChanged.cs">
     </Compile>
-    <Compile Include=".\Wpf\ViewModel\ListControlWrapper.cs">
+    <Compile Include="Wpf\ViewModel\ListControlViewModel.cs">
     </Compile>
-    <Compile Include=".\Wpf\ViewModel\ListItemWrapper.cs">
+    <Compile Include="Wpf\ViewModel\ListItemViewModel.cs">
     </Compile>
     <Compile Include=".\Wpf\ViewModel\RadioButtonGroupManager.cs">
     </Compile>
-    <Compile Include=".\Wpf\ViewModel\RadioButtonWrapper.cs">
+    <Compile Include="Wpf\ViewModel\RadioButtonViewModel.cs">
     </Compile>
-    <Compile Include=".\Wpf\ViewModel\StateRuleWrapper.cs">
+    <Compile Include="Wpf\ViewModel\StateRuleViewModel.cs">
     </Compile>
     <Compile Include=".\Wpf\ViewModel\StrategyViewModel.cs">
     </Compile>

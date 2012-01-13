@@ -28,25 +28,25 @@ using Common.Logging;
 
 namespace Atdl4net.Wpf.ViewModel
 {
-    public class StateRuleWrapper : IBindable<ViewModelControlCollection>
+    public class StateRuleViewModel : IBindable<ViewModelControlCollection>
     {
         private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Wpf.ViewModel");
 
         private object _previousValue;
         private readonly StateRule_t _underlyingStateRule;
-        private readonly ControlWrapper _owningControlWrapper;
-        private readonly EditWrapper _edit;
+        private readonly ControlViewModel _owningControlViewModel;
+        private readonly EditViewModel _edit;
 
-        public StateRuleWrapper(ControlWrapper owningControl, StateRule_t stateRule)
+        public StateRuleViewModel(ControlViewModel owningControl, StateRule_t stateRule)
         {
 
-            _owningControlWrapper = owningControl;
+            _owningControlViewModel = owningControl;
             _underlyingStateRule = stateRule;
 
             if (stateRule.Edit != null)
-                _edit = new EditWrapper(stateRule.Edit);
+                _edit = new EditViewModel(stateRule.Edit);
             else if (stateRule.EditRef != null)
-                _edit = new EditWrapper(stateRule.EditRef);
+                _edit = new EditViewModel(stateRule.EditRef);
             else
                 // TODO: Proper exception please.
                 throw new Exception("Neither Edit nor EditRef set!");
@@ -56,7 +56,7 @@ namespace Atdl4net.Wpf.ViewModel
         /// <param name="e"></param>
         private void OnEditStateChanged(object sender, StateChangedEventArgs e)
         {
-            _log.Debug(m => m("StateRuleWrapper.OnEditStateChanged invoked; new Edit_t state = {0}", _edit.CurrentState));
+            _log.Debug(m => m("StateRuleViewModel.OnEditStateChanged invoked; new Edit_t state = {0}", _edit.CurrentState));
 
             RefreshState();
         }
@@ -85,7 +85,7 @@ namespace Atdl4net.Wpf.ViewModel
 
                 _log.Debug(m => m("Updating control's visible state to {0}", visible.ToString().ToLower()));
 
-                _owningControlWrapper.IsVisible = visible;
+                _owningControlViewModel.IsVisible = visible;
             }
 
             if (_underlyingStateRule.Enabled != null)
@@ -94,23 +94,23 @@ namespace Atdl4net.Wpf.ViewModel
 
                 _log.Debug(m => m("Updating control's enabled state to {0}", enabled.ToString().ToLower()));
 
-                _owningControlWrapper.Enabled = enabled;
+                _owningControlViewModel.Enabled = enabled;
             }
 
             if (_underlyingStateRule.Value != null)
             {
                 if (_edit.CurrentState)
                 {
-                    _log.Debug(m => m("Updating control's value from '{0}' to '{1}'", _owningControlWrapper.UiValue, _underlyingStateRule.Value));
+                    _log.Debug(m => m("Updating control's value from '{0}' to '{1}'", _owningControlViewModel.UiValue, _underlyingStateRule.Value));
 
-                    _previousValue = _owningControlWrapper.UiValue;
-                    _owningControlWrapper.UiValue = _underlyingStateRule.Value;
+                    _previousValue = _owningControlViewModel.UiValue;
+                    _owningControlViewModel.UiValue = _underlyingStateRule.Value;
                 }
                 else if (_underlyingStateRule.Value == Atdl.NullValue)
                 {
-                    _log.Debug(m => m("Returning control's value to '{1}' (from '{0}')", _previousValue, _owningControlWrapper.UiValue));
+                    _log.Debug(m => m("Returning control's value to '{1}' (from '{0}')", _previousValue, _owningControlViewModel.UiValue));
 
-                    _owningControlWrapper.UiValue = _previousValue;
+                    _owningControlViewModel.UiValue = _previousValue;
                 }
             }
         }

@@ -129,9 +129,25 @@ namespace Atdl4net.Model.Controls.Support
         /// Serves as a hash function for this type.  Overridden because Equals(object) is overridden.
         /// </summary>
         /// <returns>A hash code for the current Object.</returns>
+        /// <remarks>The value 251 is used here because it is a prime number, helpful for generating unique hash values.</remarks>
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            unchecked // No issue with int overflow
+            {
+                // Convert our BitArray to an integer value
+                int[] enumStates = new int[1];
+                _enumStates.CopyTo(enumStates, 0);
+
+                int hashCode = enumStates[0] * 251;
+
+                if (_enumIds != null)
+                    hashCode = hashCode + _enumIds.GetHashCode();
+
+                if (_nonEnumValue != null)
+                    hashCode = (hashCode * 251) + _nonEnumValue.GetHashCode();
+
+                return hashCode;
+            }
         }
 
         /// <summary>

@@ -32,7 +32,7 @@ namespace Atdl4net.Model.Collections
     /// used when laying out controls on StrategyPanels</remarks>
     public class ControlCollection : ObservableCollection<Control_t>
     {
-        private StrategyPanel_t _owner;
+        private readonly StrategyPanel_t _owner;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ControlCollection"/> class.

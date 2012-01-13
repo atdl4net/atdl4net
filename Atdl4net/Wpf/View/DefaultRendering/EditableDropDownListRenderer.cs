@@ -47,25 +47,30 @@ namespace Atdl4net.Wpf.View.DefaultRendering
                     writer.WriteAttribute(WpfXmlWriterAttribute.GridColumn, gridCoordinate.Column.ToString());
                     writer.WriteAttribute(WpfXmlWriterAttribute.GridRow, gridCoordinate.Row.ToString());
 
-                    writer.WriteAttribute(WpfXmlWriterAttribute.Margin, "2");
+//                    writer.WriteAttribute(WpfXmlWriterAttribute.Margin, "1");
+                    writer.WriteAttribute(WpfXmlWriterAttribute.Margin, "1,3,1,3");
 
                     if (Atdl4netConfiguration.Settings.Wpf.View.AutoSizeDropDowns)
                         writer.WriteAttribute(WpfXmlWriterAttribute.Width,
-                            string.Format("{0}Binding Source={1}StaticResource {2}{3},Path=[{4}]{5}", "{", "{", Atdl4net.Wpf.AtdlControl.ComboBoxSizerKey, "}", id, "}"));
+                            string.Format("{{Binding Source={{StaticResource {0}}},Path=[{1}]}}", Atdl4net.Wpf.AtdlControl.ComboBoxSizerKey, id));
 
                     writer.WriteAttribute(WpfXmlWriterAttribute.IsEditable, "True");
 
                     if (!string.IsNullOrEmpty(id))
                         writer.WriteAttribute(WpfXmlWriterAttribute.Name, id);
 
-                    writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, string.Format("{0}Binding Path=Controls[{1}].ToolTip{2}", "{", id, "}"));
-                    writer.WriteAttribute(WpfXmlWriterAttribute.ItemsSource, string.Format("{0}Binding Path=Controls[{1}].ListItems{2}", "{", id, "}"));
-                    writer.WriteAttribute(WpfXmlWriterAttribute.SelectedValue, string.Format("{0}Binding Path=Controls[{1}].SelectedValue{2}", "{", id, "}"));
+                    writer.WriteAttribute(WpfXmlWriterAttribute.HorizontalAlignment, "Left");
+
+                    writer.WriteAttribute(WpfXmlWriterAttribute.DataContext, string.Format("{{Binding Path=Controls[{0}]}}", id));
+
+                    writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, "{Binding Path=ToolTip}");
+                    writer.WriteAttribute(WpfXmlWriterAttribute.ItemsSource, "{Binding Path=ListItems}");
+                    writer.WriteAttribute(WpfXmlWriterAttribute.SelectedValue, "{Binding Path=SelectedValue}");
                     writer.WriteAttribute(WpfXmlWriterAttribute.SelectedValuePath, "EnumId");
                     writer.WriteAttribute(WpfXmlWriterAttribute.DisplayMemberPath, "UiRep");
-                    writer.WriteAttribute(WpfXmlWriterAttribute.Text, string.Format("{0}Binding Path=Controls[{1}].Text{2}", "{", id, "}"));
-                    writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, string.Format("{0}Binding Path=Controls[{1}].Enabled{2}", "{", id, "}"));
-                    writer.WriteAttribute(WpfXmlWriterAttribute.Visibility, string.Format("{0}Binding Path=Controls[{1}].Visibility{2}", "{", id, "}"));
+                    writer.WriteAttribute(WpfXmlWriterAttribute.Text, "{Binding Path=Text}");
+                    writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, "{Binding Path=Enabled}");
+                    writer.WriteAttribute(WpfXmlWriterAttribute.Visibility, "{Binding Path=Visibility}");
                 }
             });
         }

@@ -27,21 +27,21 @@ using Common.Logging;
 
 namespace Atdl4net.Wpf.ViewModel
 {
-    public class ViewModelStateRuleCollection : Collection<StateRuleWrapper>, IBindable<ViewModelControlCollection>
+    public class ViewModelStateRuleCollection : Collection<StateRuleViewModel>, IBindable<ViewModelControlCollection>
     {
         private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Wpf.ViewModel");
 
-        private readonly ControlWrapper _owningControl;
+        private readonly ControlViewModel _owningControl;
 
-        public ViewModelStateRuleCollection(ControlWrapper owningControl, StateRuleCollection stateRules)
+        public ViewModelStateRuleCollection(ControlViewModel owningControl, StateRuleCollection stateRules)
         {
             _owningControl = owningControl;
 
             foreach (StateRule_t stateRule in stateRules)
             {
-                StateRuleWrapper wrapper = new StateRuleWrapper(owningControl, stateRule);
+                StateRuleViewModel stateRuleViewModel = new StateRuleViewModel(owningControl, stateRule);
 
-                Add(wrapper);
+                Add(stateRuleViewModel);
             }
         }
 
@@ -50,7 +50,7 @@ namespace Atdl4net.Wpf.ViewModel
             if (this.Items.Count > 0 )
                 _log.Debug(m=>m("Refreshing state for all state rules of control ID {0}", _owningControl.Id));
 
-            foreach (StateRuleWrapper stateRule in this.Items)
+            foreach (StateRuleViewModel stateRule in this.Items)
                 stateRule.RefreshState();
         }
 

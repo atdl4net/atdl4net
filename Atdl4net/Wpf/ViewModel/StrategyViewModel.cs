@@ -34,7 +34,7 @@ namespace Atdl4net.Wpf.ViewModel
         private bool _disposed;
 
         /// <summary>
-        /// Gets the set of controls (<see cref="ControlWrapper"/>s) for this strategy (<see cref="StrategyViewModel"/>).
+        /// Gets the set of controls (<see cref="ControlViewModel"/>s) for this strategy (<see cref="StrategyViewModel"/>).
         /// </summary>
         public ViewModelControlCollection Controls { get; private set; }
 

@@ -78,9 +78,14 @@ namespace Atdl4net.Model.Types.Support
             return this == (Tenor)obj;
         }
 
+        /// <summary>
+        /// Serves as a hash function for this type.  Overridden because Equals(object) is overridden.
+        /// </summary>
+        /// <returns>A hash code for the current Object.</returns>
+        /// <remarks>The value 251 is used here because it is a prime number, helpful for generating unique hash values.</remarks>
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return (Offset * 251) + (int)TenorType;
         }
 
         public static Tenor Parse(string value)

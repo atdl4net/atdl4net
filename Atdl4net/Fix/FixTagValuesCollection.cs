@@ -20,13 +20,13 @@
 #endregion
 
 using System.Collections.Generic;
-using Atdl4net.Fix;
 using Atdl4net.Utility;
 
-namespace Atdl4net.Model.Collections
+namespace Atdl4net.Fix
 {
     public class FixTagValuesCollection : IEnumerable<KeyValuePair<FixField, string>>
     {
+        private static readonly FixTagValuesCollection _empty = new FixTagValuesCollection();
         private readonly FixMessage _message;
 
         public FixTagValuesCollection()
@@ -42,15 +42,16 @@ namespace Atdl4net.Model.Collections
         public FixTagValuesCollection(FixMessage message)
         {
             _message = message;
-            //foreach (FixField field in message.FixFields)
-            //    this[field] = message[field];
         }
 
-        /// <summary>
-        /// FIX_ ...
-        /// </summary>
-        /// <param name="fixField"></param>
-        /// <returns>.</returns>
+        public static FixTagValuesCollection Empty { get { return _empty; } }
+
+        public string this[FixField fixField]
+        {
+            get { return _message[fixField]; }
+            set { _message[fixField] = value; }
+        }
+
         public string this[string fixField]
         {
             get

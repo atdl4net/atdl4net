@@ -28,6 +28,7 @@ using Atdl4net.Fix;
 using Atdl4net.Model.Controls.Support;
 using Atdl4net.Model.Elements;
 using Atdl4net.Model.Elements.Support;
+using Atdl4net.Model.Enumerations;
 using Atdl4net.Notification;
 using Atdl4net.Resources;
 using Atdl4net.Utility;
@@ -40,11 +41,11 @@ using Atdl4net.Model.Controls;
 namespace Atdl4net.Wpf.ViewModel
 {
     /// <summary>
-    /// Wrapper class for all FIXatdl non-list-based controls; part of the View Model for Atdl4net.
+    /// View model class for all FIXatdl non-list-based controls; part of the View Model for Atdl4net.
     /// </summary>
-    /// <remarks>Each non-list-based control within a strategy is wrapped with a ControlWrapper, this provides the glue between the actual WPF
+    /// <remarks>Each non-list-based control within a strategy is wrapped with a ControlViewModel, this provides the glue between the actual WPF
     /// control (TextBox, Clock, etc.) and the <see cref="Control_t"/> itself.  WPF databinding is used to link the WPF control state
-    /// to its ControlWrapper. The list of FIXatdl controls that use ControlWrapper is as follows:
+    /// to its ControlViewModel. The list of FIXatdl controls that use ControlViewModel is as follows:
     /// <list type="bullet">
     /// <item><description><see cref="Atdl4net.Model.Controls.CheckBox_t"/></description></item>
     /// <item><description><see cref="Atdl4net.Model.Controls.Clock_t"/></description></item>
@@ -55,59 +56,56 @@ namespace Atdl4net.Wpf.ViewModel
     /// <item><description><see cref="Atdl4net.Model.Controls.SingleSpinner_t"/></description></item>
     /// <item><description><see cref="Atdl4net.Model.Controls.TextField_t"/></description></item>
     /// </list><br/>
-    /// Note that ControlWrappers do not hold value information; the value of each control is always held in the Control_t.
-    /// ControlWrappers do however hold the user interface state of each control (i.e., visibility, enabled/disabled).<br/><br/>
-    /// Note also that list-based controls use <see cref="ListControlWrapper"/> instead as that class handles the communication
+    /// Note that ControlViewModels do not hold value information; the value of each control is always held in the Control_t.
+    /// ControlViewModels do however hold the user interface state of each control (i.e., visibility, enabled/disabled).<br/><br/>
+    /// Note also that list-based controls use <see cref="ListControlViewModel"/> instead as that class handles the communication
     /// of the state of list-based WPF to the <see cref="Atdl4net.Model.Types.Support.EnumState"/> type that holds the state of each selectable item
     /// within the control.</remarks>
-    public class ControlWrapper : INotifyPropertyChanged, INotifyValueChanged, INotifyValueChangeCompleted, IBindable<ViewModelControlCollection>
+    public class ControlViewModel : INotifyPropertyChanged, INotifyValueChanged, INotifyValueChangeCompleted, IBindable<ViewModelControlCollection>
     {
         private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Wpf.ViewModel");
 
         private bool _visible = true;
         private bool _enabled = true;
+        private bool _firstValidationStateChangeNotification = true;
         private readonly DataEntryMode _dataEntryMode;
         private FixFieldValueProvider _fixFieldValues;
         private ViewModelStateRuleCollection _stateRules;
         private readonly ControlValidationState _validationState;
         private readonly IParameter _referencedParameter;
 
-        #region INotifyPropertyChanged Members
-
         /// <summary>
         /// Raised whenever the value of a property (UiValue, Visibility, IsEnabled) changes.
         /// </summary>
+        /// <remarks>Implemented as part of INotifyPropertyChanged.</remarks>
         public event PropertyChangedEventHandler PropertyChanged;
-
-        #endregion
-
-        #region INotifyValueChanged Members
 
         /// <summary>
         /// Raised whenever the WPF control's value changes.  Used to communicate value change notifications to Edits
         /// within StateRules for the strategy the underlying <see cref="Control_t"/> belongs to.
         /// </summary>
+        /// <remarks>Implemented as part of INotifyValueChanged.</remarks>
         public event EventHandler<ValueChangedEventArgs> ValueChanged;
-
-        #endregion
-
-        #region INotifyValueChangeCompleted Members
 
         /// <summary>
         /// Raised when a value change has been fully processed.
         /// </summary>
+        /// <remarks>Implemented as part of INotifyValueChangeCompleted.</remarks>
         public event EventHandler<ValueChangeCompletedEventArgs> ValueChangeCompleted;
 
-        #endregion
+        /// <summary>
+        /// Raised whenever the validation state of this control changes.
+        /// </summary>
+        public event EventHandler<ValidationStateChangedEventArgs> ValidationStateChanged;
 
         /// <summary>
-        /// Initializes a new ControlWrapper using the supplied <see cref="Control_t"/> as underlying control and the 
+        /// Initializes a new ControlViewModel using the supplied <see cref="Control_t"/> as underlying control and the 
         /// supplied <see cref="IParameter"/> as referenced parameter.
         /// </summary>
-        /// <param name="control">Underlying Control_t for this ControlWrapper.</param>
+        /// <param name="control">Underlying Control_t for this ControlViewModel.</param>
         /// <param name="referencedParameter">Parameter that this control relates to.  May be null.</param>
         /// <param name="mode">Data entry mode (create/amend/view).</param>
-        protected ControlWrapper(Control_t control, IParameter referencedParameter, DataEntryMode mode)
+        protected ControlViewModel(Control_t control, IParameter referencedParameter, DataEntryMode mode)
         {
             UnderlyingControl = control;
             _referencedParameter = referencedParameter;
@@ -117,13 +115,13 @@ namespace Atdl4net.Wpf.ViewModel
         }
 
         /// <summary>
-        /// Factory method for creating new ControlWrapper instances.
+        /// Factory method for creating new ControlViewModel instances.
         /// </summary>
-        /// <param name="underlyingStrategy"><see cref="Strategy_t"/> that this ControlWrapper's <see cref="Control_t"/> is a member of.</param>
-        /// <param name="control">Underlying Control_t for this ControlWrapper.</param>
+        /// <param name="underlyingStrategy"><see cref="Strategy_t"/> that this ControlViewModel's <see cref="Control_t"/> is a member of.</param>
+        /// <param name="control">Underlying Control_t for this ControlViewModel.</param>
         /// <param name="mode">Data entry mode (create/amend/view).</param>
         /// <returns></returns>
-        public static ControlWrapper Create(Strategy_t underlyingStrategy, Control_t control, DataEntryMode mode)
+        public static ControlViewModel Create(Strategy_t underlyingStrategy, Control_t control, DataEntryMode mode)
         {
             IParameter referencedParameter = null;
 
@@ -135,38 +133,43 @@ namespace Atdl4net.Wpf.ViewModel
                     throw ThrowHelper.New<ReferencedObjectNotFoundException>(ErrorMessages.UnresolvedParameterRefError, control.ParameterRef);
             }
 
-            ControlWrapper wrapper;
+            ControlViewModel controlViewModel;
 
 #if !NET_40
             // This is to workaround a bug in .NET Framework 3.5 where it is possible for more than one radio button in a 
             // group to be checked at a time.
             if (control is RadioButton_t)
-                wrapper = new RadioButtonWrapper(control as RadioButton_t, referencedParameter, mode);
+                controlViewModel = new RadioButtonViewModel(control as RadioButton_t, referencedParameter, mode);
             else
 #endif
             if (control is ListControlBase)
-                wrapper = ListControlWrapper.Create(control as ListControlBase, referencedParameter, mode);
+                controlViewModel = ListControlViewModel.Create(control as ListControlBase, referencedParameter, mode);
             else
-                wrapper = new ControlWrapper(control, referencedParameter, mode);
+                controlViewModel = new ControlViewModel(control, referencedParameter, mode);
 
-            wrapper._stateRules = new ViewModelStateRuleCollection(wrapper, control.StateRules);
-            wrapper._fixFieldValues = new FixFieldValueProvider(underlyingStrategy.InputValues, underlyingStrategy.Parameters);
+            controlViewModel._stateRules = new ViewModelStateRuleCollection(controlViewModel, control.StateRules);
+            controlViewModel._fixFieldValues = new FixFieldValueProvider(underlyingStrategy.InputValues, underlyingStrategy.Parameters);
 
-            return wrapper;
+            return controlViewModel;
         }
 
         /// <summary>
-        /// Gets the underlying <see cref="Control_t"/> that this ControlWrapper is responsible for.
+        /// Indicates whether the parameter this control references is required or optional.  False if this control has no parameter.
+        /// </summary>
+        public bool IsRequiredParameter { get { return _referencedParameter != null ? _referencedParameter.Use == Use_t.Required : false; } }
+
+        /// <summary>
+        /// Gets the underlying <see cref="Control_t"/> that this ControlViewModel is responsible for.
         /// </summary>
         public Control_t UnderlyingControl { get; private set; }
 
         /// <summary>
-        /// Gets the ParameterRef of this ControlWrapper's underlying <see cref="Control_t"/>.
+        /// Gets the ParameterRef of this ControlViewModel's underlying <see cref="Control_t"/>.
         /// </summary>
         public string ParameterRef { get { return UnderlyingControl.ParameterRef; } }
 
         /// <summary>
-        /// Gets the ID of this ControlWrapper's underlying <see cref="Control_t"/>.
+        /// Gets the ID of this ControlViewModel's underlying <see cref="Control_t"/>.
         /// </summary>
         public string Id { get { return UnderlyingControl.Id; } }
 
@@ -185,7 +188,7 @@ namespace Atdl4net.Wpf.ViewModel
         }
 
         /// <summary>
-        /// Gets/sets the user interface value for the <see cref="Control_t"/> that this ControlWrapper is responsible for.
+        /// Gets/sets the user interface value for the <see cref="Control_t"/> that this ControlViewModel is responsible for.
         /// </summary>
         public virtual object UiValue
         {
@@ -193,7 +196,7 @@ namespace Atdl4net.Wpf.ViewModel
 
             set
             {
-                _log.Debug(m => m("ControlWrapper for Control {0} value updated to '{1}' (data type {2}).",
+                _log.Debug(m => m("ControlViewModel for Control {0} value updated to '{1}' (data type {2}).",
                     Id, (value is ListItem_t) ? (value as ListItem_t).EnumId : value ?? "null", value != null ? value.GetType().Name : "N/A"));
 
                 if (UnderlyingControl.GetCurrentValue() != value)
@@ -209,7 +212,7 @@ namespace Atdl4net.Wpf.ViewModel
         }
 
         /// <summary>
-        /// Sets the visible state of the WPF control that this ControlWrapper is responsible for.
+        /// Sets the visible state of the WPF control that this ControlViewModel is responsible for.
         /// </summary>
         public bool IsVisible
         {
@@ -225,7 +228,7 @@ namespace Atdl4net.Wpf.ViewModel
         }
 
         /// <summary>
-        /// Gets/sets the WPF visibility for the user interface control that this ControlWrapper is responsible for.
+        /// Gets/sets the WPF visibility for the user interface control that this ControlViewModel is responsible for.
         /// </summary>
         public Visibility Visibility
         {
@@ -234,7 +237,7 @@ namespace Atdl4net.Wpf.ViewModel
         }
 
         /// <summary>
-        /// Gets/sets the WPF enabled/disabled state for the user interface control that this ControlWrapper is responsible for.
+        /// Gets/sets the WPF enabled/disabled state for the user interface control that this ControlViewModel is responsible for.
         /// </summary>
         public bool Enabled
         {
@@ -268,7 +271,13 @@ namespace Atdl4net.Wpf.ViewModel
         }
 
         /// <summary>
-        /// Resets the state of this ControlWrapper, i.e., Enabled = true, Visible = true;
+        /// Indicates whether this control value is currently valid, according to the StrategyEdits
+        /// attached to the parent strategy and the control validations.
+        /// </summary>
+        public bool IsValid { get { return !_validationState.CurrentState; } }
+
+        /// <summary>
+        /// Resets the state of this ControlViewModel, i.e., Enabled = true, Visible = true;
         /// </summary>
         public virtual void Reset()
         {
@@ -277,7 +286,7 @@ namespace Atdl4net.Wpf.ViewModel
         }
 
         /// <summary>
-        /// Refreshes the state of all StateRules for this ControlWrapper's underlying <see cref="Control_t"/>.
+        /// Refreshes the state of all StateRules for this ControlViewModel's underlying <see cref="Control_t"/>.
         /// </summary>
         public void RefreshState()
         {
@@ -285,12 +294,6 @@ namespace Atdl4net.Wpf.ViewModel
 
             _stateRules.RefreshState();
         }
-
-        /// <summary>
-        /// Indicates whether this control value is currently valid, according to the StrategyEdits
-        /// attached to the parent strategy.
-        /// </summary>
-        public bool IsValid { get { return !_validationState.CurrentState; } }
 
         /// <summary>
         /// Updates the value of the parameter that the underlying <see cref="Control_t"/> relates to.  If the Control_t
@@ -346,10 +349,30 @@ namespace Atdl4net.Wpf.ViewModel
             if (valueChangeCompleted != null)
                 valueChangeCompleted(this, new ValueChangeCompletedEventArgs(this));
 
+            bool previousState = _validationState.CurrentState;
+
             _validationState.Evaluate(_fixFieldValues);
+
+            bool newState = _validationState.CurrentState;
+
+            // We always notify the first state change notification even if the state hasn't changed from the default value (true)
+            if (_firstValidationStateChangeNotification || previousState != newState)
+            {
+                _firstValidationStateChangeNotification = false;
+
+                NotifyValidationStateChanged(newState);
+            }
 
             // In case the validation state ErrorText has changed...
             NotifyPropertyChanged("ToolTip");
+        }
+
+        private void NotifyValidationStateChanged(bool isValid)
+        {
+            EventHandler<ValidationStateChangedEventArgs>validationStateChanged = ValidationStateChanged;
+
+            if (validationStateChanged !=null)
+                validationStateChanged(this, new ValidationStateChangedEventArgs(Id, isValid));
         }
 
         private void StrategyEditStateChanged(object sender, Notification.StateChangedEventArgs e)
@@ -358,32 +381,32 @@ namespace Atdl4net.Wpf.ViewModel
             NotifyPropertyChanged("UiValue");
             NotifyPropertyChanged("ToolTip");
 
-            StrategyEditWrapper strategyEdit = sender as StrategyEditWrapper;
+            StrategyEditViewModel strategyEdit = sender as StrategyEditViewModel;
 
             _log.Debug(m => m("Control {0}: {1} {2} {3}", Id, strategyEdit.InternalId, e.OldState, e.NewState));
         }
 
-        internal void BindStrategyEdit(StrategyEditWrapper strategyEditWrapper)
+        internal void BindStrategyEdit(StrategyEditViewModel strategyEditViewModel)
         {
-            strategyEditWrapper.StateChanged += new EventHandler<StateChangedEventArgs>(StrategyEditStateChanged);
+            strategyEditViewModel.StateChanged += new EventHandler<StateChangedEventArgs>(StrategyEditStateChanged);
 
-            _validationState.Add(strategyEditWrapper);
+            _validationState.Add(strategyEditViewModel);
         }
 
-        internal void UnbindStrategyEdit(StrategyEditWrapper strategyEditWrapper)
+        internal void UnbindStrategyEdit(StrategyEditViewModel strategyEditViewModel)
         {
-            strategyEditWrapper.StateChanged -= new EventHandler<StateChangedEventArgs>(StrategyEditStateChanged);
+            strategyEditViewModel.StateChanged -= new EventHandler<StateChangedEventArgs>(StrategyEditStateChanged);
 
-            _validationState.Remove(strategyEditWrapper);
+            _validationState.Remove(strategyEditViewModel);
         }
 
         #region IBindable<ViewControlCollection> Members
 
         /// <summary>
-        /// Binds this control's StateRules to the <see cref="ViewModelControlCollection"/> this ControlWrapper is a
+        /// Binds this control's StateRules to the <see cref="ViewModelControlCollection"/> this ControlViewModel is a
         /// member of.
         /// </summary>
-        /// <param name="target">ViewModelControlCollection this ControlWrapper is a member of.</param>
+        /// <param name="target">ViewModelControlCollection this ControlViewModel is a member of.</param>
         void IBindable<ViewModelControlCollection>.Bind(ViewModelControlCollection target)
         {
             (_stateRules as IBindable<ViewModelControlCollection>).Bind(target);

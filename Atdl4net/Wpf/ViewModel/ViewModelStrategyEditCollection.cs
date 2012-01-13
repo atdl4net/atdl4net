@@ -28,9 +28,9 @@ using Atdl4net.Model.Elements;
 namespace Atdl4net.Wpf.ViewModel
 {
     /// <summary>
-    /// Collection of <see cref="StrategyEditWrapper"/>s, part of the Atdl4net ViewModel.
+    /// Collection of <see cref="StrategyEditViewModel"/>s, part of the Atdl4net ViewModel.
     /// </summary>
-    public class ViewModelStrategyEditCollection : Collection<StrategyEditWrapper>, IDisposable
+    public class ViewModelStrategyEditCollection : Collection<StrategyEditViewModel>, IDisposable
     {
         private bool _disposed;
         private ViewModelControlCollection _controls;
@@ -47,11 +47,11 @@ namespace Atdl4net.Wpf.ViewModel
             {
                 _controls = controls;
 
-                StrategyEditWrapper strategyEditWrapper = new StrategyEditWrapper(strategyEdit);
+                StrategyEditViewModel strategyEditViewModel = new StrategyEditViewModel(strategyEdit);
 
-                Add(strategyEditWrapper);
+                Add(strategyEditViewModel);
 
-                strategyEditWrapper.Bind(from c in _controls 
+                strategyEditViewModel.Bind(from c in _controls 
                                          where c.ParameterRef != null && strategyEdit.Sources.Contains(c.ParameterRef) 
                                          select c);
             }
@@ -76,9 +76,9 @@ namespace Atdl4net.Wpf.ViewModel
             {
                 if (disposing)
                 {
-                    foreach (StrategyEditWrapper strategyEdit in this)
+                    foreach (StrategyEditViewModel strategyEdit in this)
                     {
-                        foreach (ControlWrapper control in _controls)
+                        foreach (ControlViewModel control in _controls)
                         {
                             string targetParameter = control.UnderlyingControl.ParameterRef;
 

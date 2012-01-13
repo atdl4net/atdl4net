@@ -21,6 +21,7 @@
 
 using System.ComponentModel.Composition;
 using Atdl4net.Model.Controls;
+using Atdl4net.Wpf.View.Controls;
 using Common.Logging;
 
 namespace Atdl4net.Wpf.View.DefaultRendering
@@ -38,22 +39,26 @@ namespace Atdl4net.Wpf.View.DefaultRendering
 
             WpfControlRenderer.RenderLabelledControl<TextField_t>(writer, control, (c, gridCoordinate) =>
             {
-                using (writer.New(WpfXmlWriterTag.TextBox))
+                using (writer.New(DefaultNamespaceProvider.Atdl4netNamespaceUri, typeof(ClickSelectTextBox).Name))
                 {
                     writer.WriteAttribute(WpfXmlWriterAttribute.GridColumn, gridCoordinate.Column.ToString());
                     writer.WriteAttribute(WpfXmlWriterAttribute.GridRow, gridCoordinate.Row.ToString());
 
-                    writer.WriteAttribute(WpfXmlWriterAttribute.Margin, "1");
+//                    writer.WriteAttribute(WpfXmlWriterAttribute.Margin, "1");
+                    writer.WriteAttribute(WpfXmlWriterAttribute.Margin, "1,3,1,3");
 
                     if (!string.IsNullOrEmpty(c.Id))
                         writer.WriteAttribute(WpfXmlWriterAttribute.Name, id);
 
                     writer.WriteAttribute(WpfXmlWriterAttribute.Width, "120");
+                    writer.WriteAttribute(WpfXmlWriterAttribute.HorizontalAlignment, "Left");
 
-                    writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, string.Format("{0}Binding Path=Controls[{1}].ToolTip{2}", "{", id, "}"));
-                    writer.WriteAttribute(WpfXmlWriterAttribute.Text, string.Format("{0}Binding Path=Controls[{1}].UiValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged{2}", "{", id, "}"));
-                    writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, string.Format("{0}Binding Path=Controls[{1}].Enabled{2}", "{", id, "}"));
-                    writer.WriteAttribute(WpfXmlWriterAttribute.Visibility, string.Format("{0}Binding Path=Controls[{1}].Visibility{2}", "{", id, "}"));
+                    writer.WriteAttribute(WpfXmlWriterAttribute.DataContext, string.Format("{{Binding Path=Controls[{0}]}}", id));
+
+                    writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, "{Binding Path=ToolTip}");
+                    writer.WriteAttribute(WpfXmlWriterAttribute.Text, "{Binding Path=UiValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}");
+                    writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, "{Binding Path=Enabled}");
+                    writer.WriteAttribute(WpfXmlWriterAttribute.Visibility, "{Binding Path=Visibility}");
                 }
             });
         }

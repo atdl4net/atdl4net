@@ -34,7 +34,7 @@ namespace Atdl4net.Model.Collections
     /// </summary>
     public class CountryCollection : HashSet<Country_t>
     {
-        Region _region;
+        private readonly Region _region;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CountryCollection"/> class.

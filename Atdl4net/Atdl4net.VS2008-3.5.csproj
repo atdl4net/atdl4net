@@ -31,6 +31,22 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Common.Logging, Version=2.0.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -102,8 +118,6 @@
     <Compile Include=".\Model\Collections\EditRefCollection.cs">
     </Compile>
     <Compile Include=".\Model\Collections\EnumPairCollection.cs">
-    </Compile>
-    <Compile Include=".\Model\Collections\FixTagValuesCollection.cs">
     </Compile>
     <Compile Include=".\Model\Collections\ListItemCollection.cs">
     </Compile>
@@ -463,6 +477,7 @@
     <Compile Include="Fix\FixDateTime.cs" />
     <Compile Include="Fix\FixDateTimeFormat.cs" />
     <Compile Include="Fix\FixFieldValueProvider.cs" />
+    <Compile Include="Fix\FixTagValuesCollection.cs" />
     <Compile Include="Model\Atdl.cs" />
     <Compile Include="Model\Collections\ISimpleDictionary.cs" />
     <Compile Include="Model\Controls\Support\AtdlControlName.cs" />
@@ -497,6 +512,7 @@
     <Compile Include="Notification\INotifyValueChanged.cs" />
     <Compile Include="Notification\StateChangedEventArgs.cs" />
     <Compile Include="Notification\StrategyLoadedEventArgs.cs" />
+    <Compile Include="Notification\ValidationStateChangedEventArgs.cs" />
     <Compile Include="Notification\ValueChangeCompletedEventArgs.cs" />
     <Compile Include="Notification\ValueChangedEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

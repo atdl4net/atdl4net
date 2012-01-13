@@ -19,42 +19,35 @@
 //
 #endregion
 
-using System.Collections;
-using System.Collections.Generic;
-using System.Xml;
-using System.Xml.Linq;
+using System;
+using System.Linq;
 
-namespace Atdl4net.Diagnostics
+namespace Atdl4net.Notification
 {
     /// <summary>
-    /// This class is used to hold additional information about an exception, such as line number and line position for 
-    /// errors in XML files.
+    /// Event argument that provides information about a change in validation state.
     /// </summary>
-    public class ExceptionInfo
+    public class ValidationStateChangedEventArgs : EventArgs
     {
-        private readonly Dictionary<string, object> _data = new Dictionary<string, object>();
+        /// <summary>
+        /// Gets the validity - true if valid; false otherwise.
+        /// </summary>
+        public bool IsValid { get; private set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ExceptionInfo"/> class.
+        /// Gets the Id of the affected control.
         /// </summary>
-        /// <param name="obj">The obj.</param>
-        public ExceptionInfo(XObject obj)
-        {
-            if (obj is IXmlLineInfo && (obj as IXmlLineInfo).HasLineInfo())
-            {
-                _data["LineNumber"] = (obj as IXmlLineInfo).LineNumber;
-                _data["LinePosition"] = (obj as IXmlLineInfo).LinePosition;
-            }
-        }
+        public string ControlId { get; private set; }
 
         /// <summary>
-        /// Populates the exception data.
+        /// Initializes a new <see cref="ValidationStateChangedEventArgs"/> instance.
         /// </summary>
-        /// <param name="data">The data.</param>
-        public void PopulateExceptionData(IDictionary data)
+        /// <param name="isValid">Validation state - true if valid; false otherwise.</param>
+        /// <param name="controlId">Id of the affected control.</param>
+        public ValidationStateChangedEventArgs(string controlId, bool isValid)
         {
-            foreach (KeyValuePair<string, object> item in _data)
-                data[item.Key] = item.Value;
+            ControlId = controlId;
+            IsValid = isValid;
         }
     }
 }

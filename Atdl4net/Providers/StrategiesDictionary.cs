@@ -26,7 +26,7 @@ namespace Atdl4net.Providers
 {
     public class StrategiesDictionary : Dictionary<string, Strategies_t>
     {
-        private StrategyInfoCollection _allStrategies = new StrategyInfoCollection();
+        private readonly StrategyInfoCollection _allStrategies = new StrategyInfoCollection();
 
         public StrategyInfoCollection AllStrategies 
         {
@@ -38,7 +38,7 @@ namespace Atdl4net.Providers
 
         public new void Add(string providerId, Strategies_t strategies)
         {
-            foreach (Strategy_t strategy in strategies.Strategies)
+            foreach (Strategy_t strategy in strategies)
                 _allStrategies.Add(new StrategyInfo(providerId, strategy.Name, strategy.UiRep, strategy.Regions.GetApplicableRegions()));
 
             base.Add(providerId, strategies);
@@ -72,7 +72,7 @@ namespace Atdl4net.Providers
 
                 Strategies_t strategies = this[info.ProviderId];
 
-                return strategies.Strategies[info.StrategyName];
+                return strategies[info.StrategyName];
             }
         }
     }

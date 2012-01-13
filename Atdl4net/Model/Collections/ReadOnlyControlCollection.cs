@@ -139,8 +139,14 @@ namespace Atdl4net.Model.Collections
         /// Updates the parameter values from the controls in this control collection.
         /// </summary>
         /// <param name="parameters">Collection of parameters to be updated.</param>
-        public void UpdateParameterValues(ParameterCollection parameters)
+        /// <param name="shortCircuit">If true, this method returns as soon as any error is found; if false, an attempt is made to update all parameter
+        /// values before the method returns.</param>
+        /// <param name="validationResults">If one or more validations fail, this parameter contains a list of ValidationResults; null otherwise.</param>
+        public bool TryUpdateParameterValues(ParameterCollection parameters, bool shortCircuit, out IList<ValidationResult> validationResults)
         {
+            bool isValid = true;
+            validationResults = null;
+
             foreach (Control_t control in this)
             {
                 string parameter = control.ParameterRef;
@@ -153,15 +159,30 @@ namespace Atdl4net.Model.Collections
                     ValidationResult result = parameters[parameter].SetValueFromControl(control);
 
                     if (!result.IsValid)
-                        throw ThrowHelper.New<InvalidFieldValueException>(this, result.ErrorText);
+                    {
+                        if (validationResults == null)
+                            validationResults = new List<ValidationResult>();
+
+                        validationResults.Add(result);
+
+                        if (shortCircuit)
+                            return false;
+
+                        isValid = false;
+                    }
                 }
             }
+
+            return isValid;
         }
 
-        public void UpdateValuesFromParameters(FixFieldValueProvider controlInitValueProvider)
+        /// <summary>
+        /// Updates the values of each control from its respective parameter.
+        /// </summary>
+        /// <param name="parameters">Parameter collection.</param>
+        /// <param name="controlInitValueProvider">Initial value provider that provides access to the initial FIX field values.</param>
+        public void UpdateValuesFromParameters(ParameterCollection parameters, FixFieldValueProvider controlInitValueProvider)
         {
-            ParameterCollection parameters = controlInitValueProvider.Parameters;
-
             foreach (Control_t control in this)
             {
                 try

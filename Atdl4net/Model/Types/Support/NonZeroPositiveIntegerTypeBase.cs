@@ -22,7 +22,6 @@
 using System;
 using Atdl4net.Resources;
 using Atdl4net.Validation;
-using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 
 namespace Atdl4net.Model.Types.Support
 {

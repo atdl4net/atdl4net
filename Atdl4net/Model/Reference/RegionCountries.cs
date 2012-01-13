@@ -20,15 +20,33 @@
 #endregion
 
 using System.Collections.Generic;
+using Atdl4net.Model.Enumerations;
 
 namespace Atdl4net.Model.Reference
 {
     /// <summary>
     /// Represents the Regions supported by FIXatdl.
     /// </summary>
-    public class Regions
+    public static class Regions
     {
-        private Regions() { }
+        /// <summary>
+        /// Gets the FIXatdl region for the supplied country.
+        /// </summary>
+        /// <param name="country">ISO country code to determine the region for.</param>
+        /// <returns>Applicable region, or Region.None if none is applicable.</returns>
+        public static Region GetRegionForCountry(IsoCountryCode country)
+        {
+            if (TheAmericasCountries.Contains(country))
+                return Region.TheAmericas;
+
+            if (EuropeMiddleEastAfricaCountries.Contains(country))
+                return Region.EuropeMiddleEastAfrica;
+
+            if (AsiaPacificJapanCountries.Contains(country))
+                return Region.AsiaPacificJapan;
+
+            return Region.None;
+        }
 
         /// <summary>
         /// Provides the set of ISO country codes that are in The Americas.

@@ -62,6 +62,9 @@ namespace Atdl4net.Wpf.View
         /// <summary>Height</summary>
         Height,
 
+        /// <summary>HorizontalAlignment</summary>
+        HorizontalAlignment,
+
         /// <summary>Increment</summary>
         Increment,
 
@@ -79,7 +82,10 @@ namespace Atdl4net.Wpf.View
         
         /// <summary>IsExpanded</summary>
         IsExpanded,
-        
+
+        /// <summary>ItemContainerStyle</summary>
+        ItemContainerStyle,
+
         /// <summary>ItemsSource</summary>
         ItemsSource,
         
@@ -106,6 +112,9 @@ namespace Atdl4net.Wpf.View
         
         /// <summary>SelectedValuePath</summary>
         SelectedValuePath,
+
+        /// <summary>SelectionMode</summary>
+        SelectionMode,
         
         /// <summary>Target</summary>
         Target,
@@ -121,6 +130,9 @@ namespace Atdl4net.Wpf.View
 
         /// <summary>Value</summary>
         Value,
+
+        /// <summary>VirtualizingStackPanel.IsVirtualizing</summary>
+        VirtualizingStackPanel_IsVirtualizing,
 
         /// <summary>Visibility</summary>
         Visibility,

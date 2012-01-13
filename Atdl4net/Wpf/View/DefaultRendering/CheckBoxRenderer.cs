@@ -40,7 +40,8 @@ namespace Atdl4net.Wpf.View.DefaultRendering
             {
                 WpfControlRenderer.WriteGridAttribute(writer, control);
 
-                writer.WriteAttribute(WpfXmlWriterAttribute.Margin, "1,5,2,0");
+//                writer.WriteAttribute(WpfXmlWriterAttribute.Margin, "1,5,2,0");
+                writer.WriteAttribute(WpfXmlWriterAttribute.Margin, "1,8,2,3");
 
                 if (!string.IsNullOrEmpty(control.Label))
                     writer.WriteAttribute(WpfXmlWriterAttribute.Content, control.Label);
@@ -48,10 +49,12 @@ namespace Atdl4net.Wpf.View.DefaultRendering
                 if (!string.IsNullOrEmpty(control.Id))
                     writer.WriteAttribute(WpfXmlWriterAttribute.Name, id);
 
-                writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, string.Format("{0}Binding Path=Controls[{1}].ToolTip{2}", "{", id, "}"));
-                writer.WriteAttribute(WpfXmlWriterAttribute.IsChecked, string.Format("{0}Binding Path=Controls[{1}].UiValue, Mode=TwoWay{2}", "{", id, "}"));
-                writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, string.Format("{0}Binding Path=Controls[{1}].Enabled{2}", "{", id, "}"));
-                writer.WriteAttribute(WpfXmlWriterAttribute.Visibility, string.Format("{0}Binding Path=Controls[{1}].Visibility{2}", "{", id, "}"));
+                writer.WriteAttribute(WpfXmlWriterAttribute.DataContext, string.Format("{{Binding Path=Controls[{0}]}}", id));
+
+                writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, "{Binding Path=ToolTip}");
+                writer.WriteAttribute(WpfXmlWriterAttribute.IsChecked, "{Binding Path=UiValue, Mode=TwoWay}");
+                writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, "{Binding Path=Enabled}");
+                writer.WriteAttribute(WpfXmlWriterAttribute.Visibility, "{Binding Path=Visibility}");
             }
         }
     }

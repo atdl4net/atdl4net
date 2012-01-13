@@ -65,32 +65,36 @@ namespace Atdl4net.Wpf.View.Controls
 
         private static void OnValuePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is DoubleSpinner)
-                (d as DoubleSpinner).OnValuePropertyChanged(e.NewValue as decimal?);
-        }
-
-        private void OnValuePropertyChanged(decimal? newValue)
-        {
+//            if (d is DoubleSpinner)
+//                (d as DoubleSpinner).OnValuePropertyChanged(e.NewValue as decimal?);
         }
 
         private void InnerDecrementValue()
         {
-            Value -= InnerIncrement;
+            decimal value = Value ?? 0;
+            value -= InnerIncrement;
+            Value = value;
         }
 
         private void InnerIncrementValue()
         {
-            Value += InnerIncrement;
+            decimal value = Value ?? 0;
+            value += InnerIncrement;
+            Value = value;
         }
 
         private void OuterDecrementValue()
         {
-            Value -= OuterIncrement;
+            decimal value = Value ?? 0;
+            value -= OuterIncrement;
+            Value = value;
         }
 
         private void OuterIncrementValue()
         {
-            Value += OuterIncrement;
+            decimal value = Value ?? 0;
+            value += OuterIncrement;
+            Value = value;
         }
 
         private void value_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)

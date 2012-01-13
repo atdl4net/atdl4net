@@ -28,6 +28,7 @@ using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Xml;
 using Atdl4net.Model.Elements;
+using Atdl4net.Notification;
 using Atdl4net.Utility;
 using Atdl4net.Wpf.View;
 using Atdl4net.Wpf.ViewModel;
@@ -65,10 +66,11 @@ namespace Atdl4net.Wpf
             Application.Current.Resources[ComboBoxSizerKey] = new WpfComboBoxSizer() { ExampleComboBox = new ComboBox(), InitialComboWidth = 28 };
         }
 
-
         public event EventHandler<UnhandledExceptionEventArgs> ExceptionOccurred;
+
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public event EventHandler<ValidationStateChangedEventArgs> ValidationStateChanged;
 
         public UIElementCollection Children
         {
@@ -102,6 +104,15 @@ namespace Atdl4net.Wpf
         {
             get { return (Strategy_t)GetValue(StrategyProperty); }
             set { SetValue(StrategyProperty, value); }
+        }
+
+        /// <summary>
+        /// Refreshes the rendering of the currently selected strategy.
+        /// </summary>
+        public void Refresh()
+        {
+            if (Strategy != null)
+                Render();
         }
 
         /// <remarks>This method does not throw exceptions as this causes issues with WPF data binding.  Instead it
@@ -139,9 +150,7 @@ namespace Atdl4net.Wpf
 
             sizer.Clear();
 
-            StrategyViewModel viewModel = new StrategyViewModel(Strategy, DataEntryMode);
-
-            Application.Current.Resources[DataContextKey] = viewModel;
+            CreateViewModel();
 
             StringBuilder sb = new StringBuilder();
 
@@ -166,14 +175,43 @@ namespace Atdl4net.Wpf
                     //using (StreamWriter writer = File.CreateText(Path.Combine(Path.GetTempPath(), "atdl4net_xaml.xml")))
                     //    writer.Write(sb.ToString());
                 }
-                catch (XamlParseException)
+                catch (XamlParseException ex)
                 {
+                    _log.ErrorFormat("XamlParseException thrown; details: {0}", ex.Message);
+
                     using (StreamWriter writer = File.CreateText(Path.Combine(Path.GetTempPath(), "atdl4net_xaml.xml")))
                         writer.Write(sb.ToString());
 
                     throw;
                 }
             }
+        }
+
+        private void CreateViewModel()
+        {
+            StrategyViewModel previousViewModel = Application.Current.Resources[DataContextKey] as StrategyViewModel;
+
+            if (previousViewModel != null)
+                previousViewModel.Controls.ValidationStateChanged -= new EventHandler<ValidationStateChangedEventArgs>(ControlsValidationStateChanged);
+
+            StrategyViewModel newViewModel = new StrategyViewModel(Strategy, DataEntryMode);
+
+            Application.Current.Resources[DataContextKey] = newViewModel;
+
+            newViewModel.Controls.ValidationStateChanged += new EventHandler<ValidationStateChangedEventArgs>(ControlsValidationStateChanged);
+        }
+
+        void ControlsValidationStateChanged(object sender, ValidationStateChangedEventArgs e)
+        {
+            NotifyValidationStateChanged(e);
+        }
+
+        private void NotifyValidationStateChanged(ValidationStateChangedEventArgs e)
+        {
+            EventHandler<ValidationStateChangedEventArgs> validationStateChanged = ValidationStateChanged;
+
+            if (validationStateChanged != null)
+                validationStateChanged(this, e);
         }
     }
 }

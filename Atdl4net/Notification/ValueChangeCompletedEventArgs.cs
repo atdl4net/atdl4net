@@ -33,13 +33,13 @@ namespace Atdl4net.Notification
         /// <summary>
         /// Gets the control that this event relates to.
         /// </summary>
-        public ControlWrapper Control { get; private set; }
+        public ControlViewModel Control { get; private set; }
 
         /// <summary>
-        /// Initializes a new <see cref="ValueChangeCompletedEventArgs"/> with the supplied ControlWrapper.
+        /// Initializes a new <see cref="ValueChangeCompletedEventArgs"/> with the supplied ControlViewModel.
         /// </summary>
-        /// <param name="control">ControlWrapper for the control that this event relates to.</param>
-        public ValueChangeCompletedEventArgs(ControlWrapper control)
+        /// <param name="control">ControlViewModel for the control that this event relates to.</param>
+        public ValueChangeCompletedEventArgs(ControlViewModel control)
         {
             Control = control;
         }

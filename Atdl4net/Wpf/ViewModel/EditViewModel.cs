@@ -34,14 +34,14 @@ using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 namespace Atdl4net.Wpf.ViewModel
 {
     // TODO: Implement IDisposable
-    public class EditWrapper : INotifyStateChanged, IBindable<ViewModelControlCollection>
+    public class EditViewModel : INotifyStateChanged, IBindable<ViewModelControlCollection>
     {
         private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Wpf.ViewModel");
 
         private readonly IEdit<Control_t> _underlyingEdit;
         private readonly ViewModelEditCollection _edits;
 
-        public EditWrapper(IEdit<Control_t> underlyingEdit)
+        public EditViewModel(IEdit<Control_t> underlyingEdit)
         {
             _underlyingEdit = underlyingEdit;
 
@@ -65,7 +65,7 @@ namespace Atdl4net.Wpf.ViewModel
 
         private void OnFieldValueChanged(object sender, ValueChangedEventArgs e)
         {
-            _log.Debug(m => m("EditWrapper.OnFieldValueChanged invoked; value changed from '{0}' to '{1}'", e.OldValue, e.NewValue));
+            _log.Debug(m => m("EditViewModel.OnFieldValueChanged invoked; value changed from '{0}' to '{1}'", e.OldValue, e.NewValue));
 
             bool previousState = _underlyingEdit.CurrentState;
 
@@ -76,7 +76,7 @@ namespace Atdl4net.Wpf.ViewModel
 
         private void OnField2ValueChanged(object sender, ValueChangedEventArgs e)
         {
-            _log.Debug(m => m("EditWrapper.OnField2ValueChanged invoked; value changed from '{0}' to '{1}'", e.OldValue, e.NewValue));
+            _log.Debug(m => m("EditViewModel.OnField2ValueChanged invoked; value changed from '{0}' to '{1}'", e.OldValue, e.NewValue));
 
             bool previousState = _underlyingEdit.CurrentState;
 
@@ -124,7 +124,7 @@ namespace Atdl4net.Wpf.ViewModel
                 {
                     if (target.Contains(_underlyingEdit.Field))
                     {
-                        ControlWrapper targetControl = target[_underlyingEdit.Field];
+                        ControlViewModel targetControl = target[_underlyingEdit.Field];
 
                         (targetControl as INotifyValueChanged).ValueChanged += new EventHandler<ValueChangedEventArgs>(OnFieldValueChanged);
                     }
@@ -136,7 +136,7 @@ namespace Atdl4net.Wpf.ViewModel
                 {
                     if (target.Contains(_underlyingEdit.Field2))
                     {
-                        ControlWrapper targetControl = target[_underlyingEdit.Field2];
+                        ControlViewModel targetControl = target[_underlyingEdit.Field2];
 
                         (targetControl as INotifyValueChanged).ValueChanged += new EventHandler<ValueChangedEventArgs>(OnField2ValueChanged);
                     }

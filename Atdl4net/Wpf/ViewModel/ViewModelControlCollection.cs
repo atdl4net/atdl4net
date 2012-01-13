@@ -34,9 +34,9 @@ using Atdl4net.Model.Controls;
 namespace Atdl4net.Wpf.ViewModel
 {
     /// <summary>
-    /// Collection of <see cref="ControlWrapper"/>s, part of the Atdl4net ViewModel. 
+    /// Collection of <see cref="ControlViewModel"/>s, part of the Atdl4net ViewModel. 
     /// </summary>
-    public class ViewModelControlCollection : KeyedCollection<string, ControlWrapper>, IDisposable
+    public class ViewModelControlCollection : KeyedCollection<string, ControlViewModel>, IDisposable
     {
         private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Wpf.ViewModel");
 
@@ -66,8 +66,12 @@ namespace Atdl4net.Wpf.ViewModel
 #endif
 
         private bool _disposed;
-        private Strategy_t _underlyingStrategy;
         private ViewModelStrategyEditCollection _strategyEdits;
+
+        /// <summary>
+        /// Raised whenever the validation state of any control changes.
+        /// </summary>
+        public event EventHandler<ValidationStateChangedEventArgs> ValidationStateChanged;
 
         /// <summary>
         /// Initializes a new <see cref="ViewModelControlCollection"/> 
@@ -76,20 +80,19 @@ namespace Atdl4net.Wpf.ViewModel
         /// <param name="mode">Data entry mode.</param>
         public ViewModelControlCollection(Strategy_t strategy, DataEntryMode mode)
         {
-            _underlyingStrategy = strategy;
-
             foreach (Control_t control in strategy.Controls)
             {
-                ControlWrapper controlWrapper = ControlWrapper.Create(strategy, control, mode);
+                ControlViewModel controlViewModel = ControlViewModel.Create(strategy, control, mode);
 
-                Add(controlWrapper);
+                Add(controlViewModel);
 
-                controlWrapper.ValueChangeCompleted += new EventHandler<ValueChangeCompletedEventArgs>(ControlValueChangeCompleted);
+                controlViewModel.ValueChangeCompleted += new EventHandler<ValueChangeCompletedEventArgs>(ControlValueChangeCompleted);
+                controlViewModel.ValidationStateChanged += new EventHandler<ValidationStateChangedEventArgs>(ControlValidationStateChanged);
 
 // Special treatment for radio buttons under Framework 3.5
 #if !NET_40
                 if (control is RadioButton_t)
-                    RegisterRadioButton(control as RadioButton_t, controlWrapper as RadioButtonWrapper);
+                    RegisterRadioButton(control as RadioButton_t, controlViewModel as RadioButtonViewModel);
 #endif
             }
 
@@ -98,19 +101,27 @@ namespace Atdl4net.Wpf.ViewModel
             BindStateRules();
         }
 
+        private void ControlValidationStateChanged(object sender, ValidationStateChangedEventArgs e)
+        {
+            EventHandler<ValidationStateChangedEventArgs> validationStateChanged = ValidationStateChanged;
+
+            if (validationStateChanged != null)
+                validationStateChanged(this, e);
+        }
+
         private void BindStateRules()
         {
-            foreach (ControlWrapper controlWrapper in Items)
-                (controlWrapper as IBindable<ViewModelControlCollection>).Bind(this);
+            foreach (ControlViewModel controlViewModel in Items)
+                (controlViewModel as IBindable<ViewModelControlCollection>).Bind(this);
         }
 
         public void RefreshState()
         {
-            foreach (ControlWrapper controlWrapper in Items)
-                controlWrapper.RefreshState();
+            foreach (ControlViewModel controlViewModel in Items)
+                controlViewModel.RefreshState();
         }
 
-        protected override string GetKeyForItem(ControlWrapper item)
+        protected override string GetKeyForItem(ControlViewModel item)
         {
             return item.Id;
         }
@@ -123,7 +134,7 @@ namespace Atdl4net.Wpf.ViewModel
         }
 
 #if !NET_40
-        private void RegisterRadioButton(RadioButton_t radioButton, RadioButtonWrapper controlWrapper)
+        private void RegisterRadioButton(RadioButton_t radioButton, RadioButtonViewModel controlViewModel)
         {
             string groupName = radioButton.RadioGroup;
 
@@ -136,9 +147,9 @@ namespace Atdl4net.Wpf.ViewModel
                 else
                     groupManager = _radioButtonGroups.AddGroup(groupName);
 
-                groupManager.RegisterRadioButton(controlWrapper);
+                groupManager.RegisterRadioButton(controlViewModel);
 
-                controlWrapper.RadioButtonGroupManager = groupManager;
+                controlViewModel.RadioButtonGroupManager = groupManager;
             }
         }
 #endif
@@ -165,10 +176,15 @@ namespace Atdl4net.Wpf.ViewModel
             {
                 if (disposing)
                 {
+                    foreach (ControlViewModel controlViewModel in this)
+                    {
+                        controlViewModel.ValueChangeCompleted += new EventHandler<ValueChangeCompletedEventArgs>(ControlValueChangeCompleted);
+                        controlViewModel.ValidationStateChanged += new EventHandler<ValidationStateChangedEventArgs>(ControlValidationStateChanged);
+                    }
+
                     (_strategyEdits as IDisposable).Dispose();
 
                     _strategyEdits = null;
-                    _underlyingStrategy = null;
                 }
 
                 _disposed = true;

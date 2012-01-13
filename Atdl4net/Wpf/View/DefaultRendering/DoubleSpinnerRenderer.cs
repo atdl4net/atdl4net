@@ -44,17 +44,22 @@ namespace Atdl4net.Wpf.View.DefaultRendering
                     writer.WriteAttribute(WpfXmlWriterAttribute.GridColumn, gridCoordinate.Column.ToString());
                     writer.WriteAttribute(WpfXmlWriterAttribute.GridRow, gridCoordinate.Row.ToString());
 
+                    writer.WriteAttribute(WpfXmlWriterAttribute.Width, "120");
+                    writer.WriteAttribute(WpfXmlWriterAttribute.HorizontalAlignment, "Left");
+
+                    writer.WriteAttribute(WpfXmlWriterAttribute.Margin, "1,3,1,3");
+
                     if (!string.IsNullOrEmpty(c.Id))
                         writer.WriteAttribute(WpfXmlWriterAttribute.Name, id);
 
-                    writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, string.Format("{0}Binding Path=Controls[{1}].ToolTip{2}", "{", id, "}"));
-                    writer.WriteAttribute(WpfXmlWriterAttribute.Value, string.Format("{0}Binding Path=Controls[{1}].UiValue,Mode=TwoWay,TargetNullValue={{x:Static sys:String.Empty}},StringFormat=\\{{0:D\\}}{2}", "{", id, "}"));
-                    writer.WriteAttribute(WpfXmlWriterAttribute.InnerIncrement, string.Format("{0}Binding Path=Controls[{1}].UnderlyingControl.InnerIncrement, Mode=OneWay{2}", "{", id, "}"));
-                    writer.WriteAttribute(WpfXmlWriterAttribute.OuterIncrement, string.Format("{0}Binding Path=Controls[{1}].UnderlyingControl.OuterIncrement, Mode=OneWay{2}", "{", id, "}"));
-                    writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, string.Format("{0}Binding Path=Controls[{1}].Enabled{2}", "{", id, "}"));
-                    writer.WriteAttribute(WpfXmlWriterAttribute.Visibility, string.Format("{0}Binding Path=Controls[{1}].Visibility{2}", "{", id, "}"));
+                    writer.WriteAttribute(WpfXmlWriterAttribute.DataContext, string.Format("{{Binding Path=Controls[{0}]}}", id));
 
-                    writer.WriteAttribute(WpfXmlWriterAttribute.Width, "120");
+                    writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, "{Binding Path=ToolTip}");
+                    writer.WriteAttribute(WpfXmlWriterAttribute.Value, "{Binding Path=UiValue, Mode=TwoWay, TargetNullValue={x:Static sys:String.Empty}}");
+                    writer.WriteAttribute(WpfXmlWriterAttribute.InnerIncrement, "{Binding Path=UnderlyingControl.InnerIncrement, Mode=OneWay, TargetNullValue=1}");
+                    writer.WriteAttribute(WpfXmlWriterAttribute.OuterIncrement, "{Binding Path=UnderlyingControl.OuterIncrement, Mode=OneWay, TargetNullValue=0.01}");
+                    writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, "{Binding Path=Enabled}");
+                    writer.WriteAttribute(WpfXmlWriterAttribute.Visibility, "{Binding Path=Visibility}");
                 }
             });
         }

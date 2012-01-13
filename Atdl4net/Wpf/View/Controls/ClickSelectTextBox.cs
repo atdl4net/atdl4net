@@ -26,7 +26,7 @@ using System.Windows.Media;
 
 namespace Atdl4net.Wpf.View.Controls
 {
-    internal class ClickSelectTextBox : TextBox
+    public class ClickSelectTextBox : TextBox
     {
         public ClickSelectTextBox()
         {

@@ -101,6 +101,8 @@ namespace Atdl4net.Model.Types
         /// <param name="hostParameter">Parameter that this value belongs to.</param>
         /// <param name="value">Value to convert, may be null.</param>
         /// <returns>If input value is not null, returns value converted to T?; null otherwise.</returns>
+        /// <remarks>Used when setting a parameter value from a control (or anything else that
+        /// implements <see cref="IParameterConvertible"/>).</remarks>
         protected override int? ConvertToNativeType(IParameter hostParameter, IParameterConvertible value)
         {
             return value.ToInt32(hostParameter, CultureInfo.CurrentUICulture);

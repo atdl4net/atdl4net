@@ -27,11 +27,11 @@ using Atdl4net.Utility;
 namespace Atdl4net.Wpf.ViewModel
 {
     /// <summary>
-    /// Wrapper class for <see cref="RadioButton_t"/> - needed only for .NET Framework v3.5 to workaround a bug
+    /// View model class for <see cref="RadioButton_t"/> - needed only for .NET Framework v3.5 to workaround a bug
     /// in that version of the Framework that allows more than one WPF RadioButton in a radio button group to 
     /// selected at a time.
     /// </summary>
-    public class RadioButtonWrapper : ControlWrapper
+    public class RadioButtonViewModel : ControlViewModel
     {
         /// <summary>
         /// Gets/sets the <see cref="RadioButtonGroupManager"/> that is used to manage the state of all the
@@ -40,12 +40,12 @@ namespace Atdl4net.Wpf.ViewModel
         public RadioButtonGroupManager RadioButtonGroupManager { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of <see cref="RadioButtonWrapper"/>.
+        /// Initializes a new instance of <see cref="RadioButtonViewModel"/>.
         /// </summary>
-        /// <param name="control">Underlying <see cref="RadioButton_t"/> for this RadioButtonWrapper.</param>
+        /// <param name="control">Underlying <see cref="RadioButton_t"/> for this RadioButtonViewModel.</param>
         /// <param name="referencedParameter">Parameter that the RadioButton_t refers to.</param>
         /// <param name="mode">Data entry mode (create/amend/view).</param>
-        public RadioButtonWrapper(RadioButton_t control, IParameter referencedParameter, DataEntryMode mode) 
+        public RadioButtonViewModel(RadioButton_t control, IParameter referencedParameter, DataEntryMode mode) 
             :base(control, referencedParameter, mode)
         {
         }

@@ -19,20 +19,27 @@
 //
 #endregion
 
+using System.Collections.Generic;
 using Atdl4net.Fix;
 using Atdl4net.Model.Collections;
-using Atdl4net.Model.Elements.Support;
-using Atdl4net.Utility;
 
 namespace Atdl4net.Model.Elements
 {
     /// <summary>
-    /// ...
+    /// Represents the Strategies element within a FIXatdl file.
     /// </summary>
-    public class Strategies_t
+    public class Strategies_t : IEnumerable<Strategy_t>
     {
-        private StrategyCollection _strategies;
-        private EditCollection _edits = new EditCollection();
+        private readonly StrategyCollection _strategies;
+        private readonly EditCollection _edits = new EditCollection();
+
+        /// <summary>
+        /// Initializes a new <see cref="Strategies_t"/> instance.
+        /// </summary>
+        public Strategies_t()
+        {
+            _strategies = new StrategyCollection(this);
+        }
 
         /// <summary>Indicates whether a new strategy can be chosen during a Cancel/Replace.</summary>
         public bool? ChangeStrategyOnCxlRpl { get; set; }
@@ -62,18 +69,27 @@ namespace Atdl4net.Model.Elements
         /// <remarks>Default value: false.</remarks>
         public bool? Tag957Support { get; set; }
 
-        public StrategyCollection Strategies 
-        { 
-            get 
-            {
-                // Use lazy initialisation as it is not possible to use 'this' in class initialisation.
-                if (_strategies == null)
-                    _strategies = new StrategyCollection(this);
+        /// <summary>
+        /// Gets the number of <see cref="Strategy_t"/> instances in this collection.
+        /// </summary>
+        public int Count { get { return _strategies.Count; } }
 
-                return _strategies; 
-            }
-        }
+        /// <summary>
+        /// Gets the strategy identified by the supplied name.
+        /// </summary>
+        /// <param name="name">Name of strategy.</param>
+        /// <returns><see cref="Strategy_t"/> that has the specified name.</returns>
+        /// <exception cref="KeyNotFoundException">Thrown if the specified name does not match a valid strategy.</exception>
+        public Strategy_t this[string name] { get { return _strategies[name]; } }
 
+        /// <summary>
+        /// Provides access to the underlying collection of strategies - used primarily for deserialization purposes.
+        /// </summary>
+        public StrategyCollection Strategies { get { return _strategies; } }
+
+        /// <summary>
+        /// Gets the global <see cref="Edit_t">Edits</see> for this collection of strategies.
+        /// </summary>
         public EditCollection Edits { get { return _edits; } }
 
         /// <summary>
@@ -82,12 +98,30 @@ namespace Atdl4net.Model.Elements
         /// </summary>
         public void ResolveAll()
         {
-            foreach (Strategy_t strategy in Strategies)
+            foreach (Strategy_t strategy in this)
             {
                 strategy.Controls.ResolveAll();
 
                 strategy.StrategyEdits.ResolveAll(strategy);
             }
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through all the <see cref="Strategy_t"/> instances in this collection.
+        /// </summary>
+        /// <returns>An IEnumerator object that can be used to iterate through the collection.</returns>
+        public IEnumerator<Strategy_t> GetEnumerator()
+        {
+            return _strategies.GetEnumerator();
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through all the <see cref="Strategy_t"/> instances in this collection.
+        /// </summary>
+        /// <returns>An IEnumerator object that can be used to iterate through the collection.</returns>
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return _strategies.GetEnumerator();
         }
     }
 }
