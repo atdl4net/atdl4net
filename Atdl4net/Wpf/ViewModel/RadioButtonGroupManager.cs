@@ -21,7 +21,6 @@
 
 #if !NET_40
 using System.Collections.Generic;
-using Atdl4net.Wpf.ViewModel;
 
 namespace Atdl4net.Wpf.ViewModel
 {

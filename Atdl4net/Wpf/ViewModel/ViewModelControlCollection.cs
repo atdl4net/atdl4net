@@ -27,7 +27,6 @@ using Atdl4net.Notification;
 using Atdl4net.Utility;
 using Common.Logging;
 #if !NET_40
-using System.Windows.Controls;
 using Atdl4net.Model.Controls;
 #endif
 
@@ -60,7 +59,7 @@ namespace Atdl4net.Wpf.ViewModel
             }
         }
 
-        private RadioButtonGroupManagerCollection _radioButtonGroups = new RadioButtonGroupManagerCollection();
+        private readonly RadioButtonGroupManagerCollection _radioButtonGroups = new RadioButtonGroupManagerCollection();
 
         #endregion
 #endif

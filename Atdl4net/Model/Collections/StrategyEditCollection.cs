@@ -20,8 +20,6 @@
 #endregion
 
 using System.Collections.ObjectModel;
-using Atdl4net.Diagnostics;
-using Atdl4net.Diagnostics.Exceptions;
 using Atdl4net.Fix;
 using Atdl4net.Model.Elements;
 using Atdl4net.Model.Elements.Support;

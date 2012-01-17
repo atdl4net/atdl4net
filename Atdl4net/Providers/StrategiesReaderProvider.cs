@@ -19,7 +19,6 @@
 //
 #endregion
 
-using System.Collections.Generic;
 using System.Linq;
 using Atdl4net.Model.Elements;
 using Atdl4net.Notification;

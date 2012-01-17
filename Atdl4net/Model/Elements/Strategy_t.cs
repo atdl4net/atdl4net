@@ -18,16 +18,11 @@
 //      http://www.gnu.org/licenses/.
 //
 #endregion
-using System.Collections.Generic;
+
 using System.Linq;
-using System.Text;
-using Atdl4net.Diagnostics;
-using Atdl4net.Diagnostics.Exceptions;
 using Atdl4net.Fix;
 using Atdl4net.Model.Collections;
 using Atdl4net.Utility;
-using Atdl4net.Validation;
-using Common.Logging;
 
 namespace Atdl4net.Model.Elements
 {
@@ -36,8 +31,6 @@ namespace Atdl4net.Model.Elements
     /// </summary>
     public class Strategy_t : IParentable<Strategies_t>
     {
-        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Elements");
-
         private readonly ReadOnlyControlCollection _controls;
         private readonly StrategyEditCollection _strategyEdits = new StrategyEditCollection();
         private readonly ParameterCollection _parameters = new ParameterCollection();

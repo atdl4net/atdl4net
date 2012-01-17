@@ -22,15 +22,12 @@
 using System.Text;
 using Atdl4net.Utility;
 using Atdl4net.Validation;
-using Common.Logging;
 
 namespace Atdl4net.Model.Elements
 {
     // TODO: Implement IDisposable
     public class StateRule_t : EditEvaluator<Control_t>, IParentable<Control_t>
     {
-        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Elements");
-
         private Control_t _owner;
 
         public bool? Enabled { get; set; }
