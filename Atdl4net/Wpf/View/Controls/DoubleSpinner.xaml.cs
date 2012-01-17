@@ -20,80 +20,103 @@
 #endregion
 
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace Atdl4net.Wpf.View.Controls
 {
     /// <summary>
-    /// Interaction logic for DoubleSpinner.xaml
+    /// Represents a DoubleSpinner control for WPF.
     /// </summary>
-    public partial class DoubleSpinner : UserControl
+    public partial class DoubleSpinner : NumericSpinnerControlBase
     {
         private const decimal DefaultInnerIncrement = 1;
         private const decimal DefaultOuterIncrement = 0.01m;
 
+        /// <summary>
+        /// Dependency property that provides storage for the InnerIncrement property.
+        /// </summary>
         public static readonly DependencyProperty InnerIncrementProperty =
             DependencyProperty.Register("InnerIncrement", typeof(decimal), typeof(DoubleSpinner), new FrameworkPropertyMetadata(DefaultInnerIncrement));
+
+        /// <summary>
+        /// Dependency property that provides storage for the OuterIncrement property.
+        /// </summary>
         public static readonly DependencyProperty OuterIncrementProperty =
             DependencyProperty.Register("OuterIncrement", typeof(decimal), typeof(DoubleSpinner), new FrameworkPropertyMetadata(DefaultOuterIncrement));
-        public static readonly DependencyProperty ValueProperty =
-            DependencyProperty.Register("Value", typeof(decimal?), typeof(DoubleSpinner), new FrameworkPropertyMetadata(OnValuePropertyChanged));
 
+        /// <summary>
+        /// Initializes a new <see cref="DoubleSpinner"/> instance.
+        /// </summary>
         public DoubleSpinner()
         {
             InitializeComponent();
         }
 
-        public decimal? Value
-        {
-            get { return (decimal?)GetValue(ValueProperty); }
-            set { SetValue(ValueProperty, value); }
-        }
-
+        /// <summary>
+        /// Gets/sets the inner increment.
+        /// </summary>
         public decimal InnerIncrement
         {
             get { return (decimal)GetValue(InnerIncrementProperty); }
             set { SetValue(InnerIncrementProperty, value); }
         }
 
+        /// <summary>
+        /// Gets/sets the outer increment.
+        /// </summary>
         public decimal OuterIncrement
         {
             get { return (decimal)GetValue(OuterIncrementProperty); }
             set { SetValue(OuterIncrementProperty, value); }
         }
 
-        private static void OnValuePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-//            if (d is DoubleSpinner)
-//                (d as DoubleSpinner).OnValuePropertyChanged(e.NewValue as decimal?);
-        }
+        #region Private Methods
 
         private void InnerDecrementValue()
         {
+            if (!IsContentValid)
+                return;
+
             decimal value = Value ?? 0;
+
             value -= InnerIncrement;
+            
             Value = value;
         }
 
         private void InnerIncrementValue()
         {
+            if (!IsContentValid)
+                return;
+
             decimal value = Value ?? 0;
+            
             value += InnerIncrement;
+            
             Value = value;
         }
 
         private void OuterDecrementValue()
         {
+            if (!IsContentValid)
+                return;
+
             decimal value = Value ?? 0;
+            
             value -= OuterIncrement;
+            
             Value = value;
         }
 
         private void OuterIncrementValue()
         {
+            if (!IsContentValid)
+                return;
+
             decimal value = Value ?? 0;
+            
             value += OuterIncrement;
+            
             Value = value;
         }
 
@@ -188,5 +211,7 @@ namespace Atdl4net.Wpf.View.Controls
                 e.Handled = true;
             }
         }
+
+        #endregion
     }
 }

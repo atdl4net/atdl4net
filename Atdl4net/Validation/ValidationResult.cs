@@ -29,7 +29,22 @@ namespace Atdl4net.Validation
     /// </summary>
     public class ValidationResult
     {
-        private readonly bool _isValid;
+        /// <summary>
+        /// Type of the result.
+        /// </summary>
+        public enum ResultType
+        {
+            /// <summary>The result represents a valid value.</summary>
+            Valid,
+
+            /// <summary>The result represents a missing mandatory value.</summary>
+            Missing,
+
+            /// <summary>The result represents an invalid value.</summary>
+            Invalid
+        }
+
+        private readonly ResultType _validityType;
         private readonly string _errorText;
 
         private static readonly ValidationResult _validResult = new ValidationResult();
@@ -37,7 +52,13 @@ namespace Atdl4net.Validation
         /// <summary>
         /// Indicates whether the validation that this ValidationResult corresponds to is valid.
         /// </summary>
-        public bool IsValid { get { return _isValid; } }
+        public bool IsValid { get { return _validityType == ResultType.Valid; } }
+
+        /// <summary>
+        /// Indicates whether the result that this ValidationResult corresponds to is invalid
+        /// because the field was required but not present.
+        /// </summary>
+        public bool IsMissing { get { return _validityType == ResultType.Missing; } }
 
         /// <summary>
         /// Gets the error text for this ValidationResult; used when a validation has failed.
@@ -56,15 +77,15 @@ namespace Atdl4net.Validation
         /// <param name="isValid">Set this value to true if the validation succeeded, false otherwise.</param>
         /// <param name="format">Format string.</param>
         /// <param name="args">Optional array of arguments to apply to format string.</param>
-        public ValidationResult(bool isValid, string format, params object[] args)
+        public ValidationResult(ResultType resultType, string format, params object[] args)
         {
-            _isValid = isValid;
+            _validityType = resultType;
             _errorText = string.Format(format, args);
         }
 
         private ValidationResult()
         {
-            _isValid = true;
+            _validityType = ResultType.Valid;
         }
     }
 }

@@ -171,7 +171,13 @@ namespace Atdl4net.Model.Elements
 
             try
             {
-                return _value.SetValueFromControl(this, value);
+                ValidationResult result = _value.SetValueFromControl(this, value);
+
+                // Update the text in the ValidationResult to include this parameter's name
+                if (result.IsMissing)
+                    return new ValidationResult(ValidationResult.ResultType.Missing, ErrorMessages.NonOptionalParameterNotSupplied, Name);
+
+                return result;
             }
             catch (Atdl4netException ex)
             {

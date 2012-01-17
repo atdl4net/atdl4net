@@ -19,29 +19,37 @@
 //
 #endregion
 
-using Atdl4net.Wpf.ViewModel;
 using System;
+using System.ComponentModel;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Atdl4net.Wpf.ViewModel;
 
 namespace Atdl4net.Wpf.View.Controls
 {
     /// <summary>
-    /// 
+    /// Represents a FIXatdl slider control for WPF.
     /// </summary>
     /// <remarks>This control is implemented using a standard WPF Slider and a series of TextBlocks, positioned
     /// using the measuring algorithm in the private UpdateListItems method.  An alternative implementation using 
     /// WPF UniformGrid was tried, but the custom algorithm was found to give better layout results.</remarks>
-    public partial class Slider : UserControl
+    public partial class Slider : UserControl, INotifyPropertyChanged
     {
+        private bool _selectedIndexChangeInProgress = false;
+
         public static readonly DependencyProperty ItemsSourceProperty =
             DependencyProperty.Register("ItemsSource", typeof(ViewModelListItemCollection), typeof(Slider), new FrameworkPropertyMetadata(OnListItemsChanged));
-        public static readonly DependencyProperty SelectedValueProperty =
-            DependencyProperty.Register("SelectedValue", typeof(string), typeof(Slider));
 
-        private int _selectedIndex = -1;
+        public static readonly DependencyProperty SelectedValueProperty =
+            DependencyProperty.Register("SelectedValue", typeof(string), typeof(Slider), new FrameworkPropertyMetadata(OnSelectedValueChanged));
+
+        #region INotifyPropertyChanged Members
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        #endregion
 
         public Slider()
         {
@@ -62,24 +70,57 @@ namespace Atdl4net.Wpf.View.Controls
 
         public int SelectedIndex
         {
-            get { return _selectedIndex; }
+            get
+            {
+                if (ItemsSource != null)
+                    return ItemsSource.GetFirstSelectedEnumIdIndex();
+
+                return -1;
+            }
 
             set
             {
-                if (_selectedIndex != value)
+                try
                 {
-                    _selectedIndex = value;
+                    _selectedIndexChangeInProgress = true;
 
                     if (ItemsSource != null && value >= 0 && value < ItemsSource.Count)
                         SelectedValue = ItemsSource[value].EnumId;
                 }
+                finally
+                {
+                    _selectedIndexChangeInProgress = false;
+                }
+
             }
         }
 
         private static void OnListItemsChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
-            if (dependencyObject is Slider)
-                (dependencyObject as Slider).LayoutControl(e.NewValue as ViewModelListItemCollection);
+            (dependencyObject as Slider).LayoutControl(e.NewValue as ViewModelListItemCollection);
+        }
+
+        private static void OnSelectedValueChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
+        {
+            (dependencyObject as Slider).OnSelectedValueChanged(e.NewValue as string);
+        }
+
+        private void OnSelectedValueChanged(string enumId)
+        {
+            if (!_selectedIndexChangeInProgress && ItemsSource != null)
+            {
+                SelectedIndex = ItemsSource.GetIndexOfEnumId(enumId);
+
+                NotifyPropertyChanged("SelectedIndex");
+            }
+        }
+
+        private void NotifyPropertyChanged(string name)
+        {
+            PropertyChangedEventHandler propertyChanged = PropertyChanged;
+
+            if (propertyChanged !=null)
+                propertyChanged(this, new PropertyChangedEventArgs(name));
         }
 
         private void LayoutControl(ViewModelListItemCollection items)

@@ -1,8 +1,30 @@
-﻿using System;
+﻿#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
+//
+//   This software is released under both commercial and open-source licenses.
+//
+//   If you received this software under the commercial license, the terms of that license can be found in the
+//   Commercial.txt file in the Licenses folder.  If you received this software under the open-source license,
+//   the following applies:
+//
+//      This file is part of Atdl4net.
+//
+//      Atdl4net is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public 
+//      License as published by the Free Software Foundation, either version 2.1 of the License, or (at your option) any later version.
+// 
+//      Atdl4net is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+//      of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+//
+//      You should have received a copy of the GNU Lesser General Public License along with Atdl4net.  If not, see
+//      http://www.gnu.org/licenses/.
+//
+#endregion
+
+using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Common.Logging;
 
 namespace Atdl4net.Wpf.View.Controls
 {
@@ -11,18 +33,30 @@ namespace Atdl4net.Wpf.View.Controls
     /// </summary>
     public partial class TimePicker : UserControl, INotifyPropertyChanged
     {
-        private bool _invalidTime;
+        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Wpf.View.Controls");
+
         private bool _minutesHasFocus;
         private TimeInstant _value = new TimeInstant() { IsEmpty = true };
 
         /// <summary>
-        /// Underlying dependency property for this control's Time property.
+        /// Dependency property that provides storage for this control's Time property.
         /// </summary>
         public static readonly DependencyProperty TimeProperty =
             DependencyProperty.Register("Time", typeof(DateTime?), typeof(TimePicker), new PropertyMetadata(new PropertyChangedCallback(OnTimeChanged)));
 
         /// <summary>
-        /// Initializes a new instance of the TimePicker control.
+        /// Dependency property that provides storage for the validity state of this control.
+        /// </summary>
+        public static readonly DependencyProperty IsContentValidProperty =
+            DependencyProperty.Register("IsContentValid", typeof(bool), typeof(TimePicker), new PropertyMetadata(true));
+
+        /// <summary>
+        /// Raised whenever a property of interest has changed.
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TimePicker"/> control.
         /// </summary>
         public TimePicker()
         {
@@ -55,22 +89,100 @@ namespace Atdl4net.Wpf.View.Controls
             }
         }
 
+        /// <summary>
+        /// Gets the validity state of this control.
+        /// </summary>
+        public bool IsContentValid
+        {
+            get { return (bool)GetValue(IsContentValidProperty); }
+            set { SetValue(IsContentValidProperty, value); }
+        }
+
+        /// <summary>
+        /// Gets or sets the minutes value. Used for typing in a value for minutes.
+        /// </summary>
+        /// <value>The minutes.</value>
+        public string Minutes
+        {
+            get { return _value.IsEmpty ? string.Empty : _value.Minutes.ToString("D2"); }
+
+            set
+            {
+                int minutes;
+
+                if (int.TryParse(value, out minutes) && (minutes >= 0 && minutes <= 59))
+                {
+                    TimeInstant prevValue = _value;
+
+                    _value.Minutes = minutes;
+
+                    if (_value.IsEmpty)
+                    {
+                        _value.IsEmpty = false;
+                        _value.Hours = 0;
+
+                        NotifyHoursPropertyChanged(prevValue, _value);
+                    }
+
+                    NotifyMinutesPropertyChanged(prevValue, _value);
+
+                    UpdateIsContentValid(true);
+                }
+                else
+                    UpdateIsContentValid(false);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the hours. Used for typing in a value for hours.
+        /// </summary>
+        /// <value>The hours.</value>
+        public string Hours
+        {
+            get { return _value.IsEmpty ? string.Empty : _value.Hours.ToString(); }
+
+            set
+            {
+                int hours;
+
+                if (int.TryParse(value, out hours) && (hours >= 0 && hours <= 23))
+                {
+                    TimeInstant prevValue = _value;
+
+                    _value.Hours = hours;
+
+                    if (_value.IsEmpty)
+                    {
+                        _value.IsEmpty = false;
+                        _value.Minutes = 0;
+
+                        NotifyMinutesPropertyChanged(prevValue, _value);
+                    }
+
+                    NotifyHoursPropertyChanged(prevValue, _value);
+
+                    UpdateIsContentValid(true);
+                }
+                else
+                    UpdateIsContentValid(false);
+            }
+        }
+
+        #region Private Methods
+
         private static void OnTimeChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
-            TimePicker target = dependencyObject as TimePicker;
+            (dependencyObject as TimePicker).OnTimeChanged((DateTime?)e.OldValue, (DateTime?)e.NewValue);
+        }
 
-            DateTime? oldValue = (DateTime?)e.OldValue;
-            DateTime? newValue = (DateTime?)e.NewValue;
-
-            // DateTime.MaxValue is used to indicate an invalid date or time
-            if (newValue == DateTime.MaxValue)
-                return;
-
+        private void OnTimeChanged(DateTime? oldValue, DateTime? newValue)
+        {
             TimeInstant oldTime = oldValue != null ? new TimeInstant(((DateTime)oldValue).Hour, ((DateTime)oldValue).Minute) : new TimeInstant();
-            target._value = newValue != null ? new TimeInstant(((DateTime)newValue).Hour, ((DateTime)newValue).Minute) : new TimeInstant();
+            
+            _value = newValue != null ? new TimeInstant(((DateTime)newValue).Hour, ((DateTime)newValue).Minute) : new TimeInstant();
 
-            target.NotifyMinutesPropertyChanged(oldTime, target._value);
-            target.NotifyHoursPropertyChanged(oldTime, target._value);
+            NotifyMinutesPropertyChanged(oldTime, _value);
+            NotifyHoursPropertyChanged(oldTime, _value);
         }
 
         private void upButton_Click(object sender, RoutedEventArgs e)
@@ -147,77 +259,9 @@ namespace Atdl4net.Wpf.View.Controls
             }
         }
 
-        /// <summary>
-        /// Gets or sets the minutes value. Used for typing in a value for minutes.
-        /// </summary>
-        /// <value>The minutes.</value>
-        public string Minutes
-        {
-            get { return _value.IsEmpty ? string.Empty : _value.Minutes.ToString("D2"); }
-
-            set
-            {
-                int minutes;
-
-                if (int.TryParse(value, out minutes) && (minutes >= 0 && minutes <= 59))
-                {
-                    TimeInstant prevValue = _value;
-
-                    _value.Minutes = minutes;
-                    _value.IsValid = true;
-
-                    if (_value.IsEmpty)
-                    {
-                        _value.IsEmpty = false;
-                        _value.Hours = 0;
-
-                        NotifyHoursPropertyChanged(prevValue, _value);
-                    }
-
-                    NotifyMinutesPropertyChanged(prevValue, _value);
-                }
-                else
-                    InvalidateTime();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the hours. Used for typing in a value for hours.
-        /// </summary>
-        /// <value>The hours.</value>
-        public string Hours
-        {
-            get { return _value.IsEmpty ? string.Empty : _value.Hours.ToString(); }
-
-            set
-            {
-                int hours;
-
-                if (int.TryParse(value, out hours) && (hours >= 0 && hours <= 23))
-                {
-                    TimeInstant prevValue = _value;
-
-                    _value.Hours = hours;
-                    _value.IsValid = true;
-
-                    if (_value.IsEmpty)
-                    {
-                        _value.IsEmpty = false;
-                        _value.Minutes = 0;
-
-                        NotifyMinutesPropertyChanged(prevValue, _value);
-                    }
-
-                    NotifyHoursPropertyChanged(prevValue, _value);
-                }
-                else
-                    InvalidateTime();
-            }
-        }
-
         private void IncrementHours()
         {
-            if (!_value.IsValid)
+            if (!IsContentValid)
                 return;
 
             TimeInstant prevValue = _value;
@@ -236,7 +280,7 @@ namespace Atdl4net.Wpf.View.Controls
 
         private void IncrementMinutes()
         {
-            if (!_value.IsValid)
+            if (!IsContentValid)
                 return;
 
             TimeInstant prevValue = _value;
@@ -255,7 +299,7 @@ namespace Atdl4net.Wpf.View.Controls
 
         private void DecrementHours()
         {
-            if (!_value.IsValid)
+            if (!IsContentValid)
                 return;
 
             TimeInstant prevValue = _value;
@@ -274,7 +318,7 @@ namespace Atdl4net.Wpf.View.Controls
 
         private void DecrementMinutes()
         {
-            if (!_value.IsValid)
+            if (!IsContentValid)
                 return;
 
             TimeInstant prevValue = _value;
@@ -293,11 +337,9 @@ namespace Atdl4net.Wpf.View.Controls
 
         private void NotifyHoursPropertyChanged(TimeInstant oldValue, TimeInstant newValue)
         {
-            PropertyChangedEventHandler propertyChanged = PropertyChanged;
-
-            if (propertyChanged != null && TimeInstant.HoursAreDifferent(oldValue, newValue))
+            if (TimeInstant.HoursAreDifferent(oldValue, newValue))
             {
-                propertyChanged(this, new PropertyChangedEventArgs("Hours"));
+                NotifyPropertyChanged("Hours");
 
                 this.SetValue(TimeProperty, _value.ToDateTime());
             }
@@ -305,23 +347,29 @@ namespace Atdl4net.Wpf.View.Controls
 
         private void NotifyMinutesPropertyChanged(TimeInstant oldValue, TimeInstant newValue)
         {
-            PropertyChangedEventHandler propertyChanged = PropertyChanged;
-
-            if (propertyChanged != null && TimeInstant.MinutesAreDifferent(oldValue, newValue))
+            if (TimeInstant.MinutesAreDifferent(oldValue, newValue))
             {
-                propertyChanged(this, new PropertyChangedEventArgs("Minutes"));
+                NotifyPropertyChanged("Minutes");
 
                 this.SetValue(TimeProperty, _value.ToDateTime());
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void InvalidateTime()
+        private void UpdateIsContentValid(bool value)
         {
-            _value.IsValid = false;
+            _log.Debug(m => m("Updating IsContentValid for time picker to {0}", value.ToString().ToLower()));
 
-            this.SetValue(TimeProperty, DateTime.MaxValue);
+            IsContentValid = value;
         }
+
+        private void NotifyPropertyChanged(string propertyName)
+        {
+            PropertyChangedEventHandler propertyChanged = PropertyChanged;
+
+            if (propertyChanged != null)
+                propertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        #endregion
     }
 }

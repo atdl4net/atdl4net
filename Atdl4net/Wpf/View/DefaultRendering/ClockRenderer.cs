@@ -60,6 +60,7 @@ namespace Atdl4net.Wpf.View.DefaultRendering
                     writer.WriteAttribute(WpfXmlWriterAttribute.Time, "{Binding Path=UiValue, Mode=TwoWay}");
                     writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, "{Binding Path=Enabled}");
                     writer.WriteAttribute(WpfXmlWriterAttribute.Visibility, "{Binding Path=Visibility}");
+                    writer.WriteAttribute(WpfXmlWriterAttribute.IsContentValid, "{Binding Path=IsContentValid, Mode=OneWayToSource}");
                 }
             });
         }

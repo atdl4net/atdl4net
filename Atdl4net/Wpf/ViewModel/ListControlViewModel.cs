@@ -80,7 +80,7 @@ namespace Atdl4net.Wpf.ViewModel
         /// <param name="control">Underlying list-based Control_t (of type <see cref="ListControlBase"/>) for this ControlViewModel.</param>
         /// <param name="referencedParameter">Parameter that the specified Control_t relates to.  May be null.</param>
         /// <param name="mode">Data entry mode (create/amend/view).</param>
-        /// <returns></returns>
+        /// <returns>New instance of ListControlViewModel.</returns>
         public static ListControlViewModel Create(ListControlBase control, IParameter referencedParameter, DataEntryMode mode)
         {
             ListControlViewModel controlViewModel = new ListControlViewModel(control, referencedParameter, mode);
@@ -272,8 +272,21 @@ namespace Atdl4net.Wpf.ViewModel
 
                     NotifyValueChanged(oldState, state);
                 }
-
             }
+        }
+
+        /// <summary>
+        /// Refreshes the state of all StateRules for this ListControlViewModel's underlying <see cref="Control_t"/>.
+        /// </summary>
+        public override void RefreshState()
+        {
+            base.RefreshState();
+
+            _log.Debug(m => m("Refreshing SelectedValue and ListItems state for list control with ID {0}", Id));
+
+            _listItems.RefreshState();
+
+            NotifyPropertyChanged("SelectedValue");
         }
     }
 }

@@ -299,4 +299,13 @@
   <data name="InvalidDateOrTimeValueUnknown" xml:space="preserve">
     <value>The value supplied for this date or time field could not be interpreted as a valid date or time.</value>
   </data>
+  <data name="NonOptionalParameterNotSupplied2" xml:space="preserve">
+    <value>This field is not optional; a valid value must be supplied.</value>
+  </data>
+  <data name="InvalidControlValueError" xml:space="preserve">
+    <value>The value supplied for this field is not a valid value.</value>
+  </data>
+  <data name="OneOrMoreInvalidControlValues" xml:space="preserve">
+    <value>One or more controls have invalid values.</value>
+  </data>
 </root>

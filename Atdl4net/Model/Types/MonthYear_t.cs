@@ -60,14 +60,18 @@ namespace Atdl4net.Model.Types
         /// Validates the supplied value in terms of the parameters constraints (e.g., MinValue, MaxValue, etc.).
         /// </summary>
         /// <param name="value">Value to validate, may be null in which case no validation is applied.</param>
+        /// <param name="isRequired">Set to true to check that this parameter is non-null.</param>
         /// <returns>ValidationResult indicating whether the supplied value is valid.</returns>
-        protected override ValidationResult ValidateValue(MonthYear? value)
+        protected override ValidationResult ValidateValue(MonthYear? value, bool isRequired)
         {
             if (MaxValue != null && !(value >= MaxValue))
-                return new ValidationResult(false, ErrorMessages.MaxValueExceeded, value.ToString(), MaxValue);
+                return new ValidationResult(ValidationResult.ResultType.Invalid, ErrorMessages.MaxValueExceeded, value.ToString(), MaxValue);
 
             if (MinValue != null && !(value <= MinValue))
-                return new ValidationResult(false, ErrorMessages.MinValueExceeded, value.ToString(), MinValue);
+                return new ValidationResult(ValidationResult.ResultType.Invalid, ErrorMessages.MinValueExceeded, value.ToString(), MinValue);
+
+            if (isRequired && value == null)
+                return new ValidationResult(ValidationResult.ResultType.Missing, ErrorMessages.NonOptionalParameterNotSupplied2);
 
             return ValidationResult.ValidResult;
         }

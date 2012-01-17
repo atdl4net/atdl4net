@@ -14,7 +14,7 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Slider Grid.Row="0" Grid.Column="0" Name="sliderControl" LargeChange="1" TickPlacement="BottomRight" TickFrequency="1" 
-                    IsSnapToTickEnabled="True" HorizontalAlignment="Center" Margin="0,3,0,0" Value="{Binding ElementName=userControl, Path=SelectedIndex}"/>
+                    IsSnapToTickEnabled="True" HorizontalAlignment="Center" Margin="0,3,0,0" Value="{Binding ElementName=sliderRoot, Path=SelectedIndex}"/>
             <Grid Grid.Row="1" Grid.Column="0" Name="labelArea" Margin="5,0,3,3" />
         </Grid>
     </Border>

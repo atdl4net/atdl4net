@@ -48,7 +48,6 @@ namespace Atdl4net.Wpf.View.DefaultRendering
                         writer.WriteAttribute(WpfXmlWriterAttribute.Name, id);
 
                     writer.WriteAttribute(WpfXmlWriterAttribute.Margin, "1,3,1,3");
-//                    writer.WriteAttribute(WpfXmlWriterAttribute.Margin, "2.5");
 
                     writer.WriteAttribute(WpfXmlWriterAttribute.DataContext, string.Format("{{Binding Path=Controls[{0}]}}", id));
 

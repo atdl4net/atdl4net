@@ -63,7 +63,7 @@ namespace Atdl4net.Model.Controls.Support
         /// Note that it is possible to initialize an enumerated control (e.g., DropDownList_t) from a FIX_ value.  In this case, it must
         /// be possible to retrieve a valid EnumID for the supplied FIX wire value.  The target parameter is used to translate the wire value
         /// into </remarks>
-        public override void LoadDefault(FixFieldValueProvider controlInitValueProvider)
+        public override void LoadInitValue(FixFieldValueProvider controlInitValueProvider)
         {
             // If UseFixField, then attempt to initialize with FIX field...
             if (InitPolicy == InitPolicy_t.UseFixField)

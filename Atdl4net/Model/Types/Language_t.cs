@@ -42,9 +42,13 @@ namespace Atdl4net.Model.Types
         /// is not possible for an IsoLanguageCode value to be invalid.
         /// </summary>
         /// <param name="value">Value to validate, may be null in which case no validation is applied.</param>
+        /// <param name="isRequired">Set to true to check that this parameter is non-null.</param>
         /// <returns>ValidationResult indicating whether the supplied value is valid.</returns>
-        protected override ValidationResult ValidateValue(IsoLanguageCode? value)
+        protected override ValidationResult ValidateValue(IsoLanguageCode? value, bool isRequired)
         {
+            if (isRequired && value == null)
+                return new ValidationResult(ValidationResult.ResultType.Missing, ErrorMessages.NonOptionalParameterNotSupplied2);
+
             return ValidationResult.ValidResult;
         }
 

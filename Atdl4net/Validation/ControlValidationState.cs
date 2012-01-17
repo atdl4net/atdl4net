@@ -36,6 +36,7 @@ namespace Atdl4net.Validation
     {
         private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Validation");
 
+        private ValidationResult _controlValidationResult;
         private ValidationResult _parameterValidationResult;
         private readonly string _controlId;
         private readonly List<StrategyEditViewModel> _strategyEdits = new List<StrategyEditViewModel>();
@@ -58,13 +59,24 @@ namespace Atdl4net.Validation
         {
             get
             {
-                bool state = (_parameterValidationResult == null || _parameterValidationResult.IsValid);
+                bool state = (_controlValidationResult == null || _controlValidationResult.IsValid);
+
+                state &= (_parameterValidationResult == null || _parameterValidationResult.IsValid);
 
                 foreach (StrategyEditViewModel strategyEdit in _strategyEdits)
                     state &= strategyEdit.CurrentState;
 
                 return state;
             }
+        }
+
+        /// <summary>
+        /// Used to hold the results obtained from the control set/validation operation.
+        /// </summary>
+        public ValidationResult ControlValidationResult
+        {
+            get { return _controlValidationResult; }
+            set { _controlValidationResult = value; }
         }
 
         /// <summary>
@@ -99,10 +111,12 @@ namespace Atdl4net.Validation
         {
             _log.Debug(m => m("Evaluating ValidationState for control {0}, CurrentState = {1}", _controlId, CurrentState.ToString().ToLower()));
 
+            bool state = (_controlValidationResult == null || _controlValidationResult.IsValid);
+
             // Evaluating the StrategyEdits may give us meaningless information if the parameter value
             // didn't validate, but we go ahead and do it anyway because failing to do leaves us in an
             // indeterminate state from this value change.
-            bool state = (_parameterValidationResult == null || _parameterValidationResult.IsValid);
+            state &= (_parameterValidationResult == null || _parameterValidationResult.IsValid);
 
             foreach (StrategyEditViewModel strategyEdit in _strategyEdits)
                 state &= strategyEdit.Evaluate(additionalValues);
@@ -122,8 +136,17 @@ namespace Atdl4net.Validation
                 IEnumerable<StrategyEditViewModel> strategyEditsInError = from s in _strategyEdits where !s.CurrentState select s;
 
                 int count = strategyEditsInError.Count();
+                bool parameterIsInvalid = _parameterValidationResult != null && !_parameterValidationResult.IsValid;
 
-                if (_parameterValidationResult != null && !_parameterValidationResult.IsValid)
+                if (_controlValidationResult != null && !_controlValidationResult.IsValid)
+                {
+                    sb.Append(_controlValidationResult.ErrorText);
+
+                    if (count > 0 || parameterIsInvalid)
+                        sb.AppendLine();
+                }
+
+                if (parameterIsInvalid)
                 {
                     sb.Append(_parameterValidationResult.ErrorText);
 

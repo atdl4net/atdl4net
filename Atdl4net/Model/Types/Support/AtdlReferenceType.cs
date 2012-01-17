@@ -89,34 +89,41 @@ namespace Atdl4net.Model.Types.Support
         public ValidationResult SetValueFromControl(IParameter hostParameter, IParameterConvertible value)
         {
             if (ConstValue != null)
-                return new ValidationResult(false, string.Format(ErrorMessages.AttemptToSetConstValueParameter, ConstValue));
+                return new ValidationResult(ValidationResult.ResultType.Invalid, string.Format(ErrorMessages.AttemptToSetConstValueParameter, ConstValue));
 
             try
             {
                 _value = ConvertToNativeType(hostParameter, value);
 
-                return ValidateValue(_value);
+                return ValidateValue(_value, hostParameter.Use == Use_t.Required);
+            }
+            catch (InvalidFieldValueException ex)
+            {
+                _log.Error(m => m("Invalid value of type {0} for parameter {1}; exception text: {2}",
+                    hostParameter.Type, hostParameter.Name, ex.Message));
+
+                return new ValidationResult(ValidationResult.ResultType.Invalid, ErrorMessages.DataConversionFailure, HumanReadableTypeName);
             }
             catch (FormatException ex)
             {
                 _log.Error(m => m("Unable to convert value '{0}' to type {1} for parameter {2}; exception text: {3}",
                     value, hostParameter.Type, hostParameter.Name, ex.Message));
 
-                return new ValidationResult(false, ErrorMessages.DataConversionFailure, HumanReadableTypeName);
+                return new ValidationResult(ValidationResult.ResultType.Invalid, ErrorMessages.DataConversionFailure, HumanReadableTypeName);
             }
             catch (InvalidCastException ex)
             {
                 _log.Error(m => m("Unable to convert value '{0}' to type {1} for parameter {2}; exception text: {3}",
                     value, hostParameter.Type, hostParameter.Name, ex.Message));
 
-                return new ValidationResult(false, ErrorMessages.DataConversionFailure, HumanReadableTypeName);
+                return new ValidationResult(ValidationResult.ResultType.Invalid, ErrorMessages.DataConversionFailure, HumanReadableTypeName);
             }
             catch (ArgumentException ex)
             {
                 _log.Error(m => m("Unable to convert value '{0}' to type {1} for parameter {2}; exception text: {3}",
                     value, hostParameter.Type, hostParameter.Name, ex.Message));
 
-                return new ValidationResult(false, ErrorMessages.DataConversionFailure, HumanReadableTypeName);
+                return new ValidationResult(ValidationResult.ResultType.Invalid, ErrorMessages.DataConversionFailure, HumanReadableTypeName);
             }
         }
 
@@ -141,7 +148,7 @@ namespace Atdl4net.Model.Types.Support
 
             T convertedValue = ConvertFromWireValueFormat(value);
 
-            ValidationResult result = ValidateValue(convertedValue);
+            ValidationResult result = ValidateValue(convertedValue, true);
 
             if (result.IsValid)
                 _value = convertedValue;
@@ -162,16 +169,20 @@ namespace Atdl4net.Model.Types.Support
         {
             T value = ConstValue ?? _value;
 
-            ValidationResult validity = ValidateValue(value);
+            ValidationResult validity = ValidateValue(value, hostParameter.Use == Use_t.Required);
 
             if (!validity.IsValid)
+            {
+                if (validity.IsMissing)
+                    throw ThrowHelper.New<MissingMandatoryValueException>(this, ErrorMessages.NonOptionalParameterNotSupplied, hostParameter.Name);
+
                 throw ThrowHelper.New<InvalidFieldValueException>(ErrorMessages.InvalidGetParameterValue,
                     hostParameter.Name, value, validity.ErrorText);
+            }
 
             string wireValue = ConvertToWireValueFormat(value);
 
-            if (hostParameter.Use == Use_t.Required && wireValue == null)
-                throw ThrowHelper.New<MissingMandatoryValueException>(this, ErrorMessages.NonOptionalParameterNotSupplied, hostParameter.Name);
+            _log.Debug(m => m("Wire value for parameter {0} = '{1}'", hostParameter.Name, wireValue));
 
             return wireValue;
         }
@@ -209,8 +220,9 @@ namespace Atdl4net.Model.Types.Support
         /// Validates the supplied value in terms of the parameters constraints (e.g., MinValue, MaxValue, etc.).
         /// </summary>
         /// <param name="value">Value to validate, may be null in which case no validation is applied.</param>
+        /// <param name="isRequired">Set to true to check that this parameter is non-null.</param>
         /// <returns>Value passed in is returned if it is valid; otherwise an appropriate exception is thrown.</returns>
-        protected abstract ValidationResult ValidateValue(T value);
+        protected abstract ValidationResult ValidateValue(T value, bool isRequired);
 
         /// <summary>
         /// Converts the supplied value from string format (as might be used on the FIX wire) into the type of the type

@@ -38,7 +38,7 @@ namespace Atdl4net.Fix
         private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Fix");
         private static readonly FixFieldValueProvider _emptyProvider = new FixFieldValueProvider(null, null);
 
-        private readonly IInitialValueProvider _initialValueProvider;
+        private readonly IInputValueProvider _initialValueProvider;
         private readonly ParameterCollection _parameters;
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace Atdl4net.Fix
         /// </summary>
         /// <param name="fixValues">Input FIX fields to use.</param>
         /// <param name="parameters">Parameters to use.</param>
-        public FixFieldValueProvider(IInitialValueProvider initialValueProvider, ParameterCollection parameters)
+        public FixFieldValueProvider(IInputValueProvider initialValueProvider, ParameterCollection parameters)
         {
             _initialValueProvider = initialValueProvider;
             _parameters = parameters;
@@ -66,7 +66,7 @@ namespace Atdl4net.Fix
         /// <summary>
         /// Gets the FIX values collection for this value provider.
         /// </summary>
-        public FixTagValuesCollection FixValues { get { return _initialValueProvider.InitialValues; } }
+        public FixTagValuesCollection FixValues { get { return _initialValueProvider.InputValues; } }
 
         /// <summary>
         /// Attempts to get the value of the specified FIX field (in FIX_ format), returning the value as a string.
@@ -120,7 +120,7 @@ namespace Atdl4net.Fix
         {
             string result = null;
 
-            bool retrieved = _initialValueProvider != null && _initialValueProvider.InitialValues.TryGetValue(fixField, out result);
+            bool retrieved = _initialValueProvider != null && _initialValueProvider.InputValues.TryGetValue(fixField, out result);
             
             _log.Debug(m => m("FIX value lookup for field {0} returning {1}; value = '{2}'", fixField,
                 retrieved.ToString().ToLower(), retrieved ? result : "N/A"));

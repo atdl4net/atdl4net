@@ -47,7 +47,7 @@ namespace Atdl4net.Wpf.View.DefaultRendering
                     writer.WriteAttribute(WpfXmlWriterAttribute.Width, "120");
                     writer.WriteAttribute(WpfXmlWriterAttribute.HorizontalAlignment, "Left");
 
-                    writer.WriteAttribute(WpfXmlWriterAttribute.Margin, "1,3,1,3");
+                    writer.WriteAttribute(WpfXmlWriterAttribute.Margin, "1,3,3,3");
 
                     if (!string.IsNullOrEmpty(c.Id))
                         writer.WriteAttribute(WpfXmlWriterAttribute.Name, id);
@@ -60,6 +60,7 @@ namespace Atdl4net.Wpf.View.DefaultRendering
                     writer.WriteAttribute(WpfXmlWriterAttribute.OuterIncrement, "{Binding Path=UnderlyingControl.OuterIncrement, Mode=OneWay, TargetNullValue=0.01}");
                     writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, "{Binding Path=Enabled}");
                     writer.WriteAttribute(WpfXmlWriterAttribute.Visibility, "{Binding Path=Visibility}");
+                    writer.WriteAttribute(WpfXmlWriterAttribute.IsContentValid, "{Binding Path=IsContentValid, Mode=OneWayToSource}");
                 }
             });
         }

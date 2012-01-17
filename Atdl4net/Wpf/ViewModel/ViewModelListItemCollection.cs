@@ -115,6 +115,30 @@ namespace Atdl4net.Wpf.ViewModel
         }
 
         /// <summary>
+        /// Gets the (zero-based) index of the first EnumID that has a value of true.
+        /// </summary>
+        /// <returns>The index of the first EnumID if any enumerated values are set; -1 otherwise.</returns>
+        public int GetFirstSelectedEnumIdIndex()
+        {
+            if (_owningControlViewModel.UiValue == null)
+                return -1;
+
+            return (_owningControlViewModel.UiValue as EnumState).GetFirstSelectedEnumIdIndex();
+        }
+
+        /// <summary>
+        /// Gets the (zero-based) index of the supplied EnumID.
+        /// </summary>
+        /// <returns>The index of the supplied EnumID if that matches a valid enumerated value identifier; -1 otherwise.</returns>
+        public int GetIndexOfEnumId(string enumId)
+        {
+            if (_owningControlViewModel.UiValue == null)
+                return -1;
+
+            return (_owningControlViewModel.UiValue as EnumState).GetIndexOfEnumId(enumId);
+        }
+
+        /// <summary>
         /// Gets the current state (true/false) of the ListItem specified by the supplied EnumID.
         /// </summary>
         /// <param name="enumId">EnumID to get the state for.</param>
@@ -152,6 +176,15 @@ namespace Atdl4net.Wpf.ViewModel
             state[enumId] = value;
 
             _owningControlViewModel.UiValue = state;
+        }
+
+        /// <summary>
+        /// Refreshes the user interface state of each list item within this collection.
+        /// </summary>
+        public void RefreshState()
+        {
+            foreach (ListItemViewModel listItem in this)
+                listItem.RefreshState();
         }
 
         /// <summary>

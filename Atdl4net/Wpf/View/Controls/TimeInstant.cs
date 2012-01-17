@@ -33,13 +33,10 @@ namespace Atdl4net.Wpf.View.Controls
 
         public bool IsEmpty { get; set; }
 
-        public bool IsValid { get; set; }
-
         public TimeInstant(int hours, int minutes)
             : this()
         {
             IsEmpty = false;
-            IsValid = true;
             Hours = hours;
             Minutes = minutes;
         }
@@ -88,7 +85,7 @@ namespace Atdl4net.Wpf.View.Controls
 
         public DateTime? ToDateTime()
         {
-            if (IsEmpty || !IsValid)
+            if (IsEmpty)
                 return null;
 
             DateTime today = DateTime.Now;
@@ -98,8 +95,6 @@ namespace Atdl4net.Wpf.View.Controls
 
         public void FromDateTime(DateTime? value)
         {
-            IsValid = true;
-
             if (value == null)
                 IsEmpty = true;
             else

@@ -161,7 +161,7 @@ namespace Atdl4net.Model.Elements
         /// the tag specified in the initFixField attribute. If the value is equal to "UseFixField" and it is not possible to access the 
         /// value of the specified fix tag then revert to using initValue. If the value is equal to "UseFixField", the field is not accessible,
         /// and initValue is not defined, then do not initialize.</remarks>
-        public abstract void LoadDefault(FixFieldValueProvider controlInitValueProvider);
+        public abstract void LoadInitValue(FixFieldValueProvider controlInitValueProvider);
 
         #endregion
 

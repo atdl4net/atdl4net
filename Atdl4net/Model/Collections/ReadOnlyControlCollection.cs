@@ -122,7 +122,7 @@ namespace Atdl4net.Model.Collections
                 {
                     control = thisControl;
 
-                    thisControl.LoadDefault(controlInitValueProvider);
+                    thisControl.LoadInitValue(controlInitValueProvider);
                 }
             }
             catch (System.Exception ex)
@@ -180,14 +180,15 @@ namespace Atdl4net.Model.Collections
         /// Updates the values of each control from its respective parameter.
         /// </summary>
         /// <param name="parameters">Parameter collection.</param>
-        /// <param name="controlInitValueProvider">Initial value provider that provides access to the initial FIX field values.</param>
+        /// <param name="controlInitValueProvider">Initial value provider that provides access to the initial FIX field values,
+        /// needed to allow control values to be initialised using the FIX_ mechanism .</param>
         public void UpdateValuesFromParameters(ParameterCollection parameters, FixFieldValueProvider controlInitValueProvider)
         {
             foreach (Control_t control in this)
             {
                 try
                 {
-                    control.LoadDefault(controlInitValueProvider);
+                    control.LoadInitValue(controlInitValueProvider);
 
                     if (control.ParameterRef != null)
                     {

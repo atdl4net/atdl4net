@@ -19,54 +19,64 @@
 //
 #endregion
 
-using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace Atdl4net.Wpf.View.Controls
 {
     /// <summary>
-    /// Interaction logic for SingleSpinner.xaml
+    /// Represents a SingleSpinner control for WPF.
     /// </summary>
-    public partial class SingleSpinner : UserControl, INotifyPropertyChanged
+    public partial class SingleSpinner : NumericSpinnerControlBase
     {
         private const decimal DefaultIncrement = 1;
 
+        /// <summary>
+        /// Dependency property that provides storage for the Increment property of this control.
+        /// </summary>
         public static readonly DependencyProperty IncrementProperty =
             DependencyProperty.Register("Increment", typeof(decimal), typeof(SingleSpinner), new FrameworkPropertyMetadata(DefaultIncrement));
 
-        public static readonly DependencyProperty ValueProperty =
-            DependencyProperty.Register("Value", typeof(decimal?), typeof(SingleSpinner));
-
+        /// <summary>
+        /// Initializes a new <see cref="SingleSpinner"/> instance.
+        /// </summary>
         public SingleSpinner()
         {
             InitializeComponent();
         }
 
-        public decimal? Value
-        {
-            get { return (decimal?)GetValue(ValueProperty); }
-            set { SetValue(ValueProperty, value); }
-        }
-
+        /// <summary>
+        /// Gets/sets the Increment property of this control.
+        /// </summary>
         public decimal Increment
         {
             get { return (decimal)GetValue(IncrementProperty); }
             set { SetValue(IncrementProperty, value); }
         }
 
+        #region Private Methods
+
         private void DecrementValue()
         {
+            if (!IsContentValid)
+                return;
+
             decimal value = Value ?? 0;
+
             value -= Increment;
+
             Value = value;
         }
 
         private void IncrementValue()
         {
+            if (!IsContentValid)
+                return;
+
             decimal value = Value ?? 0;
+
             value += Increment;
+
             Value = value;
         }
 
@@ -119,18 +129,6 @@ namespace Atdl4net.Wpf.View.Controls
                 e.Handled = true;
             }
         }
-
-        private void NotifyPropertyChanged(string propertyName)
-        {
-            PropertyChangedEventHandler propertyChanged = PropertyChanged;
-
-            if (propertyChanged != null)
-                propertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        #region INotifyPropertyChanged Members
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion
     }

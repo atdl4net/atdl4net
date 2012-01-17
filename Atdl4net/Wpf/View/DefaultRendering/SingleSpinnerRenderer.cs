@@ -44,7 +44,7 @@ namespace Atdl4net.Wpf.View.DefaultRendering
                     writer.WriteAttribute(WpfXmlWriterAttribute.GridColumn, gridCoordinate.Column.ToString());
                     writer.WriteAttribute(WpfXmlWriterAttribute.GridRow, gridCoordinate.Row.ToString());
 
-                    writer.WriteAttribute(WpfXmlWriterAttribute.Margin, "1,3,1,3");
+                    writer.WriteAttribute(WpfXmlWriterAttribute.Margin, "1,3,3,3");
 
                     writer.WriteAttribute(WpfXmlWriterAttribute.Width, "120");
                     writer.WriteAttribute(WpfXmlWriterAttribute.HorizontalAlignment, "Left");
@@ -59,6 +59,7 @@ namespace Atdl4net.Wpf.View.DefaultRendering
                     writer.WriteAttribute(WpfXmlWriterAttribute.Increment, "{Binding Path=UnderlyingControl.Increment, Mode=OneWay, TargetNullValue=1}");
                     writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, "{Binding Path=Enabled}");
                     writer.WriteAttribute(WpfXmlWriterAttribute.Visibility, "{Binding Path=Visibility}");
+                    writer.WriteAttribute(WpfXmlWriterAttribute.IsContentValid, "{Binding Path=IsContentValid, Mode=OneWayToSource}");
                 }
             });
         }

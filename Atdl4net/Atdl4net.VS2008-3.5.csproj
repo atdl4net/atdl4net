@@ -511,13 +511,15 @@
     <Compile Include="Validation\ValidationResult.cs" />
     <Compile Include="Wpf\ViewModel\ControlViewModel.cs" />
     <Compile Include="Wpf\ViewModel\EditViewModel.cs" />
-    <Compile Include="Wpf\ViewModel\IInitialValueProvider.cs" />
+    <Compile Include="Wpf\ViewModel\IInputValueProvider.cs" />
+    <Compile Include="Wpf\ViewModel\InvalidatableControlViewModel.cs" />
     <Compile Include="Wpf\ViewModel\ListControlViewModel.cs" />
     <Compile Include="Wpf\ViewModel\ListItemViewModel.cs" />
     <Compile Include="Wpf\ViewModel\RadioButtonViewModel.cs" />
     <Compile Include="Wpf\ViewModel\StateRuleViewModel.cs" />
     <Compile Include="Wpf\ViewModel\StrategyEditViewModel.cs" />
     <Compile Include="Wpf\ViewModel\ViewModelStrategyEditCollection.cs" />
+    <Compile Include="Wpf\View\Controls\NumericSpinnerControlBase.cs" />
     <Compile Include="Xml\Serialization\ValueConverter.cs" />
   </ItemGroup>
   <ItemGroup>

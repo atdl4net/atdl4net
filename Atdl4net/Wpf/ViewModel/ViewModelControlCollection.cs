@@ -22,7 +22,6 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Atdl4net.Fix;
 using Atdl4net.Model.Elements;
 using Atdl4net.Notification;
 using Atdl4net.Utility;
@@ -79,7 +78,7 @@ namespace Atdl4net.Wpf.ViewModel
         /// </summary>
         /// <param name="strategy">Strategy that the underlying controls belong to.</param>
         /// <param name="mode">Data entry mode.</param>
-        public ViewModelControlCollection(Strategy_t strategy, IInitialValueProvider initialValueProvider, DataEntryMode mode)
+        public ViewModelControlCollection(Strategy_t strategy, IInputValueProvider initialValueProvider, DataEntryMode mode)
         {
             foreach (Control_t control in strategy.Controls)
             {
@@ -90,7 +89,7 @@ namespace Atdl4net.Wpf.ViewModel
                 controlViewModel.ValueChangeCompleted += new EventHandler<ValueChangeCompletedEventArgs>(ControlValueChangeCompleted);
                 controlViewModel.ValidationStateChanged += new EventHandler<ValidationStateChangedEventArgs>(ControlValidationStateChanged);
 
-// Special treatment for radio buttons under Framework 3.5
+                // Special treatment for radio buttons under Framework 3.5
 #if !NET_40
                 if (control is RadioButton_t)
                     RegisterRadioButton(control as RadioButton_t, controlViewModel as RadioButtonViewModel);
@@ -101,6 +100,13 @@ namespace Atdl4net.Wpf.ViewModel
 
             BindStateRules();
         }
+
+        /// <summary>
+        /// Determines whether all 
+        /// </summary>
+        public bool AreAllValid { get { return this.All(cvm => (!(cvm is InvalidatableControlViewModel) || (cvm as InvalidatableControlViewModel).IsContentValid)); } }
+
+        #region Private Methods
 
         private void ControlValidationStateChanged(object sender, ValidationStateChangedEventArgs e)
         {
@@ -118,6 +124,8 @@ namespace Atdl4net.Wpf.ViewModel
 
         public void RefreshState()
         {
+            _log.Debug("Refreshing state for all controls");
+
             foreach (ControlViewModel controlViewModel in Items)
                 controlViewModel.RefreshState();
         }
@@ -154,6 +162,7 @@ namespace Atdl4net.Wpf.ViewModel
             }
         }
 #endif
+        #endregion
 
         #region IDisposable Members and support
 

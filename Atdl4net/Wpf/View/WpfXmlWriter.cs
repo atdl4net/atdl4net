@@ -224,6 +224,7 @@ namespace Atdl4net.Wpf.View
             _attributeInformation[(int)WpfXmlWriterAttribute.Increment] = new AttributeInformation("Increment");
             _attributeInformation[(int)WpfXmlWriterAttribute.InnerIncrement] = new AttributeInformation("InnerIncrement");
             _attributeInformation[(int)WpfXmlWriterAttribute.IsChecked] = new AttributeInformation("IsChecked");
+            _attributeInformation[(int)WpfXmlWriterAttribute.IsContentValid] = new AttributeInformation("IsContentValid");
             _attributeInformation[(int)WpfXmlWriterAttribute.IsEditable] = new AttributeInformation("IsEditable");
             _attributeInformation[(int)WpfXmlWriterAttribute.IsEnabled] = new AttributeInformation("IsEnabled");
             _attributeInformation[(int)WpfXmlWriterAttribute.IsExpanded] = new AttributeInformation("IsExpanded");

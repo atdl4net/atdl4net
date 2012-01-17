@@ -52,21 +52,24 @@ namespace Atdl4net.Model.Types.Support
         /// Validates the supplied value in terms of the parameters constraints (e.g., MinValue, MaxValue, etc.).
         /// </summary>
         /// <param name="value">Value to validate, may be null in which case no validation is applied.</param>
+        /// <param name="isRequired">Set to true to check that this parameter is non-null.</param>
         /// <returns>ValidationResult indicating whether the supplied value is valid.</returns>
         /// <remarks>DateTime.MaxValue (a date and time at the end of the year 9999) is used to indicate an invalid date or time.</remarks>
-        protected override ValidationResult ValidateValue(DateTime? value)
+        protected override ValidationResult ValidateValue(DateTime? value, bool isRequired)
         {
             if (value != null)
             {
                 if (value == DateTime.MaxValue)
-                    return new ValidationResult(false, ErrorMessages.InvalidDateOrTimeValueUnknown);
+                    return new ValidationResult(ValidationResult.ResultType.Invalid, ErrorMessages.InvalidDateOrTimeValueUnknown);
 
                 if (MaxValue != null && (DateTime)value > MaxValue)
-                    return new ValidationResult(false, ErrorMessages.MaxValueExceeded, value, MaxValue);
+                    return new ValidationResult(ValidationResult.ResultType.Invalid, ErrorMessages.MaxValueExceeded, value, MaxValue);
 
                 if (MinValue != null && (DateTime)value < MinValue)
-                    return new ValidationResult(false, ErrorMessages.MinValueExceeded, value, MinValue);
+                    return new ValidationResult(ValidationResult.ResultType.Invalid, ErrorMessages.MinValueExceeded, value, MinValue);
             }
+            else if (isRequired)
+                return new ValidationResult(ValidationResult.ResultType.Missing, ErrorMessages.NonOptionalParameterNotSupplied2);
 
             return ValidationResult.ValidResult;
         }

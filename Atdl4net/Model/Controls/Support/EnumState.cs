@@ -218,11 +218,35 @@ namespace Atdl4net.Model.Controls.Support
         /// <returns>The first EnumID if any enumerated values are set; otherwise an empty string is returned.</returns>
         public string GetFirstSelectedEnumId()
         {
+            int index = GetFirstSelectedEnumIdIndex();
+
+            return index != -1 ? _enumIds[index] : string.Empty;
+        }
+
+        /// <summary>
+        /// Gets the (zero-based) index of the first EnumID that has a value of true.
+        /// </summary>
+        /// <returns>The index of the first EnumID if any enumerated values are set; -1 otherwise.</returns>
+        public int GetFirstSelectedEnumIdIndex()
+        {
             for (int n = 0; n < _enumStates.Length; n++)
                 if (_enumStates[n])
-                    return _enumIds[n];
+                    return n;
 
-            return string.Empty;
+            return -1;
+        }
+
+        /// <summary>
+        /// Gets the (zero-based) index of the supplied EnumID.
+        /// </summary>
+        /// <returns>The index of the supplied EnumID if that matches a valid enumerated value identifier; -1 otherwise.</returns>
+        public int GetIndexOfEnumId(string enumId)
+        {
+            for (int n = 0; n < _enumIds.Length; n++)
+                if (_enumIds[n] == enumId)
+                    return n;
+
+            return -1;
         }
 
         /// <summary>

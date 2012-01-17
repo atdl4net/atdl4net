@@ -99,12 +99,20 @@ namespace Atdl4net.Wpf.ViewModel
         public bool IsRequiredParameter { get { return _owningCollection.IsRequiredParameter; } }
 
         /// <summary>
-        /// Provides a string representation of this ListItemViewModel, primarily for debugging purposes.
+        /// Refreshes the user interface state of this list item.
         /// </summary>
-        /// <returns>String representation of this instance.</returns>
+        public void RefreshState()
+        {
+            NotifyPropertyChanged("IsSelected");
+        }
+
+        /// <summary>
+        /// Provides a string representation of this ListItemViewModel, used for test automation.
+        /// </summary>
+        /// <returns>Text (i.e., UiRep) for this list item.</returns>
         public override string ToString()
         {
-            return string.Format("ListItemViewModel[{0}, {1}, {2}]", EnumId, UiRep, IsSelected);
+            return UiRep;
         }
 
         private void NotifyPropertyChanged(string propertyName)

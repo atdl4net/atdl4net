@@ -1,11 +1,11 @@
-﻿<UserControl x:Class="Atdl4net.Wpf.View.Controls.SingleSpinner"
+﻿<local:NumericSpinnerControlBase x:Class="Atdl4net.Wpf.View.Controls.SingleSpinner"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Atdl4net.Wpf.View.Controls"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
-             mc:Ignorable="d" Name="controlRoot">
+             mc:Ignorable="d" x:Name="controlRoot">
     <UserControl.Resources>
         <Style TargetType="{x:Type RepeatButton}">
             <Setter Property="Background" Value="Transparent"/>
@@ -39,8 +39,7 @@
             <Grid Grid.Column="0" Height="Auto">
                 <local:ClickSelectTextBox x:Name="value" BorderThickness="0" Margin="0,1,0,0" TextAlignment="Left" 
                                         KeyDown="value_KeyDown">
-                    <Binding ElementName="controlRoot" Path="Value" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged" 
-                             TargetNullValue="{x:Static sys:String.Empty}"/>
+                    <Binding ElementName="controlRoot" Path="Text" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged" TargetNullValue="{x:Static sys:String.Empty}"/>
                 </local:ClickSelectTextBox>
             </Grid>
             <Grid Grid.Column="1">
@@ -59,4 +58,4 @@
             </Grid>
         </Grid>
     </Border>
-</UserControl>
+</local:NumericSpinnerControlBase>

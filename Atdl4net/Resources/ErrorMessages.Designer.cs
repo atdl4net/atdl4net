@@ -225,6 +225,15 @@ namespace Atdl4net.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The value supplied for this field is not a valid value..
+        /// </summary>
+        internal static string InvalidControlValueError {
+            get {
+                return ResourceManager.GetString("InvalidControlValueError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The value supplied, &apos;{0}&apos;, for this date or time field could not be interpreted as a valid date or time..
         /// </summary>
         internal static string InvalidDateOrTimeValue {
@@ -414,6 +423,15 @@ namespace Atdl4net.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This field is not optional; a valid value must be supplied..
+        /// </summary>
+        internal static string NonOptionalParameterNotSupplied2 {
+            get {
+                return ResourceManager.GetString("NonOptionalParameterNotSupplied2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The value supplied for this field, {0}, is invalid as this field can only contain integer values greater than zero..
         /// </summary>
         internal static string NonZeroPositiveIntRequired {
@@ -455,6 +473,15 @@ namespace Atdl4net.Resources {
         internal static string NullOrEmptyStringEnumParseFailure {
             get {
                 return ResourceManager.GetString("NullOrEmptyStringEnumParseFailure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One or more controls have invalid values..
+        /// </summary>
+        internal static string OneOrMoreInvalidControlValues {
+            get {
+                return ResourceManager.GetString("OneOrMoreInvalidControlValues", resourceCulture);
             }
         }
         

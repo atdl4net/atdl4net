@@ -23,6 +23,8 @@ using System;
 using System.Globalization;
 using Atdl4net.Model.Controls.Support;
 using Atdl4net.Model.Elements.Support;
+using Atdl4net.Resources;
+using Atdl4net.Validation;
 
 namespace Atdl4net.Model.Types
 {
@@ -44,6 +46,32 @@ namespace Atdl4net.Model.Types
         public bool? MultiplyBy100 { get; set; }
 
         #region AtdlValueType<T> Overrides
+
+        /// <summary>
+        /// Validates the supplied value in terms of the parameters constraints (e.g., MinValue, MaxValue, etc.).
+        /// </summary>
+        /// <param name="value">Value to validate, may be null in which case no validation is applied.</param>
+        /// <param name="isRequired">Set to true to check that this parameter is non-null.</param>
+        /// <returns>ValidationResult indicating whether the supplied value is valid.</returns>
+        protected override ValidationResult ValidateValue(decimal? value, bool isRequired)
+        {
+            if (value != null)
+            {
+                int adjustmentFactor = (MultiplyBy100 == true) ? 1 : 100;
+
+                if (MaxValue != null && (decimal)value > MaxValue)
+                    return new ValidationResult(ValidationResult.ResultType.Invalid, ErrorMessages.MaxValueExceeded,
+                        RemoveTrailingZeroes(value * adjustmentFactor), RemoveTrailingZeroes(MaxValue * adjustmentFactor));
+
+                if (MinValue != null && (decimal)value < MinValue)
+                    return new ValidationResult(ValidationResult.ResultType.Invalid, ErrorMessages.MinValueExceeded,
+                        RemoveTrailingZeroes(value * adjustmentFactor), RemoveTrailingZeroes(MinValue * adjustmentFactor));
+            }
+            else if (isRequired)
+                return new ValidationResult(ValidationResult.ResultType.Missing, ErrorMessages.NonOptionalParameterNotSupplied2);
+
+            return ValidationResult.ValidResult;
+        }
 
         /// <summary>
         /// Converts the supplied value from string format (as might be used on the FIX wire) into the type of the type
@@ -72,7 +100,7 @@ namespace Atdl4net.Model.Types
             if (value == null)
                 return null;
 
-            decimal adjustedValue = (MultiplyBy100 == true) ? (decimal)value * 100 : (decimal)value;
+            decimal adjustedValue = (MultiplyBy100 == true) ? (decimal)RemoveTrailingZeroes(value * 100) : (decimal)value;
 
             if (Precision == null)
                 return adjustedValue.ToString(CultureInfo.InvariantCulture);
@@ -112,7 +140,7 @@ namespace Atdl4net.Model.Types
 
             if (value != null && applyWireValueFormat)
             {
-                decimal adjustedValue = (MultiplyBy100 == true) ? (decimal)value * 100 : (decimal)value;
+                decimal adjustedValue = (MultiplyBy100 == true) ? (decimal)RemoveTrailingZeroes(value * 100) : (decimal)value;
 
                 if (Precision != null)
                     return Math.Round(adjustedValue, (int)Precision, MidpointRounding.AwayFromZero);
@@ -139,9 +167,7 @@ namespace Atdl4net.Model.Types
             if (value == null || MultiplyBy100 == true)
                 return value;
 
-            // As we are multiplying a decimal, we do this slightly ugly manipulation to remove the trailing zeroes that
-            // the multiplication produces
-            return decimal.Parse(((decimal)value * 100).ToString("G29"));
+            return RemoveTrailingZeroes(value * 100);
         }
 
         /// <summary>
@@ -157,5 +183,14 @@ namespace Atdl4net.Model.Types
         }
 
         #endregion
+
+        private static decimal? RemoveTrailingZeroes(decimal? value)
+        {
+            if (value == null)
+                return null;
+
+            // We use this slightly ugly manipulation to remove the trailing zeroes that multiplication by 100 produces
+            return decimal.Parse(((decimal)value).ToString("G29"));
+        }
     }
 }

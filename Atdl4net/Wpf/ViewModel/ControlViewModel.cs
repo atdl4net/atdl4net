@@ -72,8 +72,12 @@ namespace Atdl4net.Wpf.ViewModel
         private readonly DataEntryMode _dataEntryMode;
         private FixFieldValueProvider _fixFieldValues;
         private ViewModelStateRuleCollection _stateRules;
-        private readonly ControlValidationState _validationState;
         private readonly IParameter _referencedParameter;
+
+        /// <summary>
+        /// Holds the validation state of this control view model.
+        /// </summary>
+        protected readonly ControlValidationState _validationState;
 
         /// <summary>
         /// Raised whenever the value of a property (UiValue, Visibility, IsEnabled) changes.
@@ -122,7 +126,7 @@ namespace Atdl4net.Wpf.ViewModel
         /// <param name="control">Underlying Control_t for this ControlViewModel.</param>
         /// <param name="mode">Data entry mode (create/amend/view).</param>
         /// <returns></returns>
-        public static ControlViewModel Create(Strategy_t underlyingStrategy, Control_t control, IInitialValueProvider initialValueProvider, DataEntryMode mode)
+        public static ControlViewModel Create(Strategy_t underlyingStrategy, Control_t control, IInputValueProvider initialValueProvider, DataEntryMode mode)
         {
             IParameter referencedParameter = null;
 
@@ -145,6 +149,8 @@ namespace Atdl4net.Wpf.ViewModel
 #endif
             if (control is ListControlBase)
                 controlViewModel = ListControlViewModel.Create(control as ListControlBase, referencedParameter, mode);
+            else if (InvalidatableControlViewModel.IsInvalidatable(control))
+                controlViewModel = InvalidatableControlViewModel.Create(control, referencedParameter, mode);
             else
                 controlViewModel = new ControlViewModel(control, referencedParameter, mode);
 
@@ -286,9 +292,10 @@ namespace Atdl4net.Wpf.ViewModel
         }
 
         /// <summary>
-        /// Refreshes the state of all StateRules for this ControlViewModel's underlying <see cref="Control_t"/>.
+        /// Refreshes the state of all StateRules for this ControlViewModel's underlying <see cref="Control_t"/> and
+        /// all control values (in terms of data binding).
         /// </summary>
-        public void RefreshState()
+        public virtual void RefreshState()
         {
             _log.Debug(m => m("Refreshing state for control with ID {0}", Id));
 
@@ -327,7 +334,7 @@ namespace Atdl4net.Wpf.ViewModel
         /// </summary>
         /// <param name="oldValue">Old value before this change.</param>
         /// <param name="newValue">New value.</param>
-        /// <remarks>Note that this method is not intended for databinding, rather to notify Edit_t objects that one of their
+        /// <remarks>Note that the ValueChanged event is not intended for databinding, rather to notify Edit_t objects that one of their
         /// values has changed.</remarks>
         protected void NotifyValueChanged(object oldValue, object newValue)
         {
@@ -386,7 +393,24 @@ namespace Atdl4net.Wpf.ViewModel
             }
         }
 
-        private void NotifyValidationStateChanged(bool isValid)
+        /// <summary>
+        /// Updates the state of the user interface in terms of the validity, tooltip and optionally value.
+        /// </summary>
+        /// <param name="includeValue"></param>
+        protected void RefreshUiState(bool includeValue)
+        {
+            NotifyPropertyChanged("IsValid");
+            NotifyPropertyChanged("ToolTip");
+
+            if (includeValue)
+                NotifyPropertyChanged("UiValue");
+        }
+
+        /// <summary>
+        /// Notifies interested parties that the validation state of this control has changed.
+        /// </summary>
+        /// <param name="isValid">true if the control is now valid; false otherwise.</param>
+        protected void NotifyValidationStateChanged(bool isValid)
         {
             EventHandler<ValidationStateChangedEventArgs> validationStateChanged = ValidationStateChanged;
 
@@ -408,15 +432,6 @@ namespace Atdl4net.Wpf.ViewModel
                 RefreshUiState(false);
             else
                 _log.Debug("Ignoring StrategyEdit change notification as this control's value change is currently being processed");
-        }
-
-        private void RefreshUiState(bool includeValue)
-        {
-            NotifyPropertyChanged("IsValid");
-            NotifyPropertyChanged("ToolTip");
-
-            if (includeValue)
-                NotifyPropertyChanged("UiValue");
         }
 
         internal void BindStrategyEdit(StrategyEditViewModel strategyEditViewModel)

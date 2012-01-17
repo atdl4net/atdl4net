@@ -74,6 +74,9 @@ namespace Atdl4net.Wpf.View
         /// <summary>IsChecked</summary>
         IsChecked,
 
+        /// <summary>IsContentValid</summary>
+        IsContentValid,
+
         /// <summary>IsEditable</summary>
         IsEditable,
         
