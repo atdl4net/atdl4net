@@ -182,13 +182,15 @@ namespace Atdl4net.Model.Collections
         /// <param name="parameters">Parameter collection.</param>
         /// <param name="controlInitValueProvider">Initial value provider that provides access to the initial FIX field values,
         /// needed to allow control values to be initialised using the FIX_ mechanism .</param>
-        public void UpdateValuesFromParameters(ParameterCollection parameters, FixFieldValueProvider controlInitValueProvider)
+        /// <param name="reloadInitValues">Set to true to cause each control to initialize from its InitValue; false to leave each control uninitialized.</param>
+        public void UpdateValuesFromParameters(ParameterCollection parameters, FixFieldValueProvider controlInitValueProvider, bool reloadInitValues)
         {
             foreach (Control_t control in this)
             {
                 try
                 {
-                    control.LoadInitValue(controlInitValueProvider);
+                    if (reloadInitValues)
+                        control.LoadInitValue(controlInitValueProvider);
 
                     if (control.ParameterRef != null)
                     {

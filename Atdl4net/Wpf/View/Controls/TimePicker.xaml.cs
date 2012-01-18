@@ -337,7 +337,8 @@ namespace Atdl4net.Wpf.View.Controls
 
         private void NotifyHoursPropertyChanged(TimeInstant oldValue, TimeInstant newValue)
         {
-            if (TimeInstant.HoursAreDifferent(oldValue, newValue))
+            // Notify when changed, but also when hours is zero, as that is the starting value
+            if (TimeInstant.HoursAreDifferent(oldValue, newValue) || newValue.Hours == 0)
             {
                 NotifyPropertyChanged("Hours");
 
@@ -347,7 +348,8 @@ namespace Atdl4net.Wpf.View.Controls
 
         private void NotifyMinutesPropertyChanged(TimeInstant oldValue, TimeInstant newValue)
         {
-            if (TimeInstant.MinutesAreDifferent(oldValue, newValue))
+            // Notify when changed, but also when minutes is zero, as that is the starting value
+            if (TimeInstant.MinutesAreDifferent(oldValue, newValue) || newValue.Minutes == 0)
             {
                 NotifyPropertyChanged("Minutes");
 

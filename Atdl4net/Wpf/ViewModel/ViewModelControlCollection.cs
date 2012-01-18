@@ -121,12 +121,12 @@ namespace Atdl4net.Wpf.ViewModel
                 (controlViewModel as IBindable<ViewModelControlCollection>).Bind(this);
         }
 
-        public void RefreshState()
+        public void RefreshState(bool reevaluateStateRules)
         {
             _log.Debug("Refreshing state for all controls");
 
             foreach (ControlViewModel controlViewModel in Items)
-                controlViewModel.RefreshState();
+                controlViewModel.RefreshState(reevaluateStateRules);
         }
 
         protected override string GetKeyForItem(ControlViewModel item)

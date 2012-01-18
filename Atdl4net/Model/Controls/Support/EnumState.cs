@@ -100,13 +100,23 @@ namespace Atdl4net.Model.Controls.Support
 
             _log.Debug(m => m("Updating EnumState from {0} to {1}", this.ToString(), source.ToString()));
 
+            int enumCount = _enumIds.Length;
+
             for (int n = 0; n < _enumIds.Length; n++)
             {
-                if (_enumIds[n] == source._enumIds[n])
-                    _enumStates.Set(n, source._enumStates[n]);
-                else
-                    throw ThrowHelper.New<ArgumentException>(this, "Mismatch between the EnumID of the source and target EnumState");
+                for (int index =0;index < source._enumIds.Length; index++)
+                    if (source._enumIds[index] == _enumIds[n])
+                    {
+                        _enumStates.Set(n, source._enumStates[index]);
+
+                        enumCount--;
+
+                        break;
+                    }
             }
+
+            if (enumCount != 0)
+                throw ThrowHelper.New<ArgumentException>(this, "Mismatch between the EnumIDs of the source and target EnumState");
 
             _nonEnumValue = source._nonEnumValue;
         }

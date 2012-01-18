@@ -278,9 +278,10 @@ namespace Atdl4net.Wpf.ViewModel
         /// <summary>
         /// Refreshes the state of all StateRules for this ListControlViewModel's underlying <see cref="Control_t"/>.
         /// </summary>
-        public override void RefreshState()
+        /// <param name="reevaluateStateRules">Set to true to force the control's state rules to be re-evaluated; to false otherwise.</param>
+        public override void RefreshState(bool reevaluateStateRules)
         {
-            base.RefreshState();
+            base.RefreshState(reevaluateStateRules);
 
             _log.Debug(m => m("Refreshing SelectedValue and ListItems state for list control with ID {0}", Id));
 

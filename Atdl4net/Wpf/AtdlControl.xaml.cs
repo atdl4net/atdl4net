@@ -237,12 +237,13 @@ namespace Atdl4net.Wpf
 
             parameters.InitializeValues(inputValues, resetExistingValues);
 
-            Strategy.Controls.UpdateValuesFromParameters(parameters, new FixFieldValueProvider(this, parameters));
+            Strategy.Controls.UpdateValuesFromParameters(parameters, new FixFieldValueProvider(this, parameters), resetExistingValues);
 
             StrategyViewModel viewModel = Application.Current.Resources[StrategyViewModel.DataContextKey] as StrategyViewModel;
 
-            if (viewModel != null)
-                viewModel.Controls.RefreshState();
+            // Only refresh the state when SetInputValues is being called initially, not on subsequent calls
+            if (viewModel != null && resetExistingValues)
+                viewModel.Controls.RefreshState(DataEntryMode == DataEntryMode.Create);
         }
 
         /// <summary>
