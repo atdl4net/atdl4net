@@ -77,11 +77,11 @@ namespace Atdl4net.Wpf.ViewModel
         /// </summary>
         /// <param name="strategy">Strategy that the underlying controls belong to.</param>
         /// <param name="mode">Data entry mode.</param>
-        public ViewModelControlCollection(Strategy_t strategy, IInputValueProvider initialValueProvider, DataEntryMode mode)
+        public ViewModelControlCollection(Strategy_t strategy, IInitialFixValueProvider initialValueProvider)
         {
             foreach (Control_t control in strategy.Controls)
             {
-                ControlViewModel controlViewModel = ControlViewModel.Create(strategy, control, initialValueProvider, mode);
+                ControlViewModel controlViewModel = ControlViewModel.Create(strategy, control, initialValueProvider);
 
                 Add(controlViewModel);
 
@@ -101,9 +101,37 @@ namespace Atdl4net.Wpf.ViewModel
         }
 
         /// <summary>
-        /// Determines whether all 
+        /// Determines whether all controls have internally valid state.  Note that this is not the same as whether
+        /// the controls have valid parameter values.
         /// </summary>
         public bool AreAllValid { get { return this.All(cvm => (!(cvm is InvalidatableControlViewModel) || (cvm as InvalidatableControlViewModel).IsContentValid)); } }
+
+        /// <summary>
+        /// Gets the collection of StrategyEditViewModels for the currently selected strategy.
+        /// </summary>
+        public ViewModelStrategyEditCollection StrategyEdits { get { return _strategyEdits; } }
+
+        /// <summary>
+        /// Refreshes the state of the view and optionally re-evaluates all the state rules for the selected strategy.
+        /// </summary>
+        /// <param name="reevaluateStateRules">Set to true to force the re-evaluation of all the selected strategy's state rules.</param>
+        public void RefreshState(bool reevaluateStateRules)
+        {
+            _log.Debug("Refreshing state for all controls");
+
+            foreach (ControlViewModel controlViewModel in Items)
+                controlViewModel.RefreshState(reevaluateStateRules);
+        }
+
+        /// <summary>
+        /// Gets the unique key for the supplied item.  The key is used to allow keyed access to the collection.
+        /// </summary>
+        /// <param name="item">Item to determine key for.</param>
+        /// <returns>Unique key for item.</returns>
+        protected override string GetKeyForItem(ControlViewModel item)
+        {
+            return item.Id;
+        }
 
         #region Private Methods
 
@@ -119,19 +147,6 @@ namespace Atdl4net.Wpf.ViewModel
         {
             foreach (ControlViewModel controlViewModel in Items)
                 (controlViewModel as IBindable<ViewModelControlCollection>).Bind(this);
-        }
-
-        public void RefreshState(bool reevaluateStateRules)
-        {
-            _log.Debug("Refreshing state for all controls");
-
-            foreach (ControlViewModel controlViewModel in Items)
-                controlViewModel.RefreshState(reevaluateStateRules);
-        }
-
-        protected override string GetKeyForItem(ControlViewModel item)
-        {
-            return item.Id;
         }
 
         private void ControlValueChangeCompleted(object sender, ValueChangeCompletedEventArgs e)

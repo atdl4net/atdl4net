@@ -18,11 +18,13 @@
 //      http://www.gnu.org/licenses/.
 //
 #endregion
-
+using System.Collections.Generic;
 using System.Linq;
 using Atdl4net.Fix;
 using Atdl4net.Model.Collections;
 using Atdl4net.Utility;
+using Atdl4net.Validation;
+using Atdl4net.Wpf.ViewModel;
 
 namespace Atdl4net.Model.Elements
 {
@@ -189,6 +191,74 @@ namespace Atdl4net.Model.Elements
         /// at the Strategies level within the FIXatdl file will be set to this value.
         /// </summary>
         public string WireValue { get; set; }
+
+        /// <summary>
+        /// Loads the initial control values, either from the control's initValue attribute, or using the
+        /// FIX_ mechanism in conjunction with the supplied initial FIX values.
+        /// </summary>
+        /// <param name="controlInitValueProvider">Initial value provider that provides access to the initial FIX field values,
+        /// needed to allow control values to be initialised using the FIX_ mechanism .</param>
+        public void LoadInitialControlValues(FixFieldValueProvider controlInitValueProvider)
+        {
+            Controls.LoadDefaults(controlInitValueProvider);
+        }
+
+        /// <summary>
+        /// Updates the values of each control within this strategy from its respective parameter.
+        /// </summary>
+        /// <param name="controlInitValueProvider">Initial value provider that provides access to the initial FIX field values,
+        /// needed to allow control values to be initialised using the FIX_ mechanism .</param>
+        public void UpdateControlValuesFromParameters(FixFieldValueProvider controlInitValueProvider)
+        {
+            Controls.UpdateValuesFromParameters(Parameters);
+        }
+
+        /// <summary>
+        /// Loads this strategy's parameters with the supplied FIX values.
+        /// </summary>
+        /// <param name="controlInitValueProvider"><see cref="FixFieldValueProvider"/> providing the FIX values to initialize from.</param>
+        /// <param name="resetExistingValues">Set to true if each parameter value is to be reset if its value is specified in
+        /// inputValues; set to false to leave the parameter value unchanged.</param>
+        public void LoadParameterValues(FixFieldValueProvider controlInitValueProvider, bool resetExistingValues)
+        {
+            Parameters.LoadInitialValues(controlInitValueProvider.FixValues, resetExistingValues);
+        }
+
+        /// <summary>
+        /// Evaluate all the <see cref="StrategyEdit_t">StrategyEdit</see>s for this strategy.
+        /// </summary>
+        /// <param name="inputValueProvider">Provider that providers access to any additional FIX field values that may 
+        /// be required in the Edit evaluation.</param>
+        /// <param name="shortCircuit">If true, this method returns as soon as any error is found; if false, all StrategyEdits
+        /// are evaluated before the method returns.</param>
+        public bool EvaluateAllStrategyEdits(IInitialFixValueProvider inputValueProvider, bool shortCircuit)
+        {
+            FixFieldValueProvider additionalValues = inputValueProvider == null ?
+                FixFieldValueProvider.Empty : new FixFieldValueProvider(inputValueProvider, Parameters);
+
+            return _strategyEdits.EvaluateAll(additionalValues, shortCircuit);
+        }
+
+        /// <summary>
+        /// Attempts to updates the parameter values from the controls in this strategy.
+        /// </summary>
+        /// <param name="shortCircuit">If true, this method returns as soon as any error is found; if false, an attempt is made to update all parameter
+        /// values before the method returns.</param>
+        /// <param name="validationResults">If one or more validations fail, this parameter contains a list of ValidationResults; null otherwise.</param>
+        public bool TryUpdateParameterValuesFromControls(bool shortCircuit, out IList<ValidationResult> validationResults)
+        {
+            return Controls.TryUpdateParameterValues(Parameters, shortCircuit, out validationResults);
+        }
+
+        /// <summary>
+        /// Resets all the parameters and controls within this strategy.
+        /// </summary>
+        public void Reset()
+        {
+            Parameters.ResetAll();
+            Controls.ResetAll();
+        }
+
 
         #region IParentable<Strategies_t> Members
 

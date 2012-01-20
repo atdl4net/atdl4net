@@ -82,6 +82,8 @@ namespace Atdl4net.Model.Controls.Support
 
         #endregion
 
+        #region Control_t Overrides
+
         /// <summary>
         /// Sets the value of this control; either via a string or using the FIXatdl '{NULL}' value.
         /// </summary>
@@ -107,7 +109,13 @@ namespace Atdl4net.Model.Controls.Support
             _log.Debug(m => m("Control value is now '{0}'", _value ?? "null"));
         }
 
-        #region Control_t Overrides
+        /// <summary>
+        /// Resets this control to either a null value or for list controls, all options unselected.
+        /// </summary>
+        public override void Reset()
+        {
+            _value = null;
+        }
 
         /// <summary>
         /// Sets the value of this control using the value of the supplied parameter.

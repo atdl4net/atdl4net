@@ -39,17 +39,17 @@ namespace Atdl4net.Xml
     {
         private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Xml.Serialization");
 
-        public Strategies_t Load(FileInfo file)
+        public event System.EventHandler<StrategyLoadedEventArgs> StrategyLoaded;
+
+        public Strategies_t Load(string path)
         {
-            string strategyFilePath = file.FullName;
+            _log.DebugFormat("Attempting to load strategies from file '{0}'.", path);
 
-            _log.DebugFormat("Attempting to load strategies from file '{0}'.", strategyFilePath);
-
-            XDocument document = XDocument.Load(strategyFilePath, LoadOptions.SetLineInfo | LoadOptions.PreserveWhitespace);
+            XDocument document = XDocument.Load(path, LoadOptions.SetLineInfo | LoadOptions.PreserveWhitespace);
 
             Strategies_t strategies = LoadStrategies(document);
 
-            _log.DebugFormat("{0} strategies loaded from file '{1}'.", strategies.Count, strategyFilePath);
+            _log.DebugFormat("{0} strategies loaded from file '{1}'.", strategies.Count, path);
 
             return strategies;
         }
@@ -83,7 +83,7 @@ namespace Atdl4net.Xml
 
             ElementFactory factory = new ElementFactory(SchemaDefinitions.Strategies_t, typeof(Strategy_t));
 
-            factory.ClassDeserialized += new System.EventHandler<ClassDeserializedEventArgs>(factory_ClassDeserialized);
+            factory.ClassDeserialized += new System.EventHandler<ClassDeserializedEventArgs>(OnStrategyDeserialized);
 
             Strategies_t strategies = (Strategies_t)factory.DeserializeElement(element);
 
@@ -92,7 +92,7 @@ namespace Atdl4net.Xml
             return strategies;
         }
 
-        private void factory_ClassDeserialized(object sender, ClassDeserializedEventArgs args)
+        private void OnStrategyDeserialized(object sender, ClassDeserializedEventArgs args)
         {
             NotifyStrategyLoaded(0,0,(args.ExtraInfo as Strategy_t).Name);
         }
@@ -106,8 +106,6 @@ namespace Atdl4net.Xml
             if (strategyLoaded != null)
                 strategyLoaded(this, new StrategyLoadedEventArgs(index, total, strategyName));
         }
-
-        public event System.EventHandler<StrategyLoadedEventArgs> StrategyLoaded;
 
         #endregion
     }

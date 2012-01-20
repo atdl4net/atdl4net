@@ -46,7 +46,6 @@ namespace Atdl4net.Wpf.View.DefaultRendering
 
                     // TODO: This probably needs to self-configure
                     writer.WriteAttribute(WpfXmlWriterAttribute.Width, "75");
-//                    writer.WriteAttribute(WpfXmlWriterAttribute.Margin, "2.5");
                     writer.WriteAttribute(WpfXmlWriterAttribute.HorizontalAlignment, "Left");
                     
                     writer.WriteAttribute(WpfXmlWriterAttribute.Margin, "1,3,1,3");
@@ -56,10 +55,10 @@ namespace Atdl4net.Wpf.View.DefaultRendering
 
                     writer.WriteAttribute(WpfXmlWriterAttribute.DataContext, string.Format("{{Binding Path=Controls[{0}]}}", id));
 
-                    writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, "{Binding Path=ToolTip}");
+                    writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, "{Binding Path=ToolTip, Mode=OneWay}");
                     writer.WriteAttribute(WpfXmlWriterAttribute.Time, "{Binding Path=UiValue, Mode=TwoWay}");
-                    writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, "{Binding Path=Enabled}");
-                    writer.WriteAttribute(WpfXmlWriterAttribute.Visibility, "{Binding Path=Visibility}");
+                    writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, "{Binding Path=Enabled, Mode=OneWay}");
+                    writer.WriteAttribute(WpfXmlWriterAttribute.Visibility, "{Binding Path=Visibility, Mode=OneWay}");
                     writer.WriteAttribute(WpfXmlWriterAttribute.IsContentValid, "{Binding Path=IsContentValid, Mode=OneWayToSource}");
                 }
             });

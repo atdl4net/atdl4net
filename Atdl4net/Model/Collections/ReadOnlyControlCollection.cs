@@ -180,42 +180,38 @@ namespace Atdl4net.Model.Collections
         /// Updates the values of each control from its respective parameter.
         /// </summary>
         /// <param name="parameters">Parameter collection.</param>
-        /// <param name="controlInitValueProvider">Initial value provider that provides access to the initial FIX field values,
-        /// needed to allow control values to be initialised using the FIX_ mechanism .</param>
-        /// <param name="reloadInitValues">Set to true to cause each control to initialize from its InitValue; false to leave each control uninitialized.</param>
-        public void UpdateValuesFromParameters(ParameterCollection parameters, FixFieldValueProvider controlInitValueProvider, bool reloadInitValues)
+        public void UpdateValuesFromParameters(ParameterCollection parameters)
         {
             foreach (Control_t control in this)
             {
-                try
+                bool hasParameterRef = control.ParameterRef != null;
+                bool isValidParameter = hasParameterRef && parameters.Contains(control.ParameterRef);
+                IParameter parameter = isValidParameter ? parameters[control.ParameterRef] : null;
+                object parameterValue = isValidParameter ? parameter.GetCurrentValue() : null;
+
+                if (hasParameterRef && !isValidParameter)
+                    throw ThrowHelper.New<ReferencedObjectNotFoundException>(this, ErrorMessages.UnresolvedParameterRefError, control.ParameterRef);
+
+                // We only want to update the control value if the parameter has a value
+                if (parameterValue != null)
                 {
-                    if (reloadInitValues)
-                        control.LoadInitValue(controlInitValueProvider);
+                    _log.Debug(m => m("Updating control {0} value from parameter {1}", control.Id, parameter.Name));
 
-                    if (control.ParameterRef != null)
-                    {
-                        if (!parameters.Contains(control.ParameterRef))
-                            throw ThrowHelper.New<ReferencedObjectNotFoundException>(this, ErrorMessages.UnresolvedParameterRefError, control.ParameterRef);
-
-                        IParameter parameter = parameters[control.ParameterRef];
-
-                        // We only want to update the control value if the parameter has a value
-                        if (parameter.GetCurrentValue() != null)
-                        {
-                            _log.Debug(m => m("Updating control {0} value from parameter {1}", control.Id, parameter.Name));
-
-                            control.SetValueFromParameter(parameter);
-                        }
-                    }
-                }
-                catch (KeyNotFoundException ex)
-                {
-                    throw ThrowHelper.New<ReferencedObjectNotFoundException>(this, ex, ErrorMessages.UnresolvedParameterRefError, control.ParameterRef);
+                    control.SetValueFromParameter(parameter);
                 }
             }
 
             foreach (Control_t control in this)
                 control.StateRules.EvaluateAll();
+        }
+
+        /// <summary>
+        /// Resets every control in this collection to its empty state.
+        /// </summary>
+        public void ResetAll()
+        {
+            foreach (Control_t control in this)
+                control.Reset();
         }
 
         /// <summary>

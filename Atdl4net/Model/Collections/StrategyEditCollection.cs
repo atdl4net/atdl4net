@@ -41,7 +41,7 @@ namespace Atdl4net.Model.Collections
         /// <param name="additionalValues">Any additional FIX field values that may be required in the Edit evaluation.</param>
         /// <param name="shortCircuit">If true, this method returns as soon as any error is found; if false, all StrategyEdits
         /// are evaluated before the method returns.</param>
-        public bool ValidateAll(FixFieldValueProvider additionalValues, bool shortCircuit)
+        public bool EvaluateAll(FixFieldValueProvider additionalValues, bool shortCircuit)
         {
             bool valid = true;
 

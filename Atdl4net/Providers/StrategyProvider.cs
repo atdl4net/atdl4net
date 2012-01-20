@@ -18,7 +18,7 @@
 //      http://www.gnu.org/licenses/.
 //
 #endregion
-
+using System.IO;
 using System.Linq;
 using Atdl4net.Model.Elements;
 using Atdl4net.Notification;
@@ -26,28 +26,28 @@ using Atdl4net.Xml;
 
 namespace Atdl4net.Providers
 {
-    public class StrategiesReaderProvider : IStrategyProvider
+    public class StrategyProvider : IStrategyProvider
     {
         protected readonly StrategiesReader _strategiesReader = new StrategiesReader();
         protected readonly StrategiesDictionary _strategiesDictionary = new StrategiesDictionary();
 
-        public StrategiesReaderProvider()
+        public StrategyProvider()
         {
             _strategiesReader.StrategyLoaded += new System.EventHandler<StrategyLoadedEventArgs>(OnStrategyLoaded);
         }
 
-        public void Load(StreamProviderContext context)
+        public void Load(string providerId, Stream stream)
         {
-            Strategies_t strategies = _strategiesReader.Load(context.Source);
+            Strategies_t strategies = _strategiesReader.Load(stream);
 
-            _strategiesDictionary[context.ProviderId] = strategies;
+            _strategiesDictionary[providerId] = strategies;
         }
 
-        public void Load(FileProviderContext context)
+        public void Load(string providerId, string path)
         {
-            Strategies_t strategies = _strategiesReader.Load(context.Source);
+            Strategies_t strategies = _strategiesReader.Load(path);
 
-            _strategiesDictionary[context.ProviderId] = strategies;
+            _strategiesDictionary[providerId] = strategies;
         }
 
         public Strategies_t GetStrategiesByProvider(string providerId)
@@ -55,11 +55,16 @@ namespace Atdl4net.Providers
             return _strategiesDictionary[providerId];
         }
 
-        public Strategy_t GetStrategyByName(string providerId, string name)
+        public Strategy_t GetStrategyByName(string providerId, string name, bool resetStrategy)
         {
             Strategies_t strategies = _strategiesDictionary[providerId];
 
-            return strategies[name];
+            Strategy_t strategy = strategies[name];
+
+            if (resetStrategy)
+                strategy.Reset();
+
+            return strategy;
         }
 
         #region IStrategyProvider Members

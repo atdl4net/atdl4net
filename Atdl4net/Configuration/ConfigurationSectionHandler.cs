@@ -36,6 +36,13 @@ namespace Atdl4net.Configuration
 
         public class WpfElement : ConfigurationElement
         {
+            [ConfigurationProperty("resetStrategyOnAssignmentToControl", DefaultValue = true, IsRequired = false)]
+            public bool ResetStrategyOnAssignmentToControl
+            {
+                get { return (bool)this["resetStrategyOnAssignmentToControl"]; }
+                set { this["resetStrategyOnAssignmentToControl"] = value; }
+            }
+
             [ConfigurationProperty("view")]
             public ViewElement View
             {

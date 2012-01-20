@@ -38,7 +38,7 @@ namespace Atdl4net.Fix
         private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Fix");
         private static readonly FixFieldValueProvider _emptyProvider = new FixFieldValueProvider(null, null);
 
-        private readonly IInputValueProvider _initialValueProvider;
+        private readonly IInitialFixValueProvider _initialValueProvider;
         private readonly ParameterCollection _parameters;
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace Atdl4net.Fix
         /// </summary>
         /// <param name="fixValues">Input FIX fields to use.</param>
         /// <param name="parameters">Parameters to use.</param>
-        public FixFieldValueProvider(IInputValueProvider initialValueProvider, ParameterCollection parameters)
+        public FixFieldValueProvider(IInitialFixValueProvider initialValueProvider, ParameterCollection parameters)
         {
             _initialValueProvider = initialValueProvider;
             _parameters = parameters;
@@ -66,7 +66,7 @@ namespace Atdl4net.Fix
         /// <summary>
         /// Gets the FIX values collection for this value provider.
         /// </summary>
-        public FixTagValuesCollection FixValues { get { return _initialValueProvider.InputValues; } }
+        public FixTagValuesCollection FixValues { get { return _initialValueProvider.InputFixValues; } }
 
         /// <summary>
         /// Attempts to get the value of the specified FIX field (in FIX_ format), returning the value as a string.
@@ -118,12 +118,16 @@ namespace Atdl4net.Fix
         /// <returns>true if the field could be retrieved; false otherwise.</returns>
         public bool TryGetValue(string fixField, out string value)
         {
+            bool retrieved = false;
             string result = null;
 
-            bool retrieved = _initialValueProvider != null && _initialValueProvider.InputValues.TryGetValue(fixField, out result);
-            
-            _log.Debug(m => m("FIX value lookup for field {0} returning {1}; value = '{2}'", fixField,
-                retrieved.ToString().ToLower(), retrieved ? result : "N/A"));
+            if (_initialValueProvider != null && _initialValueProvider.InputFixValues != null)
+            {
+                retrieved = _initialValueProvider != null && _initialValueProvider.InputFixValues.TryGetValue(fixField, out result);
+
+                _log.Debug(m => m("FIX value lookup for field {0} returning {1}; value = '{2}'", fixField,
+                    retrieved.ToString().ToLower(), retrieved ? result : "N/A"));
+            }
 
             value = retrieved ? result : null;
 

@@ -162,7 +162,7 @@ namespace Atdl4net.Wpf.View.Controls
                 if (n > 0)
                     offset = widths[0] / 2 + spacing * n - widths[n] / 2;
 
-                labelArea.Children.Add(new TextBlock() { Text = items[n].UiRep, Margin = new Thickness(offset, 0, 0, 0) });
+                labelArea.Children.Add(new Label() { Content = items[n].UiRep, Margin = new Thickness(offset, 0, 0, 0) });
             }
 
             sliderControl.Width = spacing * (numItems - 1) + internalMargin + 10;

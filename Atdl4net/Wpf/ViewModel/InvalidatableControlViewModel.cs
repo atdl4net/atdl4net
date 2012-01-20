@@ -39,8 +39,13 @@ namespace Atdl4net.Wpf.ViewModel
     {
         private static readonly ValidationResult _invalidResult = new ValidationResult(ValidationResult.ResultType.Invalid, ErrorMessages.InvalidControlValueError);
 
-        private InvalidatableControlViewModel(Control_t control, IParameter referencedParameter, DataEntryMode mode)
-            : base(control, referencedParameter, mode)
+        /// <summary>
+        /// Initializes a new <see cref="InvalidatableControlViewModel"/> instance.
+        /// </summary>
+        /// <param name="control">Control that this control view model corresponds to.</param>
+        /// <param name="referencedParameter">Parameter for this control.  May be null.</param>
+        private InvalidatableControlViewModel(Control_t control, IParameter referencedParameter)
+            : base(control, referencedParameter)
         {
         }
 
@@ -53,6 +58,9 @@ namespace Atdl4net.Wpf.ViewModel
 
             set
             {
+                if (_renderInProgress)
+                    return;
+
                 _validationState.ControlValidationResult = value ? ValidationResult.ValidResult : _invalidResult;
 
                 NotifyValidationStateChanged(_validationState.CurrentState);
@@ -66,11 +74,10 @@ namespace Atdl4net.Wpf.ViewModel
         /// </summary>
         /// <param name="control">Underlying Control_t for this ControlViewModel.</param>
         /// <param name="referencedParameter">Parameter that the specified Control_t relates to.  May be null.</param>
-        /// <param name="mode">Data entry mode (create/amend/view).</param>
         /// <returns>New instance of InvalidatableControlViewModel.</returns>
-        public static InvalidatableControlViewModel Create(Control_t control, IParameter referencedParameter, DataEntryMode mode)
+        public static InvalidatableControlViewModel Create(Control_t control, IParameter referencedParameter)
         {
-            return new InvalidatableControlViewModel(control, referencedParameter, mode);
+            return new InvalidatableControlViewModel(control, referencedParameter);
         }
 
         /// <summary>

@@ -41,5 +41,11 @@ namespace Atdl4net.Model.Controls
         {
             _log.Debug(m => m("New EditableDropDownList_t created as control {0}", id));
         }
+
+        /// <summary>
+        /// Indicates whether the EnumState value for this control can be set to a value other than one of the enumerated
+        /// values.
+        /// </summary>
+        protected override bool IsNonEnumValueAllowed { get { return true; } }
     }
 }

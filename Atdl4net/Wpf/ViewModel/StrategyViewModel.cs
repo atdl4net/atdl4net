@@ -20,6 +20,7 @@
 #endregion
 
 using System;
+using Atdl4net.Fix;
 using Atdl4net.Model.Elements;
 using Atdl4net.Utility;
 
@@ -35,6 +36,7 @@ namespace Atdl4net.Wpf.ViewModel
         public const string DataContextKey = "atdl4netViewModelKey";
 
         private bool _disposed;
+        private readonly Strategy_t _underlyingStrategy;
 
         /// <summary>
         /// Gets the set of controls (<see cref="ControlViewModel"/>s) for this strategy (<see cref="StrategyViewModel"/>).
@@ -42,15 +44,96 @@ namespace Atdl4net.Wpf.ViewModel
         public ViewModelControlCollection Controls { get; private set; }
 
         /// <summary>
+        /// Gets the set of strategy edits (<see cref="StrategyEditViewModel"/>s) for this strategy (<see cref="StrategyViewModel"/>).
+        /// </summary>
+        public ViewModelStrategyEditCollection StrategyEdits { get; private set; }
+
+        /// <summary>
+        /// Determines whether all controls within the strategy have internally valid state.  Note that this is 
+        /// not the same as whether the controls have valid parameter values.
+        /// </summary>
+        public bool AreAllControlsInternallyValid { get { return Controls.AreAllValid; } }
+
+        /// <summary>
         /// Initializes a new <see cref="StrategyViewModel"/> 
         /// </summary>
         /// <param name="strategy"><see cref="Strategy_t"/> for this View Model.</param>
-        /// <param name="mode">Data entry mode.</param>
-        public StrategyViewModel(Strategy_t strategy, IInputValueProvider initialValueProvider, DataEntryMode mode)
+        public StrategyViewModel(Strategy_t strategy, IInitialFixValueProvider initialValueProvider)
         {
-            Controls = new ViewModelControlCollection(strategy, initialValueProvider, mode);
+            _underlyingStrategy = strategy;
 
-            //Controls.RefreshState();
+            Controls = new ViewModelControlCollection(strategy, initialValueProvider);
+            StrategyEdits = Controls.StrategyEdits;
+        }
+
+        /// <summary>
+        /// Evaluates all strategy edits within the currently selected strategy.
+        /// </summary>
+        /// <param name="inputValueProvider">Provider that providers access to any additional FIX field values that may 
+        /// be required in the Edit evaluation.</param>
+        /// <returns>Summary state of all StrategyEdits after the evaluation.</returns>
+        public bool EvaluateAllStrategyEdits(IInitialFixValueProvider inputValueProvider)
+        {
+            FixFieldValueProvider additionalValues = inputValueProvider == null ?
+                FixFieldValueProvider.Empty : new FixFieldValueProvider(inputValueProvider, _underlyingStrategy.Parameters);
+
+            return StrategyEdits.EvaluateAll(additionalValues);
+        }
+
+        /// <summary>
+        /// Evaluates all strategy edits within the currently selected strategy.
+        /// </summary>
+        /// <param name="inputValueProvider">Provider that providers access to any additional FIX field values that may 
+        /// be required in the Edit evaluation.</param>
+        /// <returns>Summary state of all StrategyEdits after the evaluation.</returns>
+        public bool EvaluateAffectedStrategyEdits(IInitialFixValueProvider inputValueProvider, FixField updatedField)
+        {
+            FixFieldValueProvider additionalValues = inputValueProvider == null ?
+                FixFieldValueProvider.Empty : new FixFieldValueProvider(inputValueProvider, _underlyingStrategy.Parameters);
+
+            bool result = StrategyEdits.EvaluateAffected(additionalValues, updatedField);
+
+            foreach (ControlViewModel control in Controls)
+                control.OnValueChangeCompleted();
+
+            return result;
+        }
+
+        /// <summary>
+        /// Used to inform the view model that rendering is about to begin.
+        /// </summary>
+        public void BeginRender()
+        {
+            foreach (ControlViewModel control in Controls)
+                control.IsRenderInProgress = true;
+        }
+
+        /// <summary>
+        /// Used to inform the view model that rendering has finished.
+        /// </summary>
+        public void EndRender()
+        {
+            foreach (ControlViewModel cvm in Controls)
+                cvm.IsRenderInProgress = false;
+        }
+
+        /// <summary>
+        /// Updates the data entry mode for all control view models.
+        /// </summary>
+        /// <param name="dataEntryMode">New DataEntryMode.</param>
+        public void UpdateDataEntryMode(DataEntryMode dataEntryMode)
+        {
+            foreach (ControlViewModel cvm in Controls)
+                cvm.DataEntryMode = dataEntryMode;
+        }
+
+        /// <summary>
+        /// Refreshes the state of the view and optionally re-evaluates all the state rules for the selected strategy.
+        /// </summary>
+        /// <param name="reevaluateStateRules">Set to true to force the re-evaluation of all the selected strategy's state rules.</param>
+        public void RefreshViewState(bool reevaluateStateRules)
+        {
+            Controls.RefreshState(reevaluateStateRules);
         }
 
         #region IDisposable Members and support

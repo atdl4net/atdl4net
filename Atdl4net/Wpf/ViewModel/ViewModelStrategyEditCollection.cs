@@ -22,6 +22,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Atdl4net.Fix;
 using Atdl4net.Model.Collections;
 using Atdl4net.Model.Elements;
 
@@ -55,6 +56,41 @@ namespace Atdl4net.Wpf.ViewModel
                                            where c.ParameterRef != null && strategyEdit.Sources.Contains(c.ParameterRef) 
                                            select c);
             }
+        }
+
+        /// <summary>
+        /// Evaluates all the underlying <see cref="StrategyEdit_t"/>s and notifies any interested parties of change
+        /// of state.
+        /// </summary>
+        /// <param name="inputValueProvider">Provider that providers access to any additional FIX field values that may 
+        /// be required in the Edit evaluation.</param>
+        /// <returns>Summary state of all StrategyEdits after the evaluation.</returns>
+        public bool EvaluateAll(FixFieldValueProvider inputValueProvider)
+        {
+            bool overallState = true;
+
+            foreach (StrategyEditViewModel strategyEdit in this)
+                overallState &= strategyEdit.Evaluate(inputValueProvider);
+
+            return overallState;
+        }
+
+        /// <summary>
+        /// Evaluates all the underlying <see cref="StrategyEdit_t"/>s and notifies any interested parties of change
+        /// of state.
+        /// </summary>
+        /// <param name="inputValueProvider">Provider that providers access to any additional FIX field values that may 
+        /// be required in the Edit evaluation.</param>
+        /// <returns>Summary state of all StrategyEdits after the evaluation.</returns>
+        public bool EvaluateAffected(FixFieldValueProvider inputValueProvider, FixField fixField)
+        {
+            bool overallState = true;
+
+            foreach (StrategyEditViewModel strategyEdit in this)
+                if (strategyEdit.Sources.Contains(Enum.GetName(typeof(FixField), fixField)))
+                    overallState &= strategyEdit.Evaluate(inputValueProvider);
+
+            return overallState;
         }
 
         #region IDisposable Members and support

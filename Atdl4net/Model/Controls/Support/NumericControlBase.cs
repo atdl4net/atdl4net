@@ -135,6 +135,14 @@ namespace Atdl4net.Model.Controls.Support
         }
 
         /// <summary>
+        /// Resets this control to either a null value or for list controls, all options unselected.
+        /// </summary>
+        public override void Reset()
+        {
+            _value = null;
+        }
+
+        /// <summary>
         /// Sets the value of this control using the value of the supplied parameter.
         /// </summary>
         /// <param name="parameter">Parameter to set this control's value from.</param>

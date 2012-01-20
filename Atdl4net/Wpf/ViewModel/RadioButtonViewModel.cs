@@ -22,7 +22,6 @@
 #if !NET_40
 using Atdl4net.Model.Controls;
 using Atdl4net.Model.Elements.Support;
-using Atdl4net.Utility;
 
 namespace Atdl4net.Wpf.ViewModel
 {
@@ -44,9 +43,8 @@ namespace Atdl4net.Wpf.ViewModel
         /// </summary>
         /// <param name="control">Underlying <see cref="RadioButton_t"/> for this RadioButtonViewModel.</param>
         /// <param name="referencedParameter">Parameter that the RadioButton_t refers to.</param>
-        /// <param name="mode">Data entry mode (create/amend/view).</param>
-        public RadioButtonViewModel(RadioButton_t control, IParameter referencedParameter, DataEntryMode mode) 
-            :base(control, referencedParameter, mode)
+        public RadioButtonViewModel(RadioButton_t control, IParameter referencedParameter) 
+            :base(control, referencedParameter)
         {
         }
 

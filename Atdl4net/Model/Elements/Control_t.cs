@@ -99,6 +99,11 @@ namespace Atdl4net.Model.Elements
         public abstract void SetValue(object newValue);
 
         /// <summary>
+        /// Resets this control to either a null value or for list controls, all options unselected.
+        /// </summary>
+        public abstract void Reset();
+
+        /// <summary>
         /// Provides access to the value of this control using the <see cref="IParameterConvertible"/> interface which
         /// means that this control's value can be converted into a form that is appropriate for the target parameter.
         /// </summary>

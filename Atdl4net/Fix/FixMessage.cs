@@ -19,11 +19,12 @@
 //
 #endregion
 
-using Atdl4net.Resources;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using Atdl4net.Diagnostics.Exceptions;
+using Atdl4net.Resources;
 using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 
 namespace Atdl4net.Fix
@@ -54,12 +55,12 @@ namespace Atdl4net.Fix
         public FixMessage(string rawMessage)
         {
             if (string.IsNullOrEmpty(rawMessage))
-                throw ThrowHelper.New<ArgumentException>(this, ErrorMessages.UnableToParseFixMessageEmpty);
+                throw ThrowHelper.New<FixParseException>(this, ErrorMessages.UnableToParseFixMessageEmpty);
 
             string[] nameValuePairs = rawMessage.Split(new char[] { SOH }, StringSplitOptions.RemoveEmptyEntries);
 
             if (nameValuePairs.Length == 0)
-                throw ThrowHelper.New<ArgumentException>(this, ErrorMessages.UnableToParseFixMessageInvalidContent, rawMessage);
+                throw ThrowHelper.New<FixParseException>(this, ErrorMessages.UnableToParseFixMessageInvalidContent, rawMessage);
 
             char[] separator = new char[] { Separator };
 
@@ -73,7 +74,7 @@ namespace Atdl4net.Fix
                     string[] parts = nameValuePair.Split(separator);
 
                     if (parts.Length != 2)
-                        throw ThrowHelper.New<ArgumentException>(this, ErrorMessages.UnableToParseFixMessageInvalidContent, nameValuePair);
+                        throw ThrowHelper.New<FixParseException>(this, ErrorMessages.UnableToParseFixMessageInvalidContent, nameValuePair);
 
                     tagText = parts[0];
                     valueText = parts[1];
@@ -85,7 +86,7 @@ namespace Atdl4net.Fix
             }
             catch (FormatException fe)
             {
-                throw ThrowHelper.New<ArgumentException>(this, fe, ErrorMessages.UnableToParseFixMessageInvalidFormat, tagText, valueText, fe.Message);
+                throw ThrowHelper.New<FixParseException>(this, fe, ErrorMessages.UnableToParseFixMessageInvalidFormat, tagText, valueText, fe.Message);
             }
         }
 

@@ -65,11 +65,11 @@ namespace Atdl4net.Wpf.ViewModel
     {
         private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Wpf.ViewModel");
 
-        private bool _currentlyEvaluating = false;
+        private bool _currentlyEvaluatingValidationState = false;
         private bool _visible = true;
         private bool _enabled = true;
-        private bool _firstValidationStateChangeNotification = true;
-        private readonly DataEntryMode _dataEntryMode;
+        private bool _lastNotifiedValidationState = true;
+        private DataEntryMode _dataEntryMode;
         private FixFieldValueProvider _fixFieldValues;
         private ViewModelStateRuleCollection _stateRules;
         private readonly IParameter _referencedParameter;
@@ -78,6 +78,11 @@ namespace Atdl4net.Wpf.ViewModel
         /// Holds the validation state of this control view model.
         /// </summary>
         protected readonly ControlValidationState _validationState;
+
+        /// <summary>
+        /// Indicates whether rendering is in progress.
+        /// </summary>
+        protected bool _renderInProgress = false;
 
         /// <summary>
         /// Raised whenever the value of a property (UiValue, Visibility, IsEnabled) changes.
@@ -109,12 +114,13 @@ namespace Atdl4net.Wpf.ViewModel
         /// </summary>
         /// <param name="control">Underlying Control_t for this ControlViewModel.</param>
         /// <param name="referencedParameter">Parameter that this control relates to.  May be null.</param>
-        /// <param name="mode">Data entry mode (create/amend/view).</param>
-        protected ControlViewModel(Control_t control, IParameter referencedParameter, DataEntryMode mode)
+        protected ControlViewModel(Control_t control, IParameter referencedParameter)
         {
             UnderlyingControl = control;
             _referencedParameter = referencedParameter;
-            _dataEntryMode = mode;
+
+            // Set default data entry mode
+            DataEntryMode = DataEntryMode.Create;
 
             _validationState = new ControlValidationState(control.Id);
         }
@@ -124,9 +130,8 @@ namespace Atdl4net.Wpf.ViewModel
         /// </summary>
         /// <param name="underlyingStrategy"><see cref="Strategy_t"/> that this ControlViewModel's <see cref="Control_t"/> is a member of.</param>
         /// <param name="control">Underlying Control_t for this ControlViewModel.</param>
-        /// <param name="mode">Data entry mode (create/amend/view).</param>
-        /// <returns></returns>
-        public static ControlViewModel Create(Strategy_t underlyingStrategy, Control_t control, IInputValueProvider initialValueProvider, DataEntryMode mode)
+        /// <returns>New ControlViewModel instance.</returns>
+        public static ControlViewModel Create(Strategy_t underlyingStrategy, Control_t control, IInitialFixValueProvider initialValueProvider)
         {
             IParameter referencedParameter = null;
 
@@ -144,15 +149,15 @@ namespace Atdl4net.Wpf.ViewModel
             // This is to workaround a bug in .NET Framework 3.5 where it is possible for more than one radio button in a 
             // group to be checked at a time.
             if (control is RadioButton_t)
-                controlViewModel = new RadioButtonViewModel(control as RadioButton_t, referencedParameter, mode);
+                controlViewModel = new RadioButtonViewModel(control as RadioButton_t, referencedParameter);
             else
 #endif
             if (control is ListControlBase)
-                controlViewModel = ListControlViewModel.Create(control as ListControlBase, referencedParameter, mode);
+                controlViewModel = ListControlViewModel.Create(control as ListControlBase, referencedParameter);
             else if (InvalidatableControlViewModel.IsInvalidatable(control))
-                controlViewModel = InvalidatableControlViewModel.Create(control, referencedParameter, mode);
+                controlViewModel = InvalidatableControlViewModel.Create(control, referencedParameter);
             else
-                controlViewModel = new ControlViewModel(control, referencedParameter, mode);
+                controlViewModel = new ControlViewModel(control, referencedParameter);
 
             controlViewModel._stateRules = new ViewModelStateRuleCollection(controlViewModel, control.StateRules);
             controlViewModel._fixFieldValues = new FixFieldValueProvider(initialValueProvider, underlyingStrategy.Parameters);
@@ -249,7 +254,7 @@ namespace Atdl4net.Wpf.ViewModel
         {
             get
             {
-                switch (_dataEntryMode)
+                switch (DataEntryMode)
                 {
                     case DataEntryMode.Amend:
                         // If we don't have a referenced parameter, then there is no good reason to prevent the user changing the
@@ -283,6 +288,27 @@ namespace Atdl4net.Wpf.ViewModel
         public bool IsValid { get { return _validationState.CurrentState; } }
 
         /// <summary>
+        /// Used to indicate whether the rendering process is in operation, in order to disable certain activities during 
+        /// rendering.
+        /// </summary>
+        public bool IsRenderInProgress { set { _renderInProgress = value; } }
+
+        /// <summary>
+        /// Gets/sets the data entry mode for this control view model.
+        /// </summary>
+        public DataEntryMode DataEntryMode
+        {
+            get { return _dataEntryMode; }
+
+            set
+            {
+                _dataEntryMode = value;
+
+                NotifyPropertyChanged("Enabled");
+            }
+        }
+
+        /// <summary>
         /// Resets the state of this ControlViewModel, i.e., Enabled = true, Visible = true;
         /// </summary>
         public virtual void Reset()
@@ -303,10 +329,10 @@ namespace Atdl4net.Wpf.ViewModel
             if (reevaluateStateRules)
                 _stateRules.RefreshState();
 
-            if (_referencedParameter != null && _referencedParameter.IsSet)
-                NotifyValueChanged(null, UnderlyingControl.GetCurrentValue());
-            else
-                RefreshUiState(true);
+            //if (_referencedParameter != null && _referencedParameter.IsSet)
+            //    NotifyValueChanged(null, UnderlyingControl.GetCurrentValue());
+            //else
+            RefreshUiState(true);
         }
 
         /// <summary>
@@ -319,17 +345,6 @@ namespace Atdl4net.Wpf.ViewModel
                 _validationState.ParameterValidationResult = _referencedParameter.SetValueFromControl(UnderlyingControl);
         }
 
-        /// <summary>
-        /// Notifies any interested parties that the named property's value has changed.
-        /// </summary>
-        /// <param name="name">Name of property whose value has changed.</param>
-        protected void NotifyPropertyChanged(string name)
-        {
-            PropertyChangedEventHandler propertyChanged = PropertyChanged;
-
-            if (propertyChanged != null)
-                propertyChanged(this, new PropertyChangedEventArgs(name));
-        }
 
         /// <summary>
         /// Notifies interested parties that the value of the user interface control has changed.
@@ -350,6 +365,8 @@ namespace Atdl4net.Wpf.ViewModel
                 valueChanged(this, new ValueChangedEventArgs(Id, oldValue, newValue));
 
             OnValueChangeCompleted();
+
+            RefreshUiState(false);
         }
 
         /// <summary>
@@ -358,40 +375,35 @@ namespace Atdl4net.Wpf.ViewModel
         /// <remarks>We have to use a separate event (as opposed to re-using the ValueChanged event)
         /// because we cannot guarantee what order event subscribers will be called, and this 
         /// notification must happen once the value change has been completely processed.</remarks>
-        protected virtual void OnValueChangeCompleted()
+        public virtual void OnValueChangeCompleted()
         {
             try
             {
-                _currentlyEvaluating = true;
+                _currentlyEvaluatingValidationState = true;
 
-                bool previousState = _validationState.CurrentState;
+                _log.Debug(m => m("Processing value change completed; validation state ahead of evaluation is {0}",
+                    _validationState.CurrentState.ToString().ToLower()));
 
-                _log.Debug(m => m("Processing value change completed; validation state ahead of evaluation is {0}", previousState.ToString().ToLower()));
-
-                EventHandler<ValueChangeCompletedEventArgs> valueChangeCompleted = ValueChangeCompleted;
-
-                if (valueChangeCompleted != null)
-                    valueChangeCompleted(this, new ValueChangeCompletedEventArgs(this));
+                NotifyValueChangeCompleted();
 
                 _validationState.Evaluate(_fixFieldValues);
 
                 bool newState = _validationState.CurrentState;
 
                 // We always notify the first state change notification even if the state hasn't changed from the default value (true)
-                if (_firstValidationStateChangeNotification || previousState != newState)
+                if (_lastNotifiedValidationState != newState)
                 {
-                    _log.Debug(m => m("Notifying validation state change; was {0}, now is {1}", previousState.ToString().ToLower(), newState.ToString().ToLower()));
+                    _log.Debug(m => m("Notifying validation state change; was {0} (when last notified), now is {1}",
+                        _lastNotifiedValidationState.ToString().ToLower(), newState.ToString().ToLower()));
 
-                    _firstValidationStateChangeNotification = false;
+                    _lastNotifiedValidationState = newState;
 
                     NotifyValidationStateChanged(newState);
                 }
-
-                RefreshUiState(false);
             }
             finally
             {
-                _currentlyEvaluating = false;
+                _currentlyEvaluatingValidationState = false;
             }
         }
 
@@ -401,7 +413,9 @@ namespace Atdl4net.Wpf.ViewModel
         /// <param name="includeValue"></param>
         protected void RefreshUiState(bool includeValue)
         {
+            NotifyPropertyChanged("Enabled");
             NotifyPropertyChanged("IsValid");
+            NotifyPropertyChanged("Visibility");
             NotifyPropertyChanged("ToolTip");
 
             if (includeValue)
@@ -420,6 +434,29 @@ namespace Atdl4net.Wpf.ViewModel
                 validationStateChanged(this, new ValidationStateChangedEventArgs(Id, isValid));
         }
 
+        /// <summary>
+        /// Notifies interested parties that a value change of this control has been completed.
+        /// </summary>
+        protected void NotifyValueChangeCompleted()
+        {
+            EventHandler<ValueChangeCompletedEventArgs> valueChangeCompleted = ValueChangeCompleted;
+
+            if (valueChangeCompleted != null)
+                valueChangeCompleted(this, new ValueChangeCompletedEventArgs(this));
+        }
+
+        /// <summary>
+        /// Notifies any interested parties that the named property's value has changed.
+        /// </summary>
+        /// <param name="name">Name of property whose value has changed.</param>
+        protected void NotifyPropertyChanged(string name)
+        {
+            PropertyChangedEventHandler propertyChanged = PropertyChanged;
+
+            if (propertyChanged != null)
+                propertyChanged(this, new PropertyChangedEventArgs(name));
+        }
+
         private void StrategyEditStateChanged(object sender, Notification.StateChangedEventArgs e)
         {
             StrategyEditViewModel strategyEdit = sender as StrategyEditViewModel;
@@ -427,10 +464,10 @@ namespace Atdl4net.Wpf.ViewModel
             _log.Debug(m => m("StrategyEdit ({0}) state changed for control {1}; was {2}, now is {3}",
                 strategyEdit.InternalId, Id, e.OldState.ToString().ToLower(), e.NewState.ToString().ToLower()));
 
-            // To save the property changed notifications being raised multiple times during and evaluation,
+            // To save the property changed notifications being raised multiple times during an evaluation,
             // ignore this event if that is what we're doing.  (The primary purpose of this event is to handle
             // the scenario where another control is changing value.)
-            if (!_currentlyEvaluating)
+            if (!_currentlyEvaluatingValidationState)
                 RefreshUiState(false);
             else
                 _log.Debug("Ignoring StrategyEdit change notification as this control's value change is currently being processed");

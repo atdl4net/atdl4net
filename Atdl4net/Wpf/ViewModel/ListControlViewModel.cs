@@ -69,8 +69,9 @@ namespace Atdl4net.Wpf.ViewModel
         private string _controlText; // Used to support EditableDropDownList only
         private ViewModelListItemCollection _listItems;
 
-        private ListControlViewModel(ListControlBase control, IParameter referencedParameter, DataEntryMode mode)
-            : base(control as Control_t, referencedParameter, mode)
+        // Private constructor
+        private ListControlViewModel(ListControlBase control, IParameter referencedParameter)
+            : base(control as Control_t, referencedParameter)
         {
         }
 
@@ -81,9 +82,9 @@ namespace Atdl4net.Wpf.ViewModel
         /// <param name="referencedParameter">Parameter that the specified Control_t relates to.  May be null.</param>
         /// <param name="mode">Data entry mode (create/amend/view).</param>
         /// <returns>New instance of ListControlViewModel.</returns>
-        public static ListControlViewModel Create(ListControlBase control, IParameter referencedParameter, DataEntryMode mode)
+        public static ListControlViewModel Create(ListControlBase control, IParameter referencedParameter)
         {
-            ListControlViewModel controlViewModel = new ListControlViewModel(control, referencedParameter, mode);
+            ListControlViewModel controlViewModel = new ListControlViewModel(control, referencedParameter);
 
             controlViewModel._listItems = ViewModelListItemCollection.Create(controlViewModel);
 
@@ -288,6 +289,7 @@ namespace Atdl4net.Wpf.ViewModel
             _listItems.RefreshState();
 
             NotifyPropertyChanged("SelectedValue");
+            NotifyPropertyChanged("Text");
         }
     }
 }

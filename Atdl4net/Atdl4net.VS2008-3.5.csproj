@@ -285,25 +285,17 @@
     </Compile>
     <Compile Include=".\Model\Types\UTCTimestamp_t.cs">
     </Compile>
-    <Compile Include=".\Providers\FileProviderContext.cs">
-    </Compile>
     <Compile Include=".\Providers\IStrategyProvider.cs">
-    </Compile>
-    <Compile Include=".\Providers\IStrategyProviderContext.cs">
     </Compile>
     <Compile Include=".\Providers\ProviderIdCollection.cs">
     </Compile>
     <Compile Include=".\Providers\StrategiesDictionary.cs">
-    </Compile>
-    <Compile Include=".\Providers\StrategiesReaderProvider.cs">
     </Compile>
     <Compile Include=".\Providers\StrategyInfo.cs">
     </Compile>
     <Compile Include=".\Providers\StrategyInfoCollection.cs">
     </Compile>
     <Compile Include=".\Providers\StrategyKey.cs">
-    </Compile>
-    <Compile Include=".\Providers\StreamProviderContext.cs">
     </Compile>
     <Compile Include=".\Resources\ErrorMessages.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -461,6 +453,7 @@
     </Compile>
     <Compile Include="Configuration\Atdl4netConfiguration.cs" />
     <Compile Include="Configuration\ConfigurationSectionHandler.cs" />
+    <Compile Include="Diagnostics\Exceptions\FixParseException.cs" />
     <Compile Include="Diagnostics\Exceptions\InconsistentStrategyException.cs" />
     <Compile Include="Fix\FixDateTime.cs" />
     <Compile Include="Fix\FixDateTimeFormat.cs" />
@@ -504,6 +497,7 @@
     <Compile Include="Notification\ValueChangeCompletedEventArgs.cs" />
     <Compile Include="Notification\ValueChangedEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Providers\StrategyProvider.cs" />
     <Compile Include="Validation\ControlValidationState.cs" />
     <Compile Include="Validation\EditEvaluator.cs" />
     <Compile Include="Validation\EditValueConverter.cs" />
@@ -511,7 +505,7 @@
     <Compile Include="Validation\ValidationResult.cs" />
     <Compile Include="Wpf\ViewModel\ControlViewModel.cs" />
     <Compile Include="Wpf\ViewModel\EditViewModel.cs" />
-    <Compile Include="Wpf\ViewModel\IInputValueProvider.cs" />
+    <Compile Include="Wpf\ViewModel\IInitialFixValueProvider.cs" />
     <Compile Include="Wpf\ViewModel\InvalidatableControlViewModel.cs" />
     <Compile Include="Wpf\ViewModel\ListControlViewModel.cs" />
     <Compile Include="Wpf\ViewModel\ListItemViewModel.cs" />

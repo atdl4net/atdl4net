@@ -48,20 +48,19 @@ namespace Atdl4net.Wpf.View.DefaultRendering
                     writer.WriteAttribute(WpfXmlWriterAttribute.GridRow, gridCoordinate.Row.ToString());
 
                     writer.WriteAttribute(WpfXmlWriterAttribute.Margin, "1,3,1,3");
-//                    writer.WriteAttribute(WpfXmlWriterAttribute.Margin, "2");
 
                     if (!string.IsNullOrEmpty(id))
                         writer.WriteAttribute(WpfXmlWriterAttribute.Name, id);
 
                     writer.WriteAttribute(WpfXmlWriterAttribute.DataContext, string.Format("{{Binding Path=Controls[{0}]}}", id));
 
-                    writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, "{Binding Path=ToolTip}");
+                    writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, "{Binding Path=ToolTip, Mode=OneWay}");
                     writer.WriteAttribute(WpfXmlWriterAttribute.ItemsSource, "{Binding Path=ListItems}");
                     writer.WriteAttribute(WpfXmlWriterAttribute.SelectionMode, "Multiple");
                     writer.WriteAttribute(WpfXmlWriterAttribute.VirtualizingStackPanel_IsVirtualizing, "False");
                     writer.WriteAttribute(WpfXmlWriterAttribute.ItemContainerStyle, "{DynamicResource MultiSelectListItemStyle}");
-                    writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, "{Binding Path=Enabled}");
-                    writer.WriteAttribute(WpfXmlWriterAttribute.Visibility, "{Binding Path=Visibility}");
+                    writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, "{Binding Path=Enabled, Mode=OneWay}");
+                    writer.WriteAttribute(WpfXmlWriterAttribute.Visibility, "{Binding Path=Visibility, Mode=OneWay}");
                 }
             });
         }

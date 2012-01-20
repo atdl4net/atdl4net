@@ -19,19 +19,20 @@
 //
 #endregion
 
-using System.IO;
+using System;
+using System.Linq;
+using Atdl4net.Fix;
 
-namespace Atdl4net.Providers
+namespace Atdl4net.Wpf.ViewModel
 {
-    public class FileProviderContext : IStrategyProviderContext<FileInfo>
+    /// <summary>
+    /// Interface that classes must implement in order to be able to provide initial FIX values to consumers.
+    /// </summary>
+    public interface IInitialFixValueProvider
     {
-        public FileInfo Source { get; private set; }
-        public string ProviderId { get; private set; }
-
-        public FileProviderContext(FileInfo file, string providerId)
-        {
-            Source = file;
-            ProviderId = providerId;
-        }
+        /// <summary>
+        /// Gets the set of initial values to be used.
+        /// </summary>
+        FixTagValuesCollection InputFixValues { get; }
     }
 }

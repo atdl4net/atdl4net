@@ -143,6 +143,14 @@ namespace Atdl4net.Model.Controls
         }
 
         /// <summary>
+        /// Resets this control to either a null value or for list controls, all options unselected.
+        /// </summary>
+        public override void Reset()
+        {
+            _value = null;
+        }
+
+        /// <summary>
         /// Converts the value of this instance to an equivalent nullable boolean value.
         /// </summary>
         /// <param name="targetParameter">Target parameter for this conversion.</param>

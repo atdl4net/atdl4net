@@ -54,11 +54,11 @@ namespace Atdl4net.Wpf.View.DefaultRendering
 
                     writer.WriteAttribute(WpfXmlWriterAttribute.DataContext, string.Format("{{Binding Path=Controls[{0}]}}", id));
 
-                    writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, "{Binding Path=ToolTip}");
+                    writer.WriteAttribute(WpfXmlWriterAttribute.ToolTip, "{Binding Path=ToolTip, Mode=OneWay}");
                     writer.WriteAttribute(WpfXmlWriterAttribute.Value, "{Binding Path=UiValue, Mode=TwoWay, TargetNullValue={x:Static sys:String.Empty}}");
                     writer.WriteAttribute(WpfXmlWriterAttribute.Increment, "{Binding Path=UnderlyingControl.Increment, Mode=OneWay, TargetNullValue=1}");
-                    writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, "{Binding Path=Enabled}");
-                    writer.WriteAttribute(WpfXmlWriterAttribute.Visibility, "{Binding Path=Visibility}");
+                    writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, "{Binding Path=Enabled, Mode=OneWay}");
+                    writer.WriteAttribute(WpfXmlWriterAttribute.Visibility, "{Binding Path=Visibility, Mode=OneWay}");
                     writer.WriteAttribute(WpfXmlWriterAttribute.IsContentValid, "{Binding Path=IsContentValid, Mode=OneWayToSource}");
                 }
             });

@@ -59,6 +59,12 @@ namespace Atdl4net.Model.Controls.Support
         protected readonly ListItemCollection _listItems = new ListItemCollection();
 
         /// <summary>
+        /// Indicates whether the EnumState value for this control can be set to a value other than one of the enumerated
+        /// values.  (This property is present to support editable drop-down list controls.)
+        /// </summary>
+        protected virtual bool IsNonEnumValueAllowed { get { return false; } }
+
+        /// <summary>
         /// Initializes the base Control_t class with the supplied control identifier.
         /// </summary>
         /// <param name="id">ID for this control.</param>
@@ -83,7 +89,7 @@ namespace Atdl4net.Model.Controls.Support
 
             _value = new EnumState(ListItems.EnumIds);
 
-            _value.LoadInitValue(value);
+            _value.LoadInitValue(value, IsNonEnumValueAllowed);
 
             return true;
         }
@@ -97,7 +103,7 @@ namespace Atdl4net.Model.Controls.Support
             _value = new EnumState(ListItems.EnumIds);
 
             if (InitValue != null)
-                _value.LoadInitValue(InitValue);
+                _value.LoadInitValue(InitValue, IsNonEnumValueAllowed);
         }
 
         #endregion
@@ -127,6 +133,15 @@ namespace Atdl4net.Model.Controls.Support
                 _value.ClearAll();
             else
                 _value.UpdateFrom(newValue as EnumState);
+        }
+
+        /// <summary>
+        /// Resets this control to either a null value or for list controls, all options unselected.
+        /// </summary>
+        public override void Reset()
+        {
+            if (_value != null)
+                _value.ClearAll();
         }
 
         /// <summary>

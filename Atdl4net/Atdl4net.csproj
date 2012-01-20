@@ -95,6 +95,7 @@
     </Compile>
     <Compile Include=".\Model\Collections\EnumPairCollection.cs">
     </Compile>
+    <Compile Include="Diagnostics\Exceptions\FixParseException.cs" />
     <Compile Include="Fix\FixTagValuesCollection.cs">
     </Compile>
     <Compile Include="Configuration\Atdl4netConfiguration.cs" />
@@ -321,25 +322,19 @@
     </Compile>
     <Compile Include="Notification\INotifyStrategyLoaded.cs">
     </Compile>
-    <Compile Include=".\Providers\FileProviderContext.cs">
-    </Compile>
     <Compile Include=".\Providers\IStrategyProvider.cs">
-    </Compile>
-    <Compile Include=".\Providers\IStrategyProviderContext.cs">
     </Compile>
     <Compile Include=".\Providers\ProviderIdCollection.cs">
     </Compile>
     <Compile Include=".\Providers\StrategiesDictionary.cs">
     </Compile>
-    <Compile Include=".\Providers\StrategiesReaderProvider.cs">
+    <Compile Include="Providers\StrategyProvider.cs">
     </Compile>
     <Compile Include=".\Providers\StrategyInfo.cs">
     </Compile>
     <Compile Include=".\Providers\StrategyInfoCollection.cs">
     </Compile>
     <Compile Include=".\Providers\StrategyKey.cs">
-    </Compile>
-    <Compile Include=".\Providers\StreamProviderContext.cs">
     </Compile>
     <Compile Include=".\Resources\ErrorMessages.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -368,7 +363,7 @@
     <Compile Include="Validation\EditValueConverter.cs" />
     <Compile Include="Validation\ControlValidationState.cs" />
     <Compile Include="Validation\ValidationResult.cs" />
-    <Compile Include="Wpf\ViewModel\IInputValueProvider.cs" />
+    <Compile Include="Wpf\ViewModel\IInitialFixValueProvider.cs" />
     <Compile Include="Wpf\ViewModel\InvalidatableControlViewModel.cs" />
     <Compile Include="Wpf\ViewModel\StrategyEditViewModel.cs" />
     <Compile Include="Wpf\ViewModel\ViewModelStrategyEditCollection.cs" />

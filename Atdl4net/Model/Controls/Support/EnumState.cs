@@ -274,18 +274,32 @@ namespace Atdl4net.Model.Controls.Support
         /// (Elements may be separated with space, semi-colon or comma.)
         /// </summary>
         /// <param name="initValues">MultipleStringValue format string containing the EnumIDs that specify the initial state for this EnumState.</param>
+        /// <param name="allowNonEnumValue">If set to true, and initValues contains one or more values that don't correspond to a valid EnumID,
+        /// then assume that initValues should be treated as the non-enumerated value for this EnumState.</param>
         /// <remarks>This method should not be confused with <see cref="FromWireValue"/>, as that method parses the supplied string for FIX wire
         /// values whereas this method parses the string for EnumIDs.</remarks>
-        public void LoadInitValue(string initValues)
+        public void LoadInitValue(string initValues, bool allowNonEnumValue)
         {
             _log.DebugFormat("Loading EnumState with InitValue '{0}'", initValues);
 
-            string[] initValuesArray = initValues.Split(new char[] { ';', ' ', ',' });
+            string[] enumIds = initValues.Split(new char[] { ';', ' ', ',' });
 
             ClearAll();
 
-            foreach (string initValue in initValuesArray)
-                this[initValue] = true;
+            bool allAreValid = true;
+
+            // Verify that all EnumIds supplied in initValues are valid
+            foreach (string enumId in enumIds)
+                allAreValid &= IsValidEnumId(enumId);
+
+            if (!allAreValid && allowNonEnumValue)
+                    _nonEnumValue = initValues;
+            else
+            {
+                // [] operator will throw if any EnumId is invalid
+                foreach (string enumId in enumIds)
+                    this[enumId] = true;
+            }
 
             _log.Debug(m => m("EnumState is now {0}", ToString()));
         }

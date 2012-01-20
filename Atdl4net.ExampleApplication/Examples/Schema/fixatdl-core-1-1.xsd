@@ -1,0 +1,1760 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	- - - - - - - - - - - - - - - - - - - - - - - - - -
+    FIXatdl Sample document instance for FIXatdl Schema Version 1.1
+    (C) 2010 FIX Protocol Limited. All use of the FIXatdl Schema is subject to
+    the disclaimer which is printed on one of the initial pages of the written specification
+    for the FIXatdl Schema and is included in the zip file which you downloaded to
+    obtain the Schema.
+    Comments and errors should be posted on the FIX protocol web-site
+    http://www.fixprotocol.org
+	- - - - - - - - - - - - - - - - - - - - - - - - - -
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:core="http://www.fixprotocol.org/FIXatdl-1-1/Core" xmlns:val="http://www.fixprotocol.org/FIXatdl-1-1/Validation" xmlns:lay="http://www.fixprotocol.org/FIXatdl-1-1/Layout" xmlns:flow="http://www.fixprotocol.org/FIXatdl-1-1/Flow" xmlns:tz="http://www.fixprotocol.org/FIXatdl-1-1/Timezones" xmlns:rg="http://www.fixprotocol.org/FIXatdl-1-1/Regions" targetNamespace="http://www.fixprotocol.org/FIXatdl-1-1/Core" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.1">
+	<xs:annotation>
+		<xs:documentation>
+      This value is the internal build number of the ATDL Schema
+    </xs:documentation>
+		<xs:appinfo>
+			<BuildInfo buildNumber="2.7.2e20101221"/>
+		</xs:appinfo>
+	</xs:annotation>
+	<xs:import namespace="http://www.fixprotocol.org/FIXatdl-1-1/Layout" schemaLocation="fixatdl-layout-1-1.xsd"/>
+	<xs:import namespace="http://www.fixprotocol.org/FIXatdl-1-1/Validation" schemaLocation="fixatdl-validation-1-1.xsd"/>
+	<xs:import namespace="http://www.fixprotocol.org/FIXatdl-1-1/Flow" schemaLocation="fixatdl-flow-1-1.xsd"/>
+	<xs:import namespace="http://www.fixprotocol.org/FIXatdl-1-1/Regions" schemaLocation="fixatdl-regions-1-1.xsd"/>
+	<xs:import namespace="http://www.fixprotocol.org/FIXatdl-1-1/Timezones" schemaLocation="fixatdl-timezones-1-1.xsd"/>
+	<!-- Please email any suggestions or revisions to algotech@fixprotocol.org-->
+	<!-- Please note - Revision history is at the end of this xsd -->
+	<!-- 
+    strategies
+      |
+      +   edit
+      |
+		  +   strategy
+      |   +   edit
+      |   |
+			|   +   parameter
+			|   |   +   enumPair
+			|   |	  +   helpText
+      |   |
+			|   +   strategyLayout
+			|		|   +   strategyPanel
+      |   |       +   strategyPanel
+      |   |       +   control
+      |   |           +   stateRule
+      |   |           +   parameterRef
+			|   |
+	    |   +   repeatingGroup
+      |   |   +   parameter
+			|   |
+      |   +   strategyEdit
+
+  The schema is broken into a core schema, a user interface sub-schema, a workflow sub-schema and a validation sub-schema. 
+  This has been done to allow vendors to support the core schema and to optionally support the sub-schemas.
+  The core schema contains attributes and elements that are used to describe the data content of the algorithm and the parameters. 
+  A minimal implementation of a dynamically rendered order entry screen would need to support XML documents that adhere to this schema.
+  The UI sub-schema contains attributes and elements to describe how a parameter should be rendered within a 
+  user interface – this includes recommendations about UI components and their relative location within the interface.
+  The validation sub-schema contains attributes and elements that can be used to author rules that are applied to the parameters.
+  Please note that while support of the core schema is required, it is not necessary for the Validation and UI sub-schemas to be 
+  supported in order for an XML document to be compliant. Support for these sub-schemas should be considered optional.
+
+  Core Schema
+  The core schema includes elements at four levels. At the root level is the <strategies> element, which is simply a container 
+  of <strategy> elements. Within the <strategy> element are unlimited <edit>, <parameter>, <strategyLayout>, <repeatingGroup>,
+  and <strategyEdit> elements. Descending from a specific <parameter> elements there are optional <enumPair> and <helpText> elements. -->
+	<!-- Start of the ATDL Elements and Types -->
+	<!-- ************************************************************************************************************************** -->
+	<xs:element name="Strategies" type="core:Strategies_t">
+		<xs:key name="strategyKey">
+			<xs:selector xpath="core:strategy"/>
+			<xs:field xpath="@name"/>
+		</xs:key>
+	</xs:element>
+	<xs:complexType name="Strategies_t">
+		<xs:annotation>
+			<xs:documentation>Container for all strategy elements. It is the root element of all FIXatdl conforming documents.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element ref="core:Description" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Description of the set of strategies or a description of the firm providing them.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element ref="val:Edit" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Global rule definition. When used in this capacity Edit.id is a required attribute. Individual strategies may incorporate these rules by a reference to their 'id' attributes.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Strategy" type="core:Strategy_t" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Element defining an individual strategy.</xs:documentation>
+				</xs:annotation>
+				<xs:key name="parameterKey">
+					<xs:selector xpath="core:parameter"/>
+					<xs:field xpath="@name"/>
+				</xs:key>
+				<xs:keyref name="parameterKeyRef" refer="core:parameterKey">
+					<xs:selector xpath=".//lay:control"/>
+					<xs:field xpath="@parameterRef"/>
+				</xs:keyref>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="strategyIdentifierTag" type="xs:positiveInteger" use="required">
+			<xs:annotation>
+				<xs:documentation>The tag within the FIX order message to be populated with a value identifying the chosen strategy. Eg. if strategyIdentifierTag is 5001 and the chosen strategy is identified by the value 'VWAP' then the FIX order message would contain the tag-value pair 5001=VWAP.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="versionIdentifierTag" type="xs:positiveInteger" use="optional">
+			<xs:annotation>
+				<xs:documentation>The tag within the FIX order message to be populated with a value identifying the version of a chosen strategy. Eg. if versionIdentifierTag is 5002 and the version of the chosen strategy is '2.01' then the FIX order message would contain the tag-value pair 5001=2.01.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="draftFlagIdentifierTag" type="xs:positiveInteger">
+			<xs:annotation>
+				<xs:documentation>The tag within the FIX order message to be populated with a boolean ('Y'/'N') indicating whether the order is a draft.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="changeStrategyOnCxlRpl" type="xs:boolean">
+			<xs:annotation>
+				<xs:documentation>Indicates whether a new strategy can be chosen during a Cancel/Replace.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="imageLocation" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>Pathname or URL of an image file or logo of the algo providing firm.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="tag957Support" type="xs:boolean" default="false">
+			<xs:annotation>
+				<xs:documentation>Indicates whether the order recipient can receive algorithmic parameters in the StrategyParametersGrp component block, a repeating group starting at tag 957. If this mode of parameter transport is not supported then the fixTag attribute of all Parameter elements is required.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="Strategy_t">
+		<xs:sequence>
+			<xs:element ref="core:Description" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Description of the Strategy.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Regions" type="core:Regions_t" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>This element defines the globally based regions to which the strategy is applicable. No regions defined implies that the strategy is applicable for *ALL* regions. If a region is defined and has it's 'inclusion' attribute set to 'Include', then it is implied that the strategy is applicable for *ONLY* that region. If a region is defined and is set to 'Exclude', then it is implied that the strategy is applicable for all regions *EXCEPT* that region.
+
+'Include' takes precedence over 'Exclude' - for example, if TheAmericas is defined and set to 'Include' and EuropeMiddleEastAfrica is defined and set to 'Exclude' then AsiaPacificJapan will also be excluded since the 'Include' on TheAmericas takes precedence over the 'Exclude'  on EuropeMiddleEastAfrica. In this example, the definition of "EuropeMiddleEastAfrica" as 'Exclude' is unecessary.
+
+Regions also contain a child element called "Country" that allows the algo author to futher specify the geographic scope of the strategy. Countries can be included and excluded in the same manner as regions and the same rules of precedence apply. Please see fixatdl-regions-1-1.xsd for the list of ISO 3166 Country Code to region mappings.          </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Markets" type="core:Markets_t" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>This element defines the markets/exchanges (by ISO 10383 MIC Code) that the strategy is applicable for. No markets defined implies that the strategy is applicable for *ALL* markets. If a market is defined and has it's 'inclusion' attribute set to "Include", then it is implied that the strategy is applicable for *ONLY* that market.  If a region is defined and is set to "Exclude", then it is implied that the strategy is applicable for all markets *EXCEPT* that market. 
+
+Include takes precedence over Exclude - for example, if XNAS is defined and set to "Include" and XLON is defined and set to "Exclude" then all other markets will also be excluded since the "Include" on XNAS takes precedence over the "Exclude" on XLON.  In this example, the definition of XLON as "Exclude" is unecessary.
+
+Markets are used in conjunction with regions and countries to define the scope of the strategy.  Markets take precedence over regions and countries.  For example, if AsiaPacificJapan is defined as "Exclude" but the Fukuoka Stock Exchange (XFKA) is defined as an included market, the strategy will be applicable for all markets in The Americas and EMEA, as well as only the Fukuoka Stock Exchange in the APAC region.          </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SecurityTypes" type="core:SecurityTypes_t" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>This element defines the security types (by CFI Code) that the strategy is applicable for. No security type defined implies that the strategy is applicable for *ALL* security types supported by ATDL. 
+If a security type is defined and has it's 'inclusion' attribute set to "Include", then it is implied that the strategy is applicable for *ONLY* that security type.  If a secuiryt type is defined and is set to "Exclude", then it is implied that the strategy is applicable for all security types *EXCEPT* that market.  
+
+Include takes precedence over Exclude - for example, if equities is defined and set to "Include" and futures is defined and set to "Exclude" then all other security types will also be excluded since the "Include" on equities takes precedence over the Exclude" on futures.  In this example, the definition of futures as "Exclude" is unecessary.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Parameter" type="core:Parameter_t" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="val:Edit" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="lay:StrategyLayout" minOccurs="0"/>
+			<xs:element name="RepeatingGroup" type="core:RepeatingGroup_t" minOccurs="0"/>
+			<xs:element ref="val:StrategyEdit" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="name" use="required">
+			<xs:annotation>
+				<xs:documentation>Unique identifier of a strategy. Strategy names must be unique per provider.</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="[A-Za-z][A-za-z0-9_]{0,255}"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="uiRep" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>The name of the strategy as rendered in the UI. If not provided then the “name” attribute should be used. (This is the value rendered on the UI when the user is presented with a choice of algorithms.)</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="wireValue" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>The value used to identify the algorithm. The tag referred to by Strategy/@strategyIdentifierTag will be set to this value.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="version" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>Information to facilitate version control.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="fixMsgType" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>Indicates the FIX message to use when transmitting the order. Values taken from FIX tag 35. Can be one of “D” (NewOrder-Single), “E” (NewOrder-List), “AB” (NewOrder-Multileg), or “s” (NewOrder-Cross).</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="disclosureDoc" type="xs:anyURI">
+			<xs:annotation>
+				<xs:documentation>URL of a disclosure document supplied by the algorithm provider.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="sentOrderLink" type="xs:anyURI">
+			<xs:annotation>
+				<xs:documentation>Prefix portion of a URL to access the order or draft at the target e.g https://xyz.com/algo/dashboard?SenderCompID= OMS appends to this the specific SenderCompID string, an ampersand "ClOrdID=" and the specific CLOrdID-string. Trader hits this full URL to communicate regarding the order or draft.  See additional documentation.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="providerID" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>Identifies the firm providing the algorithm.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="providerSubID" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>A further level of firm identification.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="imageLocation" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>Pathname or URL of an image file or logo of this particular strategy.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="totalLegs" type="xs:nonNegativeInteger" use="optional">
+			<xs:annotation>
+				<xs:documentation>Used when msgType is AB and denotes number of repeating legs.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="totalOrders" type="xs:nonNegativeInteger" use="optional">
+			<xs:annotation>
+				<xs:documentation>Used to denote number of repeating orders in a NewOrder-List message or a basket of NewOrder-Single messages.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="commonIDTag" type="xs:nonNegativeInteger">
+			<xs:annotation>
+				<xs:documentation>Used to denote where to place a common basket ID when linking together single orders</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="totalOrdersTag" type="xs:nonNegativeInteger">
+			<xs:annotation>
+				<xs:documentation>In basket trading, used to denote where to place the total number of orders of a basket. </xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="orderSequenceTag" type="xs:nonNegativeInteger">
+			<xs:annotation>
+				<xs:documentation>Used to denote the tag which will contain the sequence number of a particular order of a basket.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="Parameter_t" abstract="true">
+		<xs:sequence>
+			<xs:element ref="core:Description" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Description of the Parameter.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EnumPair" type="core:EnumPair_t" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Enumerated pair/values for the parameter</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="name" use="required">
+			<xs:annotation>
+				<xs:documentation>The name of the parameter. No two parameters of any strategy may have the same name. The name may be used as a unique key when referenced from the other sub-schemas. Names must begin with an alpha character followed only by alpha-numeric characters and must not contain whitespace characters.</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="[A-Za-z][A-za-z0-9_]{0,255}"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="fixTag" type="xs:positiveInteger">
+			<xs:annotation>
+				<xs:documentation>The tag that will hold the value of the parameter.
+Required when: parameter value is intended to be transported over the wire.
+If fixTag is not provided then the Strategies-level attribute, tag957Support, must be set to true, indicating that the order recipient expects to receive algo parameters in the StrategyParameterGrp repeating group beginning at tag 957.
+</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="use" type="core:Use_t" use="optional" default="optional">
+			<xs:annotation>
+				<xs:documentation>Indicates whether a parameter is optional or required. Valid values are “optional” and “required”. Default value: “optional”.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="mutableOnCxlRpl" type="xs:boolean" default="true">
+			<xs:annotation>
+				<xs:documentation>Indication of whether the parameter’s value can be modified by an Order Cancel/Replace Request message.
+Default value: true
+</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="revertOnCxlRpl" type="xs:boolean">
+			<xs:annotation>
+				<xs:documentation>Indicates how to interpret those tags that were populated in an original order but are not populated in a subsequent cancel/replace of the order message. If this value is true then revert to the value of the original order, otherwise a null value or the parameter’s default value (Control/@initValue) is to be used or if none is specified, the parameter is to be omitted.
+Default value: false
+NOTE: Although revertOnCxlRpl and mutableOnCxlRpl might appear to be mutually exclusive, this is not strictly the case, and as the default value for mutableOnCxlRpl is ‘true’, it is recommended practice to explicitly include mutableOnCxlRpl=“false” if the option revertOnCxlRpl= “true” is set for a given parameter (assuming of course this is the intended behaviour).
+</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="definedByFIX" type="xs:boolean" default="false">
+			<xs:annotation>
+				<xs:documentation>Indicates whether the parameter is a redefinition of a standard FIX tag. The default value is False.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="RepeatingGroup_t">
+		<xs:sequence>
+			<xs:element ref="core:Description" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Description of the Repeating Group.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Parameter" type="core:Parameter_t" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>FIX Field name of the repeating group. Must refer to a FIX field of NumInGroup type. Valid values are: "NoOrders" (when NewOrder-List messages are expected), "NoLegs" (when NewOrder-Multileg messages are expected). THis field should be omitted when NewOrder-Single message are expected.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="fixTag" type="xs:positiveInteger">
+			<xs:annotation>
+				<xs:documentation>The FIX tag corresponding to a NoXXX tag. Indicates that the Parameter elements defined within the RepeatingGroup element are repeating group tags when sent over the wire.
+Valid values are: 555 (NoLegs) and 68 (TotNoOrders). In the case where fixTag=68, either multiple NewOrder-List messages may be sent where the total number of orders over the entire list must be equal to Strategy/@totalOrders, or multiple NewOrder-Single messages may be sent where total number of orders must be equal to Strategy/@totalOrders.
+</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="minSize" type="xs:nonNegativeInteger" use="required">
+			<xs:annotation>
+				<xs:documentation>The minimum number of legs or list orders.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="maxSize" type="xs:nonNegativeInteger" use="optional">
+			<xs:annotation>
+				<xs:documentation>The maximum number of legs or list orders.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="EnumPair_t">
+		<xs:sequence>
+			<xs:element ref="core:Description" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Description of the EnumPair in a given collection of EnumPairs.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="enumID" use="required">
+			<xs:annotation>
+				<xs:documentation>A unique identifier of an enumPair element per parameter.</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="[A-Za-z][A-za-z0-9_]{0,255}"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="wireValue" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>The corresponding value that is used to populate the FIX message.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="index" type="xs:nonNegativeInteger">
+			<xs:annotation>
+				<xs:documentation>Depricated. Previously provided an ordering of the enumerated values. If defined it should be ignored.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<!-- Start of the Simple Helper Types/Elements -->
+	<!-- ************************************************************************************************************************** -->
+	<xs:element name="Description" type="core:Description_t">
+		<xs:annotation>
+			<xs:documentation>Description element used to expose the description type to other subschemas</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:simpleType name="Description_t">
+		<xs:restriction base="xs:string">
+			<xs:whiteSpace value="preserve"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Use_t">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="required"/>
+			<xs:enumeration value="optional"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="Regions_t">
+		<xs:annotation>
+			<xs:documentation>List of locations as defined by the provider. Used to declare the regions where the algorithm is supported. The absence of this element implies that the strategy is valid globally.  A region can also contain countries in order to make the classifications more granular. See the regions schema file for the list of country to region mappings.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Region" type="core:Region_t" maxOccurs="3"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Region_t">
+		<xs:sequence>
+			<xs:element name="Country" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Individual country that can be included in or excluded from the region.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="CountryCode" use="required">
+						<xs:annotation>
+							<xs:documentation>ISO 3166-1 alpha-2 code for the countries to include or exclude in a given region. </xs:documentation>
+						</xs:annotation>
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:pattern value="[A-Z0-9]{2}"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:attribute>
+					<xs:attribute name="inclusion" type="core:Inclusion_t" use="required">
+						<xs:annotation>
+							<xs:documentation>Indicates whether this country should be included or excluded from encompassing list. Valid values: are “Include”, “Exclude”.</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="name" use="required">
+			<xs:annotation>
+				<xs:documentation>Name of the region. Valid values are "TheAmericas", "EuropeMiddleEastAfrica" and "AsiaPacificJapan".</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="TheAmericas"/>
+					<xs:enumeration value="EuropeMiddleEastAfrica"/>
+					<xs:enumeration value="AsiaPacificJapan"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="inclusion" type="core:Inclusion_t" use="required">
+			<xs:annotation>
+				<xs:documentation>Indicates whether this region should be included or excluded when declared within a list of regions. Valid values: are “Include”, “Exclude”.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="Markets_t">
+		<xs:annotation>
+			<xs:documentation>The list of markets (by ISO MIC Code) for which the given strategy is valid. The absence of any markets implies that the strategy is valid for all markets.   </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Market" type="core:Market_t" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Market_t">
+		<xs:attribute name="MICCode" use="required">
+			<xs:annotation>
+				<xs:documentation>String representing a markets or exchange - ISO 10383 Market Identifier Code (MIC). </xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="[A-Z0-9]{4}"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="inclusion" type="core:Inclusion_t" use="required">
+			<xs:annotation>
+				<xs:documentation>Indicates whether this market should be included or excluded from encompassing list. Valid values: are “Include”, “Exclude”.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="SecurityTypes_t">
+		<xs:annotation>
+			<xs:documentation>The list of security types that the given strategy is valid for. The absence of any security types implies that the strategy is valid for all markets.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence maxOccurs="unbounded">
+			<xs:element name="SecurityType">
+				<xs:complexType>
+					<xs:attribute name="name" use="required">
+						<xs:annotation>
+							<xs:documentation>Indicates type of security. Valid values equivalent to FIX tag 167 values.</xs:documentation>
+						</xs:annotation>
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:enumeration value="ABS"/>
+								<xs:enumeration value="AMENDED"/>
+								<xs:enumeration value="AN"/>
+								<xs:enumeration value="BA"/>
+								<xs:enumeration value="BN"/>
+								<xs:enumeration value="BOX"/>
+								<xs:enumeration value="BRADY"/>
+								<xs:enumeration value="BRIDGE"/>
+								<xs:enumeration value="BUYSELL"/>
+								<xs:enumeration value="CB"/>
+								<xs:enumeration value="CD"/>
+								<xs:enumeration value="CL"/>
+								<xs:enumeration value="CMBS"/>
+								<xs:enumeration value="CMO"/>
+								<xs:enumeration value="COFO"/>
+								<xs:enumeration value="COFP"/>
+								<xs:enumeration value="CORP"/>
+								<xs:enumeration value="CP"/>
+								<xs:enumeration value="CPP"/>
+								<xs:enumeration value="CS"/>
+								<xs:enumeration value="DEFLTED"/>
+								<xs:enumeration value="DINP"/>
+								<xs:enumeration value="DN"/>
+								<xs:enumeration value="DUAL"/>
+								<xs:enumeration value="EUCD"/>
+								<xs:enumeration value="EUCORP"/>
+								<xs:enumeration value="EUCP"/>
+								<xs:enumeration value="EUSOV"/>
+								<xs:enumeration value="EUSUPRA"/>
+								<xs:enumeration value="FAC"/>
+								<xs:enumeration value="FADN"/>
+								<xs:enumeration value="FOR"/>
+								<xs:enumeration value="FORWARD"/>
+								<xs:enumeration value="FUT"/>
+								<xs:enumeration value="GO"/>
+								<xs:enumeration value="IET"/>
+								<xs:enumeration value="LOFC"/>
+								<xs:enumeration value="LQN"/>
+								<xs:enumeration value="MATURED"/>
+								<xs:enumeration value="MBS"/>
+								<xs:enumeration value="MF"/>
+								<xs:enumeration value="MIO"/>
+								<xs:enumeration value="MLEG"/>
+								<xs:enumeration value="MPO"/>
+								<xs:enumeration value="MPP"/>
+								<xs:enumeration value="MPT"/>
+								<xs:enumeration value="MT"/>
+								<xs:enumeration value="MTN"/>
+								<xs:enumeration value="NONE"/>
+								<xs:enumeration value="ONITE"/>
+								<xs:enumeration value="OPT"/>
+								<xs:enumeration value="PEF"/>
+								<xs:enumeration value="PFAND"/>
+								<xs:enumeration value="PN"/>
+								<xs:enumeration value="PS"/>
+								<xs:enumeration value="PZFJ"/>
+								<xs:enumeration value="RAN"/>
+								<xs:enumeration value="REPLACD"/>
+								<xs:enumeration value="REPO"/>
+								<xs:enumeration value="RETIRED"/>
+								<xs:enumeration value="REV"/>
+								<xs:enumeration value="RVLV"/>
+								<xs:enumeration value="RVLVTRM"/>
+								<xs:enumeration value="SECLOAN"/>
+								<xs:enumeration value="SECPLEDGE"/>
+								<xs:enumeration value="SPCLA"/>
+								<xs:enumeration value="SPCLO"/>
+								<xs:enumeration value="SPCLT"/>
+								<xs:enumeration value="STN"/>
+								<xs:enumeration value="STRUCT"/>
+								<xs:enumeration value="SUPRA"/>
+								<xs:enumeration value="SWING"/>
+								<xs:enumeration value="TAN"/>
+								<xs:enumeration value="TAXA"/>
+								<xs:enumeration value="TBA"/>
+								<xs:enumeration value="TBILL"/>
+								<xs:enumeration value="TBOND"/>
+								<xs:enumeration value="TCAL"/>
+								<xs:enumeration value="TD"/>
+								<xs:enumeration value="TECP"/>
+								<xs:enumeration value="TERM"/>
+								<xs:enumeration value="TINT"/>
+								<xs:enumeration value="TIPS"/>
+								<xs:enumeration value="TNOTE"/>
+								<xs:enumeration value="TPRN"/>
+								<xs:enumeration value="TRAN"/>
+								<xs:enumeration value="UST"/>
+								<xs:enumeration value="USTB"/>
+								<xs:enumeration value="VRDN"/>
+								<xs:enumeration value="WAR"/>
+								<xs:enumeration value="WITHDRN"/>
+								<xs:enumeration value="?"/>
+								<xs:enumeration value="XCN"/>
+								<xs:enumeration value="XLINKD"/>
+								<xs:enumeration value="YANK"/>
+								<xs:enumeration value="YCD"/>
+								<xs:enumeration value="OOP"/>
+								<xs:enumeration value="OOF"/>
+								<xs:enumeration value="CASH"/>
+								<xs:enumeration value="OOC"/>
+								<xs:enumeration value="IRS"/>
+								<xs:enumeration value="BDN"/>
+								<xs:enumeration value="CAMM"/>
+								<xs:enumeration value="CAN"/>
+								<xs:enumeration value="CTB"/>
+								<xs:enumeration value="CDS"/>
+								<xs:enumeration value="CMB"/>
+								<xs:enumeration value="EUFRN"/>
+								<xs:enumeration value="FRN"/>
+								<xs:enumeration value="PROV"/>
+								<xs:enumeration value="SLQN"/>
+								<xs:enumeration value="TB"/>
+								<xs:enumeration value="TLQN"/>
+								<xs:enumeration value="TMCP"/>
+								<xs:enumeration value="FXNDF"/>
+								<xs:enumeration value="FXSPOT"/>
+								<xs:enumeration value="FXFWD"/>
+								<xs:enumeration value="FXSWAP"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:attribute>
+					<xs:attribute name="inclusion" type="core:Inclusion_t" use="required">
+						<xs:annotation>
+							<xs:documentation>Indicates whether this security type should be included or excluded from encompassing list. Valid values: are “Include”, “Exclude”.</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="Inclusion_t">
+		<xs:annotation>
+			<xs:documentation>Indicates the mode of inclusion (either 'Include' or 'Exsclude') for lists of elements such as Countrie, Regions, Markets and others.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Include"/>
+			<xs:enumeration value="Exclude"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Start of the AlgolT Types -->
+	<!-- ************************************************************************************************************************** -->
+	<!-- ***** STRATEGY PARAMETER TYPES - FROM FIX TAG 959 *****
+    <fm:EnumDoc value="1"><![CDATA[Int]]>"</fm:EnumDoc>
+    <fm:EnumDoc value="2"><![CDATA[Length]]>"</fm:EnumDoc>
+    <fm:EnumDoc value="3"><![CDATA[NumInGroup]]>"</fm:EnumDoc>
+    <fm:EnumDoc value="4"><![CDATA[SeqNum]]>"</fm:EnumDoc>
+    <fm:EnumDoc value="5"><![CDATA[TagNum]]>"</fm:EnumDoc>
+    <fm:EnumDoc value="6"><![CDATA[Float]]>"</fm:EnumDoc>
+    <fm:EnumDoc value="7"><![CDATA[Qty]]>"</fm:EnumDoc>
+    <fm:EnumDoc value="8"><![CDATA[Price]]>"</fm:EnumDoc>
+    <fm:EnumDoc value="9"><![CDATA[PriceOffset]]>"</fm:EnumDoc>
+    <fm:EnumDoc value="10"><![CDATA[Amt]]>"</fm:EnumDoc>
+    <fm:EnumDoc value="11"><![CDATA[Percentage]]>"</fm:EnumDoc>
+    <fm:EnumDoc value="12"><![CDATA[Char]]>"</fm:EnumDoc>
+    <fm:EnumDoc value="13"><![CDATA[Boolean]]>"</fm:EnumDoc>
+    <fm:EnumDoc value="14"><![CDATA[String]]>"</fm:EnumDoc>
+    <fm:EnumDoc value="15"><![CDATA[MultipleCharValue]]>"</fm:EnumDoc>
+    <fm:EnumDoc value="16"><![CDATA[Currency]]>"</fm:EnumDoc>
+    <fm:EnumDoc value="17"><![CDATA[Exchange]]>"</fm:EnumDoc>
+    <fm:EnumDoc value="18"><![CDATA[MonthYear]]>"</fm:EnumDoc>
+    <fm:EnumDoc value="19"><![CDATA[UTCTimestamp]]>"</fm:EnumDoc>
+    <fm:EnumDoc value="20"><![CDATA[UTCTimeOnly]]>"</fm:EnumDoc>
+    <fm:EnumDoc value="21"><![CDATA[LocalMktDate]]>"</fm:EnumDoc>
+    <fm:EnumDoc value="22"><![CDATA[UTCDateOnly]]>"</fm:EnumDoc>
+    <fm:EnumDoc value="23"><![CDATA[Data]]>"</fm:EnumDoc>
+    <fm:EnumDoc value="24"><![CDATA[MultipleStringValue]]>"</fm:EnumDoc>
+    <fm:EnumDoc value="25"><![CDATA[Country]]>"</fm:EnumDoc>
+    <fm:EnumDoc value="26"><![CDATA[Language]]>"</fm:EnumDoc>
+    <fm:EnumDoc value="27"><![CDATA[TZTimeOnly]]>"</fm:EnumDoc>
+    <fm:EnumDoc value="28"><![CDATA[TZTimestamp]]>"</fm:EnumDoc>
+    <fm:EnumDoc value="29"><![CDATA[Tenor]]>"</fm:EnumDoc>
+    -->
+	<!-- parameter type Int -->
+	<xs:complexType name="Int_t">
+		<xs:annotation>
+			<xs:documentation>Derived parameter type corresponding to the FIX "int" type defined in the FIX specification.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="core:Parameter_t">
+				<xs:attribute name="minValue" type="xs:int">
+					<xs:annotation>
+						<xs:documentation>Minimum value of the parameter accepted by the algorithm provider.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="maxValue" type="xs:int">
+					<xs:annotation>
+						<xs:documentation>Maximum value of the parameter accepted by the algorithm provider.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="constValue" type="xs:int">
+					<xs:annotation>
+						<xs:documentation>The value of a parameter that is constant and is not referred by a Control element. This value must be sent on the wire by the order generating application.</xs:documentation>
+					</xs:annotation>	
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- parameter type Length -->
+	<xs:complexType name="Length_t">
+		<xs:annotation>
+			<xs:documentation>Derived parameter type corresponding to the FIX "Length" type defined in the FIX specification.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="core:Parameter_t">
+				<xs:attribute name="constValue" type="core:Length">
+					<xs:annotation>
+						<xs:documentation>The value of a parameter that is constant and is not referred by a Control element. This value must be sent on the wire by the order generating application.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- parameter type NumInGroup -->
+	<xs:complexType name="NumInGroup_t">
+		<xs:annotation>
+			<xs:documentation>Derived parameter type corresponding to the FIX "NumInGroup" type defined in the FIX specification.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="core:Parameter_t">
+				<xs:attribute name="constValue" type="xs:positiveInteger">
+					<xs:annotation>
+						<xs:documentation>The value of a parameter that is constant and is not referred by a Control element. This value must be sent on the wire by the order generating application.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- parameter type SeqNum -->
+	<xs:complexType name="SeqNum_t">
+		<xs:annotation>
+			<xs:documentation>Derived parameter type corresponding to the FIX "SeqNum" type defined in the FIX specification.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="core:Parameter_t">
+				<xs:attribute name="constValue" type="core:SeqNum">
+					<xs:annotation>
+						<xs:documentation>The value of a parameter that is constant and is not referred by a Control element. This value must be sent on the wire by the order generating application.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- parameter type TagNum -->
+	<xs:complexType name="TagNum_t">
+		<xs:annotation>
+			<xs:documentation>Derived parameter type corresponding to the FIX "TagNum" type defined in the FIX specification.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="core:Parameter_t">
+				<xs:attribute name="constValue" type="xs:positiveInteger">
+					<xs:annotation>
+						<xs:documentation>The value of a parameter that is constant and is not referred by a Control element. This value must be sent on the wire by the order generating application.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- parameter type Float -->
+	<xs:complexType name="Float_t">
+		<xs:annotation>
+			<xs:documentation>Derived parameter type corresponding to the FIX "Float" type defined in the FIX specification.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="core:Numeric_t">
+				<xs:attribute name="minValue" type="xs:decimal">
+					<xs:annotation>
+						<xs:documentation>Minimum value of the parameter accepted by the algorithm provider.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="maxValue" type="xs:decimal">
+					<xs:annotation>
+						<xs:documentation>Maximum value of the parameter accepted by the algorithm provider.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="constValue" type="xs:decimal">
+					<xs:annotation>
+						<xs:documentation>The value of a parameter that is constant and is not referred by a Control element. This value must be sent on the wire by the order generating application.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- parameter type Qty -->
+	<xs:complexType name="Qty_t">
+		<xs:annotation>
+			<xs:documentation>Derived parameter type corresponding to the FIX "Qty" type defined in the FIX specification.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="core:Numeric_t">
+				<xs:attribute name="minValue" type="core:Qty" default="0">
+					<xs:annotation>
+						<xs:documentation>Minimum value of the parameter accepted by the algorithm provider.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="maxValue" type="core:Qty">
+					<xs:annotation>
+						<xs:documentation>Maximum value of the parameter accepted by the algorithm provider.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="constValue" type="core:Qty">
+					<xs:annotation>
+						<xs:documentation>The value of a parameter that is constant and is not referred by a Control element. This value must be sent on the wire by the order generating application.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- parameter type Price -->
+	<xs:complexType name="Price_t">
+		<xs:annotation>
+			<xs:documentation>Derived parameter type corresponding to the FIX "Price" type defined in the FIX specification.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="core:Numeric_t">
+				<xs:attribute name="minValue" type="core:Price" default="0">
+					<xs:annotation>
+						<xs:documentation>Minimum value of the parameter accepted by the algorithm provider.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="maxValue" type="core:Price">
+					<xs:annotation>
+						<xs:documentation>Maximum value of the parameter accepted by the algorithm provider.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="constValue" type="core:Price">
+					<xs:annotation>
+						<xs:documentation>The value of a parameter that is constant and is not referred by a Control element. This value must be sent on the wire by the order generating application.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- parameter type PriceOffset -->
+	<xs:complexType name="PriceOffset_t">
+		<xs:annotation>
+			<xs:documentation>Derived parameter type corresponding to the FIX "PriceOffset" type defined in the FIX specification.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="core:Numeric_t">
+				<xs:attribute name="minValue" type="core:PriceOffset" default="0">
+					<xs:annotation>
+						<xs:documentation>Minimum value of the parameter accepted by the algorithm provider.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="maxValue" type="core:PriceOffset">
+					<xs:annotation>
+						<xs:documentation>Maximum value of the parameter accepted by the algorithm provider.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="constValue" type="core:PriceOffset">
+					<xs:annotation>
+						<xs:documentation>The value of a parameter that is constant and is not referred by a Control element. This value must be sent on the wire by the order generating application.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- parameter type Amt -->
+	<xs:complexType name="Amt_t">
+		<xs:annotation>
+			<xs:documentation>Derived parameter type corresponding to the FIX "Amt" type defined in the FIX specification.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="core:Numeric_t">
+				<xs:attribute name="minValue" type="core:Amt" default="0">
+					<xs:annotation>
+						<xs:documentation>Minimum value of the parameter accepted by the algorithm provider.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="maxValue" type="core:Amt">
+					<xs:annotation>
+						<xs:documentation>Maximum value of the parameter accepted by the algorithm provider.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="constValue" type="core:Amt">
+					<xs:annotation>
+						<xs:documentation>The value of a parameter that is constant and is not referred by a Control element. This value must be sent on the wire by the order generating application.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- parameter type Percentage -->
+	<xs:complexType name="Percentage_t">
+		<xs:annotation>
+			<xs:documentation>Derived parameter type corresponding to the FIX "Percentage" type defined in the FIX specification.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="core:Numeric_t">
+				<xs:attribute name="minValue" type="core:Percentage" default="0">
+					<xs:annotation>
+						<xs:documentation>Minimum value of the parameter accepted by the algorithm provider.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="maxValue" type="core:Percentage">
+					<xs:annotation>
+						<xs:documentation>Maximum value of the parameter accepted by the algorithm provider.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="multiplyBy100" type="xs:boolean" default="false">
+					<xs:annotation>
+						<xs:documentation>Applicable for xsi:type of Percentage_t. If true then percent values must be multiplied by 100 before being sent on the wire. For example, if multiplyBy100 were false then the percentage, 75%, would be sent as 0.75 on the wire. However, if mulitplyBy100 were true then 75 would be sent on the wire.
+If not provided it should be interpreted as false.
+Use of this attribute is not recommended. The motivation for this attribute is to maximize compatibility with algorithmic interfaces that are non-compliant with FIX in regard to their handling of percentages. In these cases an integer parameter should be used instead of a percentage.				
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="constValue" type="core:Percentage">
+					<xs:annotation>
+						<xs:documentation>The value of a parameter that is constant and is not referred by a Control element. This value must be sent on the wire by the order generating application.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+			<!-- A FIX percentage type is represented as a ratio of some number with
+				the number 1. So 75% would be sent as 0.75. However, if mulitplyBy100
+				is true then 75% would be sent as 75. -->
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- parameter type Char -->
+	<xs:complexType name="Char_t">
+		<xs:annotation>
+			<xs:documentation>Derived parameter type corresponding to the FIX "Char" type defined in the FIX specification.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="core:Parameter_t">
+				<xs:attribute name="constValue" type="core:char">
+					<xs:annotation>
+						<xs:documentation>The value of a parameter that is constant and is not referred by a Control element. This value must be sent on the wire by the order generating application.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- parameter type Boolean -->
+	<xs:complexType name="Boolean_t">
+		<xs:annotation>
+			<xs:documentation>Derived parameter type corresponding to the FIX "Boolean" type defined in the FIX specification.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="core:Parameter_t">
+				<xs:attribute name="trueWireValue" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>This attribute is scheduled for deprecation.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="falseWireValue" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>This attribute is scheduled for deprecation.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="constValue" type="core:Boolean">
+					<xs:annotation>
+						<xs:documentation>The value of a parameter that is constant and is not referred by a Control element. This value must be sent on the wire by the order generating application.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- parameter type String -->
+	<xs:complexType name="String_t">
+		<xs:annotation>
+			<xs:documentation>Derived parameter type corresponding to the FIX "String" type defined in the FIX specification.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="core:Parameter_t">
+				<xs:attribute name="minLength" type="core:Length" default="0">
+					<xs:annotation>
+						<xs:documentation>The minimum allowable length of the parameter.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="maxLength" type="core:Length">
+					<xs:annotation>
+						<xs:documentation>The minaximum allowable length of the parameter.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="constValue" type="core:String">
+					<xs:annotation>
+						<xs:documentation>The value of a parameter that is constant and is not referred by a Control element. This value must be sent on the wire by the order generating application.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- parameter type MultipleCharValue -->
+	<xs:complexType name="MultipleCharValue_t">
+		<xs:annotation>
+			<xs:documentation>Derived parameter type corresponding to the FIX "MultipleCharValue" type defined in the FIX specification.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="core:Parameter_t">
+				<xs:attribute name="minLength" type="core:Length" default="0">
+					<xs:annotation>
+						<xs:documentation>The minimum allowable length of the parameter.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="maxLength" type="core:Length">
+					<xs:annotation>
+						<xs:documentation>The maximum allowable length of the parameter.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="invertOnWire" type="xs:boolean" default="false">
+					<xs:annotation>
+						<xs:documentation>Instructs the OMS whether to perform a bitwise “not” operation on each element of these lists.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="constValue" type="core:MultipleCharValue">
+					<xs:annotation>
+						<xs:documentation>The value of a parameter that is constant and is not referred by a Control element. This value must be sent on the wire by the order generating application.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- parameter type Currency -->
+	<xs:complexType name="Currency_t">
+		<xs:annotation>
+			<xs:documentation>Derived parameter type corresponding to the FIX "Currency" type defined in the FIX specification.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="core:Parameter_t">
+				<xs:attribute name="constValue" type="core:Currency">
+					<xs:annotation>
+						<xs:documentation>The value of a parameter that is constant and is not referred by a Control element. This value must be sent on the wire by the order generating application.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- parameter type Exchange -->
+	<xs:complexType name="Exchange_t">
+		<xs:annotation>
+			<xs:documentation>Derived parameter type corresponding to the FIX "Exchange" type defined in the FIX specification.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="core:Parameter_t">
+				<xs:attribute name="constValue" type="core:Exchange">
+					<xs:annotation>
+						<xs:documentation>The value of a parameter that is constant and is not referred by a Control element. This value must be sent on the wire by the order generating application.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- parameter type MonthYear -->
+	<xs:complexType name="MonthYear_t">
+		<xs:annotation>
+			<xs:documentation>Derived parameter type corresponding to the FIX "MonthYear" type defined in the FIX specification.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="core:Parameter_t">
+				<xs:attribute name="minValue" type="core:MonthYear">
+					<xs:annotation>
+						<xs:documentation>Minimum date accepted by the algorithm provider.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="maxValue" type="core:MonthYear">
+					<xs:annotation>
+						<xs:documentation>Maximum date accepted by the algorithm provider.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="constValue" type="core:MonthYear">
+					<xs:annotation>
+						<xs:documentation>The value of a parameter that is constant and is not referred by a Control element. This value must be sent on the wire by the order generating application.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- parameter type UTCTimestamp -->
+	<xs:complexType name="UTCTimestamp_t">
+		<xs:annotation>
+			<xs:documentation>Derived parameter type corresponding to the FIX "UTCTimestamp" type defined in the FIX specification.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="core:Parameter_t">
+				<xs:attribute name="minValue" type="xs:time">
+					<xs:annotation>
+						<xs:documentation>Minimum value of the time portion of this FIX UTCTimestamp parameter. Represents an instant of time that recurs every day. Expressed in local market time. </xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="maxValue" type="xs:time">
+					<xs:annotation>
+						<xs:documentation>Maximum value of the time portion of this FIX UTCTimestamp parameter. Represents an instant of time that recurs every day. Expressed in local market time.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="constValue" type="xs:time">
+					<xs:annotation>
+						<xs:documentation>Constant value of the time portion of this FIX UTCTimestamp parameter. Represents an instant of time that recurs every day. Expressed in local market time.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="localMktTz" type="tz:LocalMktTz_t">
+					<xs:annotation>
+						<xs:documentation>Further qualification of dalilyMinValue, dailyMaxValue and dailyConstValue. Lets the order sending system know the location of the recipient system or target marketplace so it can accurately display time regarless of whether daylight savings is in affect at the recipient site.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- parameter type UTCTimeOnly-->
+	<xs:complexType name="UTCTimeOnly_t">
+		<xs:annotation>
+			<xs:documentation> Derived parameter type corresponding to the FIX "UTCTimeOnly" type defined in the FIX specification.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="core:Parameter_t">
+				<xs:attribute name="minValue" type="xs:time">
+					<xs:annotation>
+						<xs:documentation>Minimum time of day. Represents an instant of time that recurs every day. Expressed in local market time.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="maxValue" type="xs:time">
+					<xs:annotation>
+						<xs:documentation>Maximum time of day. Represents an instant of time that recurs every day. Expressed in local market time.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="constValue" type="xs:time">
+					<xs:annotation>
+						<xs:documentation>Time of day value. Represents an instant of time that recurs every day. Expressed in local market time.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="localMktTz" type="tz:LocalMktTz_t">
+					<xs:annotation>
+						<xs:documentation>Further qualification of dalilyMinValue, dailyMaxValue and dailyConstValue. Lets the order sending system know the location of the recipient system or target marketplace so it can accurately display time regarless of whether daylight savings is in affect at the recipient site.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- parameter type LocalMktDate -->
+	<xs:complexType name="LocalMktDate_t">
+		<xs:annotation>
+			<xs:documentation> Derived parameter type corresponding to the FIX "LocalMktDate" type defined in the FIX specification.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="core:Parameter_t">
+				<xs:attribute name="minValue" type="core:LocalMktDate">
+					<xs:annotation>
+						<xs:documentation>Minimum date accepted by the algorithm provider.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="maxValue" type="core:LocalMktDate">
+					<xs:annotation>
+						<xs:documentation>Maximum date accepted by the algorithm provider.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="constValue" type="core:LocalMktDate">
+					<xs:annotation>
+						<xs:documentation>The value of a parameter that is constant and is not referred by a Control element. This value must be sent on the wire by the order generating application.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- parameter type UTCDateOnly-->
+	<xs:complexType name="UTCDateOnly_t">
+		<xs:annotation>
+			<xs:documentation> Derived parameter type corresponding to the FIX "UTCDateOnly" type defined in the FIX specification.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="core:Parameter_t">
+				<xs:attribute name="minValue" type="core:UTCDateOnly">
+					<xs:annotation>
+						<xs:documentation>Minimum date accepted by the algorithm provider.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="maxValue" type="core:UTCDateOnly">
+					<xs:annotation>
+						<xs:documentation>Maximum date accepted by the algorithm provider.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="constValue" type="core:UTCDateOnly">
+					<xs:annotation>
+						<xs:documentation>The value of a parameter that is constant and is not referred by a Control element. This value must be sent on the wire by the order generating application.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- parameter type Data -->
+	<xs:complexType name="Data_t">
+		<xs:annotation>
+			<xs:documentation> Derived parameter type corresponding to the FIX "Data" type defined in the FIX specification.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="core:Parameter_t">
+				<xs:attribute name="minLength" type="core:Length">
+					<xs:annotation>
+						<xs:documentation>The minimum allowable length of the parameter.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="maxLength" type="core:Length">
+					<xs:annotation>
+						<xs:documentation>The minaximum allowable length of the parameter.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="constValue" type="core:data">
+					<xs:annotation>
+						<xs:documentation>The value of a parameter that is constant and is not referred by a Control element. This value must be sent on the wire by the order generating application.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- parameter type MultipleStringValue -->
+	<xs:complexType name="MultipleStringValue_t">
+		<xs:annotation>
+			<xs:documentation> Derived parameter type corresponding to the FIX "MultipleStringValue" type defined in the FIX specification.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="core:Parameter_t">
+				<xs:attribute name="minLength" type="core:Length">
+					<xs:annotation>
+						<xs:documentation>The minimum allowable length of the parameter.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="maxLength" type="core:Length">
+					<xs:annotation>
+						<xs:documentation>The maximum allowable length of the parameter.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="invertOnWire" type="xs:boolean" default="false">
+					<xs:annotation>
+						<xs:documentation>Instructs the OMS whether to perform a bitwise “not” operation on each element of these lists.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="constValue" type="core:MultipleStringValue">
+					<xs:annotation>
+						<xs:documentation>The value of a parameter that is constant and is not referred by a Control element. This value must be sent on the wire by the order generating application.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- parameter type Country -->
+	<!-- County_t is now a type derived from Core:Parameter_t -->
+	<xs:complexType name="Country_t">
+		<xs:annotation>
+			<xs:documentation>Derived parameter type corresponding to the FIX "Country" type defined in the FIX specification.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="core:Parameter_t">
+				<xs:attribute name="constValue" type="core:Country"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- parameter type Language -->
+	<xs:complexType name="Language_t">
+		<xs:annotation>
+			<xs:documentation>Derived parameter type corresponding to the FIX "Language" type defined in the FIX specification.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="core:Parameter_t">
+				<xs:attribute name="constValue" type="core:Language"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- parameter type TZTimestamp -->
+	<xs:complexType name="TZTimestamp_t">
+		<xs:annotation>
+			<xs:documentation>Derived parameter type corresponding to the FIX "TZTimestamp" type defined in the FIX specification.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="core:Parameter_t">
+				<xs:attribute name="minValue" type="xs:time">
+					<xs:annotation>
+						<xs:documentation>Minimum value of the time portion of this FIX TZTimestamp parameter. Represents an instant of time that recurs every day.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="maxValue" type="xs:time">
+					<xs:annotation>
+						<xs:documentation>Maximum value of the time portion of this FIX TZTimestamp parameter. Represents an instant of time that recurs every day.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="constValue" type="xs:time">
+					<xs:annotation>
+						<xs:documentation>Constant value of the time portion of this FIX TZTimestamp parameter. Represents an instant of time that recurs every day.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- parameter type TZTimeOnly-->
+	<xs:complexType name="TZTimeOnly_t">
+		<xs:annotation>
+			<xs:documentation> Derived parameter type corresponding to the FIX "TZTimeOnly" type defined in the FIX specification.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="core:Parameter_t">
+				<xs:attribute name="minValue" type="core:TZTimeOnly">
+					<xs:annotation>
+						<xs:documentation>Minimum value for time of day. Represents an instant of time that recurs every day.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="maxValue" type="core:TZTimeOnly">
+					<xs:annotation>
+						<xs:documentation>Maximum value for time of day. Represents an instant of time that recurs every day.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="constValue" type="core:TZTimeOnly">
+					<xs:annotation>
+						<xs:documentation>Constant value for time of day. Represents an instant of time that recurs every day.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- parameter type Tenor -->
+	<xs:complexType name="Tenor_t">
+		<xs:annotation>
+			<xs:documentation>Derived parameter type corresponding to the FIX "Tenor" type defined in the FIX specification.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="core:Parameter_t">
+				<xs:attribute name="constValue" type="core:Tenor"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- parameter type Numeric -->
+	<xs:complexType name="Numeric_t">
+		<xs:annotation>
+			<xs:documentation> Abstract parameter from which other parameters are derived.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="core:Parameter_t">
+				<xs:attribute name="precision" type="xs:nonNegativeInteger">
+					<xs:annotation>
+						<xs:documentation>The number of digits to the right of the decimal point in which to round when populating the FIX message. Lack of this attribute indicates that the value entered by the user should be taken as-is without rounding.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- Start of fixml-datatypes-5-0-SP2.xsd hardcode -->
+	<!-- ************************************************************************************************************************** -->
+	<xs:simpleType name="String">
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="Length">
+		<xs:annotation>
+			<xs:documentation>int field representing the length in bytes. Value must be positive.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:nonNegativeInteger"/>
+	</xs:simpleType>
+	<xs:simpleType name="SeqNum">
+		<xs:annotation>
+			<xs:documentation>int field representing a message sequence number. Value must be positive.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:positiveInteger"/>
+	</xs:simpleType>
+	<xs:simpleType name="Qty">
+		<xs:annotation>
+			<xs:documentation>float field capable of storing either a whole number (no decimal places) of "shares" (securities denominated in whole units) or a decimal value containing decimal places for non-share quantity asset classes (securities denominated in fractional units).</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal"/>
+	</xs:simpleType>
+	<xs:simpleType name="Price">
+		<xs:annotation>
+			<xs:documentation>float field  representing a price. Note the number of decimal places may vary. For certain asset classes prices may be negative values. For example, prices for options strategies can be negative under certain market conditions. Refer to Volume 7: FIX Usage by Product for asset classes that support negative price values. </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal"/>
+	</xs:simpleType>
+	<xs:simpleType name="PriceOffset">
+		<xs:annotation>
+			<xs:documentation>float field representing a price offset, which can be mathematically added to a "Price". Note the number of decimal places may vary and some fields such as LastForwardPoints may be negative.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal"/>
+	</xs:simpleType>
+	<xs:simpleType name="Amt">
+		<xs:annotation>
+			<xs:documentation>float field typically representing a Price times a Qty</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal"/>
+	</xs:simpleType>
+	<xs:simpleType name="Percentage">
+		<xs:annotation>
+			<xs:documentation>float field representing a percentage (e.g. 0.05 represents 5% and 0.9525 represents 95.25%). Note the number of decimal places may vary.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal"/>
+	</xs:simpleType>
+	<xs:simpleType name="char">
+		<xs:annotation>
+			<xs:documentation>Single character value, can include any alphanumeric character or punctuation except the delimiter.  All char fields are case sensitive (i.e. m != M).
+The following fields are based on char.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value=".{1}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Boolean">
+		<xs:annotation>
+			<xs:documentation>charchar field containing one of two values:
+'Y' = True/Yes
+'N' = False/No</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[YN]{1}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="MultipleCharValue">
+		<xs:annotation>
+			<xs:documentation>Stringstring field containing one or more space delimited single character values (e.g. |18=2 A F| ).</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Za-z0-9](\s[A-Za-z0-9])*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="MultipleStringValue">
+		<xs:annotation>
+			<xs:documentation>Stringstring field containing one or more space delimited multiple character values (e.g. |277=AV AN A| ).</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value=".+(\s.+)*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Country">
+		<xs:annotation>
+			<xs:documentation>Stringstring field representing a country using ISO 3166 Country code (2 character) values (see Appendix 6-B).</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value=".{2}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Currency">
+		<xs:annotation>
+			<xs:documentation>Stringstring field representing a currency type using ISO 4217 Currency code (3 character) values (see Appendix 6-A).</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value=".{3}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Exchange">
+		<xs:annotation>
+			<xs:documentation>Stringstring field representing a market or exchange using ISO 10383 Market Identifier Code (MIC) values (see"Appendix 6-C).</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value=".*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="MonthYear">
+		<xs:annotation>
+			<xs:documentation>Stringstring field representing month of a year. An optional day of the month can be appended or an optional week code.
+Valid formats:
+	YYYYMM
+	YYYYMMDD
+	YYYYMMWW
+Valid values:
+	YYYY = 0000-9999;  MM = 01-12;  DD = 01-31;  WW = w1, w2, w3, w4, w5.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="\d{4}(0|1)\d([0-3wW]\d)?"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="UTCTimestamp">
+		<xs:annotation>
+			<xs:documentation>Stringstring field representing Time/date combination represented in UTC (Universal Time Coordinated, also known as "GMT") in either YYYYMMDD-HH:MM:SS (whole seconds) or YYYYMMDD-HH:MM:SS.sss (milliseconds) format, colons, dash, and period required.   
+Valid values:
+	*  YYYY = 0000-9999, MM = 01-12, DD = 01-31, HH = 00-23, MM = 00-59, SS = 00-60 (60 only if UTC leap second) (without milliseconds).
+	*  YYYY = 0000-9999, MM = 01-12, DD = 01-31, HH = 00-23, MM = 00-59, SS = 00-60 (60 only if UTC leap second), sss=000-999 (indicating milliseconds).
+Leap Seconds:  Note that UTC includes corrections for leap seconds, which are inserted to account for slowing of the rotation of the earth. Leap second insertion is declared by the International Earth Rotation Service (IERS) and has, since 1972, only occurred on the night of Dec. 31 or Jun 30. The IERS considers March 31 and September 30 as secondary dates for leap second insertion, but has never utilized these dates. During a leap second insertion, a UTCTimestamp field may read "19981231-23:59:59", "19981231-23:59:60", "19990101-00:00:00".  (see http://tycho.usno.navy.mil/leapsec.html)
+</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:dateTime"/>
+	</xs:simpleType>
+	<xs:simpleType name="UTCTimeOnly">
+		<xs:annotation>
+			<xs:documentation>Stringstring field representing Time-only represented in UTC (Universal Time Coordinated, also known as "GMT") in either HH:MM:SS (whole seconds) or HH:MM:SS.sss (milliseconds) format, colons, and period required.   This special-purpose field is paired with UTCDateOnly to form a proper UTCTimestamp for bandwidth-sensitive messages.
+Valid values:  
+	HH = 00-23, MM = 00-60 (60 only if UTC leap second), SS = 00-59.  (without milliseconds)
+	HH = 00-23, MM = 00-59, SS = 00-60 (60 only if UTC leap second), sss=000-999 (indicating milliseconds).
+</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:time"/>
+	</xs:simpleType>
+	<xs:simpleType name="UTCDateOnly">
+		<xs:annotation>
+			<xs:documentation>Stringstring field representing Date represented in UTC (Universal Time Coordinated, also known as "GMT") in YYYYMMDD format. This special-purpose field is paired with UTCTimeOnly to form a proper UTCTimestamp for bandwidth-sensitive messages. 
+Valid values: 
+	YYYY = 0000-9999, MM = 01-12, DD = 01-31.
+</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:date"/>
+	</xs:simpleType>
+	<xs:simpleType name="LocalMktDate">
+		<xs:annotation>
+			<xs:documentation>Stringstring field represening a Date of Local Market (as oppose to UTC) in YYYYMMDD format.  This is the "normal" date field used by the FIX Protocol.
+Valid values: 
+	YYYY = 0000-9999, MM = 01-12, DD = 01-31.
+</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:date"/>
+	</xs:simpleType>
+	<xs:simpleType name="TZTimeOnly">
+		<xs:annotation>
+			<xs:documentation>String field representing the time represented based on ISO 8601. This is the time with a UTC offset to allow identification of local time and timezone of that time. 
+Format is HH:MM[:SS][Z | [ + | - hh[:mm]]] where HH = 00-23 hours, MM = 00-59 minutes, SS = 00-59 seconds, hh = 01-12 offset hours, mm = 00-59 offset minutes. 
+Example: 07:39Z is 07:39 UTC 
+Example: 02:39-05 is five hours behind UTC, thus Eastern Time 
+Example: 15:39+08 is eight hours ahead of UTC, Hong Kong/Singapore time 
+Example: 13:09+05:30 is 5.5 hours ahead of UTC, India time</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:time"/>
+	</xs:simpleType>
+	<xs:simpleType name="TZTimestamp">
+		<xs:annotation>
+			<xs:documentation>String field representing a time/date combination representing local time with an offset to UTC to allow identification of local time and timezone offset of that time. The representation is based on ISO 8601. 
+Format is YYYYMMDD-HH:MM:SS[Z | [ + | - hh[:mm]]] where YYYY = 0000 to 9999, MM = 01-12, DD = 01-31 HH = 00-23 hours, MM = 00-59 minutes, SS = 00-59 seconds, hh = 01-12 offset hours, mm = 00-59 offset minutes 
+Example: 20060901-07:39Z is 07:39 UTC on 1st of September 2006 
+Example: 20060901-02:39-05 is five hours behind UTC, thus Eastern Time on 1st of September 2006 
+Example: 20060901-15:39+08 is eight hours ahead of UTC, Hong Kong/Singapore time on 1st of September 2006 
+Example: 20060901-13:09+05:30 is 5.5 hours ahead of UTC, India time on 1st of September 2006</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:dateTime"/>
+	</xs:simpleType>
+	<xs:simpleType name="data">
+		<xs:annotation>
+			<xs:documentation>String field containing raw data with no format or content restrictions.  Data fields are always immediately preceded by a length field.  The length field should specify the number of bytes of the value of the data field (up to but not including the terminating SOH).
+Caution: the value of one of these fields may contain the delimiter (SOH) character.  Note that the value specified for this field should be followed by the delimiter (SOH) character as all fields are terminated with an "SOH".</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="Tenor">
+		<xs:annotation>
+			<xs:documentation>Pattern used to allow the expression of FX standard tenors in addition to the base valid enumerations defined for the field that uses this pattern data type.  This pattern data type is defined as follows:
+Dx = tenor expression for "days", e.g. "D5", where "x" is any integer &gt; 0
+Mx = tenor expression for "months", e.g. "M3", where "x" is any integer &gt; 0
+Wx = tenor expression for "weeks", e.g. "W13", where "x" is any integer &gt; 0
+Yx = tenor expression for "years", e.g. "Y1", where "x" is any integer &gt; 0</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[DMWY](\d)+"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Reserved100Plus">
+		<xs:annotation>
+			<xs:documentation>PatternValues "100" and above are reserved for bilaterally agreed upon user defined enumerations.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="100"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Reserved1000Plus">
+		<xs:annotation>
+			<xs:documentation>PatternValues "1000" and above are reserved for bilaterally agreed upon user defined enumerations.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="1000"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Reserved4000Plus">
+		<xs:annotation>
+			<xs:documentation>PatternValues "4000" and above are reserved for bilaterally agreed upon user defined enumerations.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="4000"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="XMLData">
+		<xs:annotation>
+			<xs:documentation>StringContains an XML document raw data with no format or content restrictions.  XMLData fields are always immediately preceded by a length field.  The length field should specify the number of bytes of the value of the data field (up to but not including the terminating SOH).</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="Language">
+		<xs:annotation>
+			<xs:documentation>StringIdentifier for a national language - uses ISO 639-1 standard</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:language"/>
+	</xs:simpleType>
+</xs:schema>
+<!-- Please email any revisions to the Steward of the Master Model & Mapping artifacts at algotech@fixprotocol.org -->
+<!-- Revision History -->
+<!-- Date Version Author Comments
+  Authors - Greg Malatestinic, Rick Labs, Zoltan Feledy, Jim Arlet, Gideon Kaplan, Martin Naughton, Mike McDermott and other 
+  members of FPL Algo Trading WG. -if there is anyone else then please speak up :-)
+12apr07 v1-8-1-S by Robert Golan for additional annotations, slimming, revision history, and version stamping.
+			-moved in StrategyParameterType_enum_t
+			-knocked out all the dependant includes.
+			-ositiveInteger typo changed to positiveInteger
+26apr07 v1-8-1-S-Neo2 by Henrik Johansson and Robert Golan renamed now to V2.0
+			-added in numerous 5.0 types needed to perform min/max/init settings.
+			-took out use=optional on all attributes since this is an xsd default.
+			-added some additional documentation.
+30apr07 V2.1 by Henrik Johansson and Robert Golan
+			-added <xs:attribute name="initValue" type="FIXML50:NumInGroup"/> but will activate later
+01May07 V2.2 by Greg Malatestinic
+			-changed algoExtModel attribute to be of type MVS_t.
+			-added enumPair element to Parameter_t type.
+04May07 v2.2.1 by Jim Arlet and Greg Malatestinic
+			-added strategyLayout element to enclose all other layout elements
+			-strategyPanel has an orientation attribute
+			-strategyPanel can have one or more parameterName elements and/or one or more strategyPanels
+			-strategyPanel has the attributes the old verticalPanel had: title, collapsed, collapsable and color
+			-added localMktTz attribute to UTCTimestamp types.
+			-changes attribute types for initValue, minValue, maxValue to LocalMktTime for UTCTimestamp parameters.
+			-added localMktTz attribute to UTCTimestamp_t and LocalMktTime_t parameters.
+09may07 V2.2.2 by Henrik Johansson and Robert Golan
+			-added Int_t type for parameter type as per Henrik's request.
+			-sorted all complex/simple types throughout the xsd for wsdl visual purposes except for ref=s off the root element
+16may07 V2.2.3 by Henrik Johansson
+			-added attributes minValue, maxValue and initValue for parameter type Float_t
+			-<xs:attribute name="initValue" type="FIXML50:NumInGroup"/> activated as< xs:attribute name="initValue" type="xs:nonNegativeInteger"/>
+04Jun07 V2.2.4 by Greg Malatestinic
+			-defined minOccur and maxOccur values for each element.
+			-deprecated format attribute from Parameter_t element type.
+			-set strategyLayout.maxOccurs = 1 and uiComponents.maxOccurs = 1 in strategy element.
+12Jun07 V2.2.5 by Greg Malatestinic
+			-deprecated BooleanTrue and Boolean false from strategy element. Vendors must use values in {true, 1, false, 0} for Booleans.
+			-removed type attribute from edit element.
+			-added operator_t and logicOperator_t types. edit elements now refer to these types.
+			-added component_t type. Component element now uses this type.
+13Jun07 V2.2.7 by Zoltan Feledy
+			- fixed spelling errors in the comments
+			- changed attribute name to "collapsible" from "collapsable" on the strategyPanel element
+13Jun07 V2.2.7 by Graham Miller
+			- split schema in to core, layout, and validation schema
+			- prefixed references to non-core tags and attributes with appropriate namespace
+			- rearranged schema to interleave layout and parameter definitions together, or allow lone parameter definitions
+28Jun07 v2.2.8 by Greg Malatestinic
+      		-cleaned up operator_t and logicOperator_t types.
+      		-controlType attribute of is now restricted by component_t - this should habve been done on 12Jun07.
+      		-moved component_t from core namespace to layout namespace.
+      		-added description element for strategies and strategy elements.
+16Jul07 v2.2.9 by Greg Malatestinic
+			-deprecated embedFixTag attribute from strategy element.
+			-added a new control, EditableComboBox is now a legal value of a component_t type.
+01Oct07 v2.3.01 by Greg Malatestinic
+			-changed type of initValue, minValue and maxValue to LocalMktTime for UTCTimeOnly_t type and added LocalMktTz.
+			-added flow attributes to parameter and enumPair elements (withheld doing so for startegyPanel for now).
+			-created new sub-schema: flow.
+15Oct07 v2.4 by Greg Malatestinic
+			-changed flow schema to incorporate edit elements as part of stateGroup.
+			-added index attribute to enumPairs just to give a relative order inwhich they should be displayed. This
+			 is useful if a comboBox item is ever disabled by a stateRule
+			-added multiplyBy100 attribute to Percentage_t. Just for backward compatability reasons.
+			-added incrementSource attribute to Price_t and Qty_t elements.
+			-embedFixTag put back. It's removal may have been to hasty.
+07Nov07 v2.4.1 by Robert Golan
+			-added additional annotations for xmlspy doc generation.
+30Jan08 v2.5 by Greg Malatestinic and Robert Golan
+			-added strategyIdentifierTag attribute to strategies element.
+			-added versionIdentifierTag attribute to strategies element.
+			-added draftFlagIdentifierTag attribute to strategies element.
+			-algoExtModel in the strategy element has been marked for deprication.
+			-supportsCxlRpl in the strategy element has been marked for deprication.
+			-fixTag in the strategy element has been marked for deprication.
+			-simplfied URI namespace names for backwards compatability
+05Mar08 v2.4.3 by Greg Malatestinic
+			-added visible and enabled attributes to state rule element.
+			-added definedByFIX attribute to parameter element.
+			-behavior attribute of stateRule element changed to optional and marked for deprication.
+			-constTag has been marked for deprication.
+			-applicableMsgTypes has been marked for deprication. It is replaced by fixMsgType.
+			-replaced many global element definitions with type definitions.
+			-added RepeatingGroup_t type and included instance of it in strategy element.
+19Mar08 v2.4.4 by Greg Malatestinic
+			-added more attributes to repeatingGroup element that were not in orignial.
+31Mar08
+			-was forced to make StrategyLayout into a type due to parsing problems.
+20May08 v2.4.5 by Greg Malatestinic
+			-made changes to validation schema so that we have a tree structure. <edit> is now recursive.
+27May08 v2.4.6 by Greg Malatestinic
+			-added editRef type. stateRule, stateGroup and startegyEdit can now refer to named edit elements.
+			-added edit at strategy level. Now a named edit can be declared and re-used within a strategy.
+			- keyName removed from flow:stateGroup. It should have been removed several versions ago.
+04Jun08 v2.4.7 by Greg Malatestinic
+			-added edit element at strategies level. Now named edits can be re-used across strategies.
+			-added editRef to edit element.
+			-added executionProfileLink
+27Jul08 v2.4.8 by Greg Malatestinic
+			-added boolean attribute invertOnWire to MultipleCharValue_t and MultipleStringValue_t types
+			-added type MultipleCharValue. It was overlooked.
+			-added trueWireValue and falseWireValue to Boolean_t definition.
+23Dec08 v2.5.0 by Greg Malatestinic
+			-moved controlType out of Parameter_t. It is now an element that is declared in lay schema.
+			-added initValueSource to Parameter_t.
+13Jan09 v2.5.1 by Greg Malatestinic
+			-removed uiRep, increment and incrementSource from Parameter_t
+			-removed stateRule from Parameter_t
+14Jan09 v2.5.2 by Mike McDermott
+			- updated hierarchy diagram
+      - added string restriction pattern to 'name' attribute on <Strategy_t> complex type
+      - moved 'tooltip' attribute from <parameter> element to <Control_T> complex type in layout schema
+      - converted 'description' attribute on <strategies> element to an element for consistency sake, and to
+        make use of the whiteSpace restriction on the <description> simple type
+      - removed <flow:stateRule> reference from <enumPair_t>
+      - changed name of <enumPair_t> type to <EnumPair_t> for type naming consistency
+      - removed 'type' attribute from <Parameter_t>
+      - removed <StrategyParameterType_enum_t> - deprecated by the removal of the ‘type’ attribute from <Parameter_t>
+      - removed 'type' attribute from <RepeatingGroup_t> - deprecated by the removal of <StrategyParameterType_enum_t>
+      - matched date/time complex types to the correct underlying FIXML simple type
+      - removed namespace references to FIXML 5.0 - if we’re not going to directly import the FIXML 5.0 
+        data types schema, we don’t need a reference to the namespace.   
+21Jan09 v2.5.3 by Greg Malatestinic
+			- removed uiRep from EnumPair_t
+			- added enumID to EnunmPair_t and updated documentation.
+			- removed initValueSource from Parameter_t
+			- removed initValue from all types derived from Parameter_t. initValue is now found in the individual controls in layout.
+			- added dailyMinValue and dailyMaxValue to UTCTimeStamp_t.
+			- added LocalMktTz to UTCTimeStamp_t.
+			- removed initValiue mode from UTCTimeStamp_t. It is now found in the Clock_t control in layout.
+22Jan09 v2.5.4 by Greg Malatestinic and Mike McDermott
+      - moved helpText from Parameter_t to Control_t
+      - moved helpText_t simple type from Core to Layout to correspond with above change
+      - removed explicit parameter element definition - was not being used by anything
+      - changed description element to a simple type for consistency
+23Jan09 v2.5.5 by Martin Naughton and Mike McDermott
+      - added a description element to Parameter_t
+23Jan09 v2.5.6 by Martin Naughton and Mike McDermott
+      - added a description element to RepeatingGroup_t and EnumPair_t
+      - created a standalone description element to expose to the other subschemas 
+28Jan09 v2.5.7 by Greg Malatestinic
+		  - added constValue attribute to all parameters that extend Parameter_t as appropriate and with appropriate types
+02Feb09 v2.5.8 by Mike McDermott
+      - added constValue to the remaining complex types, and updated some constValues from xs: types to their underlying
+        FIXML type
+16Feb09 v2.5.9 by Mike McDermott
+      - added key constraints to the 'name' attributes on the Parameter_t and Strategy_t objects so that the name values
+        are unique and required within a given Strategy_t and Strategies_t object respectively
+      - added a 'core' alias to the default namespace to allow the xs:key constraints to work correctly.
+      - created a Strategies_t complex type to both conform with the existing pattern, and allow the xs:key constraints to
+        work correctly
+26Feb09 v2.6.1 by Mike McDermott
+      - added abstract="true" to Parameter_t to enforce the use of xsi:type
+      - added a keyRef for Control_t.parameterName to use the parameterKey key
+      - added string restriction pattern to 'enumID' attribute on <EnumPair_t> complex type
+03Mar09 v2.6.2 by Mike McDermott and Martin Naughton
+      - fixed the selector xpath query on parameterKeyRef to allow for nested controls
+      - updated locations attribute to conform to an enum of region options
+      - updated the RegEx pattern on the MVS_t type to be more specific and only allow a single space to separate the string values.
+      - updated constValue on Length_t to be typed to Length (from FIXML 5.0 Spec) per FIX spec
+      - updated constValue on NumInGroup to be typed to xs:positiveInteger per FIX spec
+      - updated constValue on SeqNum_t to be typed to SeqNum (from FIXML 5.0 Spec) per FIX spec
+      - updated constValue on TagNum_t to be typed to xs:positiveInteger per FIX spec
+27Mar09 v2.6.3 by Mike McDermott
+      - updated namespaces to conform with FIX standard for xml namespaces
+      - updated namespaces to conform with *product* version of 1.1
+      - updated element and type names to conform with FIX standard of upper camel case
+04Apr09 v2.6.4 by Mike McDermott
+      - converted the Locations attribute to an element
+      - converted the Markets attribute to an element
+      - converted the SecurityTypes attribute to an element
+      - removed the MVS_t type, since it was not being used by anything
+      - removed the extraneous <sequence> tag around the Parameter, StrategyLayout, and RepeatingGroup elements in the Strategy element.
+26May09 v2.6.5 by Mike McDermott
+      - finalized structure for Regions, Countries, Markets, and Security Types
+05Aug09 v2.6.6 by Mike McDermott
+      - updated localMktTz attributes to use the enumeration defined in the timezones schema
+10Jan10 v2.6.7 by John Shields
+      - updated FIXml hardcode section to FIX5.0 SP2
+      - added support for FIX datatypes Language_t, TZTimeOnly_t, TZTimestamp_t, and Tenor_t. Also added Country_t, but commented it out due to conflict within ATDL.
+      - corrected LocalMktTime_t to be LocalMktDate_t per FIX Protocol data dictionary and changed its base type to xs:date
+      - removed localMktTz attribute from UTCTimeStamp_t and LocalMktDate_t (UTCTimestamp_t is always UTC at the parameter level; LocalMktDate_t is a date-only value)
+      - changed dailyMinValue, dailyMaxValue, and dailyConstValue for UTCTimestamp_t to be UTCTimeOnly  instead of LocalMktTime
+      - removed trueWireValue and falseWireValue from Boolean_t definition; equivalent attributes to be added to appropriate Control_t types in the Layout schema
+      - changed minValue, maxValue, and constValue for Float_t to use xs:decimal instead of xs:float as a base type (xs:float can cause floating-point error when doing financial calculations, and all float-derived types use xs:decimal)
+      - changed naming of UTCTimestamp_t, MonthYear_t and UTCDateOnly_t to exactly match FIX Protocol spelling/casing convention
+13Jan10 v2.6.8 by Greg Malatestinic
+	  - in UTCTimestamp_t changed types of dailyMinValue, dailyMaxValue and dailyConstValue to xs:time (used to be core:LocalMktTime).
+	  - added back trueWireValue and fasleWireValue to Boolean_t
+	  - in UTCTimestamp_t intended to add back localMktTz but did not
+	  - added tag957support to Strategies as a boolean attribute
+	 - in Parameter_t use has been given a default value of "optional"
+	 - added orderSequenceTag to Strategy_t
+20Jan10 v2.6.9 by Greg Malatestinic
+	| - in UTCTimestamp_t added back localMktTz
+	| - in UTCTimeOnly_t added localMktTz
+28Jan v2.7.1 by Greg Malatestinic
+	 - changed SecurityType_t/@name to be equivalent to FIX tag 167
+	 - added namespace declaration rg for Regions.xsd
+19Feb v2.7.1 by Greg Malatestinic
+	- Country_t definition moved to interior of Region_t. This allows Country_t (the extension of Parameter_t) to be re-instated wothout causing a conflict.
+	- For UTCTimestamp_t and TZTimezone_t the attributes dailyMinValue, dailyMaxValue and dailyConstValue were removed.
+	- For UTCTimestamp_t and TZTimezone_t the attributes minValue, maxValue and constValue had their types changed to xs:time
+	- Parameter/@const was removed
+	- added annotations to Boolean_t/@trueWireValue and falseWireValue. We plan on deprecating them.
+22Feb v2.7.2 by Greg Malatestinic
+	- All xsd files renamed to fixatdl-{sub-schema}-1-1.xsd. Import/@schemaLocation adjusted accordingly.
+	- Namespaces changed to http://www.fixprotocol.org/FIXatdl-1-1/{sub-schema}
+15Dec2010 v2.7.2e by Greg Malatestinic
+	- Sync'd documentation with specification document.
+-->

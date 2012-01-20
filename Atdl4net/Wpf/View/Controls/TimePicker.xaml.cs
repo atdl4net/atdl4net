@@ -139,7 +139,7 @@ namespace Atdl4net.Wpf.View.Controls
         /// <value>The hours.</value>
         public string Hours
         {
-            get { return _value.IsEmpty ? string.Empty : _value.Hours.ToString(); }
+            get { return _value.IsEmpty ? string.Empty : _value.Hours.ToString("D2"); }
 
             set
             {

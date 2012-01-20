@@ -29,10 +29,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Xml;
+using Atdl4net.Configuration;
 using Atdl4net.Diagnostics;
 using Atdl4net.Diagnostics.Exceptions;
 using Atdl4net.Fix;
-using Atdl4net.Model.Collections;
 using Atdl4net.Model.Elements;
 using Atdl4net.Notification;
 using Atdl4net.Resources;
@@ -47,12 +47,12 @@ namespace Atdl4net.Wpf
     /// <summary>
     /// Custom control for rendering FIXatdl strategies.
     /// </summary>
-    public partial class AtdlControl : UserControl, IInputValueProvider, INotifyPropertyChanged
+    public partial class AtdlControl : UserControl, IInitialFixValueProvider, INotifyPropertyChanged
     {
         private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Wpf");
 
+        // Used for debugging purposes
         private string _xaml;
-        private FixTagValuesCollection _inputValues;
 
         #region Dependency Properties
 
@@ -60,19 +60,36 @@ namespace Atdl4net.Wpf
         /// Dependency property that provides storage for the data entry mode for this control.
         /// </summary>
         public static readonly DependencyProperty DataEntryModeProperty =
-            DependencyProperty.Register("DataEntryMode", typeof(DataEntryMode), typeof(AtdlControl), new FrameworkPropertyMetadata(DataEntryMode.Create));
+            DependencyProperty.Register("DataEntryMode", typeof(DataEntryMode), typeof(AtdlControl),
+                new FrameworkPropertyMetadata(DataEntryMode.Create, OnDataEntryModeChanged));
 
         /// <summary>
         /// Dependency property that provides storage for the flag that enables and disables rendering.
         /// </summary>
         public static readonly DependencyProperty IsRenderingDisabledProperty =
-            DependencyProperty.Register("IsRenderingDisabled", typeof(bool), typeof(AtdlControl), new FrameworkPropertyMetadata(false));
+            DependencyProperty.Register("IsRenderingDisabled", typeof(bool), typeof(AtdlControl),
+                new FrameworkPropertyMetadata(false));
 
         /// <summary>
         /// Dependency property that provides storage for the currently selected strategy for this control.
         /// </summary>
         public static readonly DependencyProperty StrategyProperty =
-            DependencyProperty.Register("Strategy", typeof(Strategy_t), typeof(AtdlControl), new FrameworkPropertyMetadata(OnStrategyPropertyChanged));
+            DependencyProperty.Register("Strategy", typeof(Strategy_t), typeof(AtdlControl),
+            new FrameworkPropertyMetadata(OnStrategyPropertyChanged));
+
+        /// <summary>
+        /// Dependency property that provides storage for the input FIX values for the currently selected strategy for this control.
+        /// </summary>
+        public static readonly DependencyProperty InputFixValuesProperty =
+            DependencyProperty.Register("InputFixValues", typeof(FixTagValuesCollection), typeof(AtdlControl),
+                new FrameworkPropertyMetadata(FixTagValuesCollection.Empty, OnInputFixValuesChanged));
+
+        /// <summary>
+        /// Dependency property that provides storage for the output FIX values for the currently selected strategy for this control.
+        /// </summary>
+        public static readonly DependencyProperty OutputFixValuesProperty =
+            DependencyProperty.Register("OutputFixValues", typeof(FixTagValuesCollection), typeof(AtdlControl),
+                new FrameworkPropertyMetadata(FixTagValuesCollection.Empty));
 
         #endregion
 
@@ -107,6 +124,8 @@ namespace Atdl4net.Wpf
             Application.Current.Resources[StrategyViewModel.ComboBoxSizerKey] = new WpfComboBoxSizer() { ExampleComboBox = new ComboBox(), InitialComboWidth = 28 };
         }
 
+        #region Properties
+
         /// <summary>
         /// Gets the collection of child controls for this control.
         /// </summary>
@@ -121,14 +140,6 @@ namespace Atdl4net.Wpf
         public string CurrentXaml
         {
             get { return _xaml; }
-        }
-
-        /// <summary>
-        /// Gets the input FIX values used when populating this Strategy, using the FIX_ mechanism.
-        /// </summary>
-        public FixTagValuesCollection InputValues
-        {
-            get { return _inputValues; }
         }
 
         /// <summary>
@@ -171,6 +182,24 @@ namespace Atdl4net.Wpf
         }
 
         /// <summary>
+        /// Gets/sets the input FIX values for this control.
+        /// </summary>
+        public FixTagValuesCollection InputFixValues
+        {
+            get { return (FixTagValuesCollection)GetValue(InputFixValuesProperty); }
+            set { SetValue(InputFixValuesProperty, value); }
+        }
+
+        /// <summary>
+        /// Gets/sets the output FIX values for this control.
+        /// </summary>
+        public FixTagValuesCollection OutputFixValues
+        {
+            get { return (FixTagValuesCollection)GetValue(OutputFixValuesProperty); }
+            set { SetValue(OutputFixValuesProperty, value); }
+        }
+
+        /// <summary>
         /// Determines whether all controls that are populated have valid values, and that all parameters therefore have valid
         /// values.
         /// </summary>
@@ -184,9 +213,9 @@ namespace Atdl4net.Wpf
                 {
                     IList<ValidationResult> validationResults;
 
-                    if (ViewModel.Controls.AreAllValid &&
-                        Strategy.Controls.TryUpdateParameterValues(Strategy.Parameters, true, out validationResults))
-                        isValid = Strategy.StrategyEdits.ValidateAll(new FixFieldValueProvider(this, Strategy.Parameters), true);
+                    if (ViewModel.AreAllControlsInternallyValid &&
+                        Strategy.TryUpdateParameterValuesFromControls(true, out validationResults))
+                        isValid = Strategy.EvaluateAllStrategyEdits(this, true);
                 }
 
                 return isValid;
@@ -209,6 +238,8 @@ namespace Atdl4net.Wpf
             private set { Application.Current.Resources[StrategyViewModel.DataContextKey] = value; }
         }
 
+        #endregion
+
         /// <summary>
         /// Refreshes the rendering of the currently selected strategy.
         /// </summary>
@@ -219,40 +250,32 @@ namespace Atdl4net.Wpf
         }
 
         /// <summary>
-        /// Sets the FIX input values for the currently selected strategy.
+        /// Updates the FIX value within the input FIX fields for the currently selected strategy.
         /// </summary>
-        /// <param name="inputValues">A valid <see cref="FixTagValuesCollection"/> containing the input FIX values.</param>
-        /// <param name="resetExistingValues">Set to true to reset the parameter values of any parameters that
-        /// do not have values in the inputValues collection; set to false to leave those parameter values unchanged.</param>
-        /// <remarks>A valid strategy must be set prior to calling SetInputValues; failure to set the
-        /// Strategy property before calling this method will result in a NullReferenceException being thrown.</remarks>
-        public void SetInputValues(FixTagValuesCollection inputValues, bool resetExistingValues)
+        /// <param name="fixTag">FIX tag whose value is to be updated.</param>
+        /// <param name="value">New value for the FIX tag being updated.</param>
+        /// <remarks>This method is used to update FIX tag values that are used within StrategyEdits using the FIX_
+        /// mechanism.  Controls that are initialized using the FIX_ mechanism and parameter values within strategies
+        /// are unaffected when invoking this method.</remarks>
+        public void UpdateFixValue(FixField fixTag, string value)
         {
-            if (Strategy == null)
-                throw new NullReferenceException(ErrorMessages.NoStrategySelectedError);
+            if (InputFixValues == null)
+                return;
 
-            ParameterCollection parameters = Strategy.Parameters;
+            InputFixValues[fixTag] = value;
 
-            _inputValues = inputValues;
+            if (ViewModel != null)
+                ViewModel.EvaluateAffectedStrategyEdits(this, fixTag);
 
-            parameters.InitializeValues(inputValues, resetExistingValues);
-
-            Strategy.Controls.UpdateValuesFromParameters(parameters, new FixFieldValueProvider(this, parameters), resetExistingValues);
-
-            StrategyViewModel viewModel = Application.Current.Resources[StrategyViewModel.DataContextKey] as StrategyViewModel;
-
-            // Only refresh the state when SetInputValues is being called initially, not on subsequent calls
-            if (viewModel != null && resetExistingValues)
-                viewModel.Controls.RefreshState(DataEntryMode == DataEntryMode.Create);
+            
         }
 
         /// <summary>
-        /// Gets the output FIX tags and values based on the current state of the Strategy.  Note that if any StrategyEdit is
+        /// Refreshes the output FIX tags and values based on the current state of the Strategy.  Note that if any StrategyEdit is
         /// invalid, then a <see cref="ValidationException"/> is thrown.
         /// </summary>
-        /// <returns></returns>
         /// <exception cref="ValidationException">Thrown if any control/parameter value is invalid or any StrategyEdit is invalid.</exception>
-        public FixTagValuesCollection GetOutputValues()
+        public void RefreshOutputValues()
         {
             if (Strategy == null)
                 throw new NullReferenceException(ErrorMessages.NoStrategySelectedError);
@@ -264,7 +287,7 @@ namespace Atdl4net.Wpf
             IList<ValidationResult> validationResults;
 
             // Step 2: Update all the parameter values from the controls, throwing if there are any problems
-            if (!Strategy.Controls.TryUpdateParameterValues(Strategy.Parameters, false, out validationResults))
+            if (!Strategy.TryUpdateParameterValuesFromControls(false, out validationResults))
             {
                 StringBuilder sb = new StringBuilder();
 
@@ -276,10 +299,8 @@ namespace Atdl4net.Wpf
                 throw ThrowHelper.New<InvalidFieldValueException>(this, sb.ToString().Substring(0, errorText.Length - 1));
             }
 
-            FixFieldValueProvider inputValueProvider = _inputValues == null ? FixFieldValueProvider.Empty : new FixFieldValueProvider(this, Strategy.Parameters);
-
             // Step 3: Validate all StrategyEdits
-            if (!Strategy.StrategyEdits.ValidateAll(inputValueProvider, false))
+            if (!ViewModel.EvaluateAllStrategyEdits(this))
             {
                 StringBuilder sb = new StringBuilder();
 
@@ -302,33 +323,85 @@ namespace Atdl4net.Wpf
                     fixTagValues.Add((FixTag)Strategy.Parent.VersionIdentifierTag, Strategy.Version);
             }
 
-            _log.Debug(m => m("Strategy_t.GetOutputValues() returning: {0}", fixTagValues.ToString()));
+            _log.Debug(m => m("RefreshOutputValues() yielding: {0}", fixTagValues.ToString()));
 
-            return fixTagValues;
+            OutputFixValues = fixTagValues;
         }
 
-        #region Private Methods
+        #region Dependency Property Change Event Handlers
+
+        private static void OnStrategyPropertyChanged(DependencyObject source, DependencyPropertyChangedEventArgs e)
+        {
+            (source as AtdlControl).OnStrategyPropertyChanged(e.NewValue as Strategy_t);
+        }
 
         /// <remarks>This method does not throw exceptions as this causes issues with WPF data binding.  Instead it
         /// invokes the ExceptionOccurred event handler (if registered).</remarks>
-        private static void OnStrategyPropertyChanged(DependencyObject source, DependencyPropertyChangedEventArgs e)
+        private void OnStrategyPropertyChanged(Strategy_t newValue)
         {
-            if (source != null && source is AtdlControl)
+            try
             {
-                AtdlControl targetControl = (AtdlControl)source;
+                if (Atdl4netConfiguration.Settings.Wpf.ResetStrategyOnAssignmentToControl)
+                {
+                    Strategy.Reset();
+                    Strategy.UpdateControlValuesFromParameters(FixFieldValueProvider.Empty);
+                }
 
-                try
-                {
-                    if (e.NewValue != null)
-                        targetControl.Render();
-                }
-                catch (Exception ex)
-                {
-                    if (targetControl.ExceptionOccurred != null)
-                        targetControl.ExceptionOccurred(source, new UnhandledExceptionEventArgs(ex, false));
-                }
+                if (newValue != null)
+                    Render();
+            }
+            catch (Exception ex)
+            {
+                NotifyExceptionOccurred(ex);
             }
         }
+
+        private static void OnInputFixValuesChanged(DependencyObject source, DependencyPropertyChangedEventArgs e)
+        {
+            (source as AtdlControl).OnInitialFixValuesChanged();
+        }
+
+        private void OnInitialFixValuesChanged()
+        {
+            try
+            {
+                if (Strategy == null)
+                    return;
+
+                FixFieldValueProvider fieldValueProvider = new FixFieldValueProvider(this, Strategy.Parameters);
+
+                // First initialize all the control values from their initValue or initFixField...
+                Strategy.LoadInitialControlValues(fieldValueProvider);
+
+                // ... then load all the parameter values from the supplied FIX fields...
+                Strategy.LoadParameterValues(fieldValueProvider, true);
+
+                // ... and finally refresh the state of the controls from their parameters
+                Strategy.UpdateControlValuesFromParameters(fieldValueProvider);
+
+                // Only refresh the state when SetInputValues is being called initially, not on subsequent calls
+                if (ViewModel != null)
+                    ViewModel.RefreshViewState(DataEntryMode == DataEntryMode.Create);
+            }
+            catch (Exception ex)
+            {
+                NotifyExceptionOccurred(ex);
+            }
+        }
+
+        private static void OnDataEntryModeChanged(DependencyObject source, DependencyPropertyChangedEventArgs e)
+        {
+            (source as AtdlControl).OnDataEntryModeChanged();
+        }
+
+        private void OnDataEntryModeChanged()
+        {
+            ViewModel.UpdateDataEntryMode(DataEntryMode);
+        }
+
+        #endregion
+
+        #region General Private Methods
 
         private void NotifyPropertyChanged(string name)
         {
@@ -346,38 +419,47 @@ namespace Atdl4net.Wpf
 
             CreateViewModel();
 
-            StringBuilder sb = new StringBuilder();
-
-            XmlWriterSettings settings = new XmlWriterSettings { ConformanceLevel = ConformanceLevel.Fragment };
-
-            using (XmlWriter writer = XmlWriter.Create(sb, settings))
+            try
             {
-                WpfStrategyPanelRenderer.Render(Strategy, writer, sizer);
+                ViewModel.BeginRender();
+
+                StringBuilder sb = new StringBuilder();
+
+                XmlWriterSettings settings = new XmlWriterSettings { ConformanceLevel = ConformanceLevel.Fragment };
+
+                using (XmlWriter writer = XmlWriter.Create(sb, settings))
+                {
+                    WpfStrategyPanelRenderer.Render(Strategy, writer, sizer);
+                }
+
+                _xaml = sb.ToString();
+
+                if (!IsRenderingDisabled)
+                {
+                    try
+                    {
+                        controlRoot.Children.Clear();
+
+                        UIElement e = (UIElement)XamlReader.Parse(_xaml);
+
+                        controlRoot.Children.Add(e);
+                        //using (StreamWriter writer = File.CreateText(Path.Combine(Path.GetTempPath(), "atdl4net_xaml.xml")))
+                        //    writer.Write(sb.ToString());
+                    }
+                    catch (XamlParseException ex)
+                    {
+                        _log.ErrorFormat("XamlParseException thrown; details: {0}", ex.Message);
+
+                        using (StreamWriter writer = File.CreateText(Path.Combine(Path.GetTempPath(), "atdl4net_xaml.xml")))
+                            writer.Write(sb.ToString());
+
+                        throw;
+                    }
+                }
             }
-
-            _xaml = sb.ToString();
-
-            if (!IsRenderingDisabled)
+            finally
             {
-                try
-                {
-                    controlRoot.Children.Clear();
-
-                    UIElement e = (UIElement)XamlReader.Parse(_xaml);
-
-                    controlRoot.Children.Add(e);
-                    //using (StreamWriter writer = File.CreateText(Path.Combine(Path.GetTempPath(), "atdl4net_xaml.xml")))
-                    //    writer.Write(sb.ToString());
-                }
-                catch (XamlParseException ex)
-                {
-                    _log.ErrorFormat("XamlParseException thrown; details: {0}", ex.Message);
-
-                    using (StreamWriter writer = File.CreateText(Path.Combine(Path.GetTempPath(), "atdl4net_xaml.xml")))
-                        writer.Write(sb.ToString());
-
-                    throw;
-                }
+                ViewModel.EndRender();
             }
         }
 
@@ -388,7 +470,7 @@ namespace Atdl4net.Wpf
             if (previousViewModel != null)
                 previousViewModel.Controls.ValidationStateChanged -= new EventHandler<ValidationStateChangedEventArgs>(ControlsValidationStateChanged);
 
-            StrategyViewModel newViewModel = new StrategyViewModel(Strategy, this, DataEntryMode);
+            StrategyViewModel newViewModel = new StrategyViewModel(Strategy, this);
 
             Application.Current.Resources[StrategyViewModel.DataContextKey] = newViewModel;
 
@@ -408,6 +490,14 @@ namespace Atdl4net.Wpf
 
             if (validationStateChanged != null)
                 validationStateChanged(this, e);
+        }
+
+        private void NotifyExceptionOccurred(Exception ex)
+        {
+            EventHandler<UnhandledExceptionEventArgs> exceptionOccurred = ExceptionOccurred;
+
+            if (exceptionOccurred != null)
+                exceptionOccurred(this, new UnhandledExceptionEventArgs(ex, false));
         }
 
         #endregion
