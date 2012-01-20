@@ -1,0 +1,27 @@
+﻿<UserControl x:Class="Atdl4net.Wpf.AtdlControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Atdl4net.Wpf.View.Controls"
+             xmlns:resources="clr-namespace:Atdl4net.Wpf.View"
+             xmlns:viewmodel="clr-namespace:Atdl4net.Wpf.ViewModel"
+             Width="Auto" Height="Auto" Background="GhostWhite">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="AtdlControl.Resources.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Grid Name="controlRoot" Margin="3">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="299*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+    </Grid>
+    
+</UserControl>
