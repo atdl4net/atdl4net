@@ -1,0 +1,311 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AttemptToAddDuplicateKey" xml:space="preserve">
+    <value>It was not possible to add the item '{0}' to the collection {1} as an item with the same key had already been added.</value>
+  </data>
+  <data name="AttemptToSetConstValueParameter" xml:space="preserve">
+    <value>It is not possible to change this field as it is set to a constant value ({0}).</value>
+  </data>
+  <data name="BothEditAndEditRefSetOnObject" xml:space="preserve">
+    <value>Both Edit and EditRef were supplied for this {0}; only one may be supplied.</value>
+  </data>
+  <data name="CompareValueFailure" xml:space="preserve">
+    <value>Comparison of '{0}' and '{1}' was not possible as no valid conversion between the two types was found.</value>
+  </data>
+  <data name="DataConversionError2" xml:space="preserve">
+    <value>The value '{0}' could not be converted to a valid value of type {1} as is required for the field {2}.</value>
+  </data>
+  <data name="EditRefFieldControlNotFound" xml:space="preserve">
+    <value>No parameter with name or control with Id '{0}' was found for EditRef {1} value.</value>
+  </data>
+  <data name="EditRefResolutionFailure" xml:space="preserve">
+    <value>The EditRef with Id '{0}' could not be found.</value>
+  </data>
+  <data name="EnumerationNotFound" xml:space="preserve">
+    <value>An error occurred setting the value of an enumerated field; '{0}' is not a valid enumeration value for this field.</value>
+  </data>
+  <data name="GeneralElementProcessingError" xml:space="preserve">
+    <value>An error occurred processing the element: {0}
+{1}</value>
+  </data>
+  <data name="InconsistentEnumPairsListItemsError" xml:space="preserve">
+    <value>An inconsistency was found setting or retrieving an enumerated value, most likely caused by a mismatch between the ListItems for a control and the EnumPairs for the control's parameter.</value>
+  </data>
+  <data name="InitControlValueError" xml:space="preserve">
+    <value>It was not possible to initialise the value of the control with ID '{0}' due to the following error:
+	{1}</value>
+  </data>
+  <data name="InvalidAttemptToAddCountryToRegion" xml:space="preserve">
+    <value>It was not possible to add the Country '{0}' to the Region '{1}' as the supplied country is not a part of this region.</value>
+  </data>
+  <data name="InvalidBooleanValue" xml:space="preserve">
+    <value>The value supplied, '{0}' for this boolean field is invalid; valid values are '{1}' and '{2}'.</value>
+  </data>
+  <data name="InvalidCharValue" xml:space="preserve">
+    <value>The value supplied, '{0}' for this char field is invalid; it must be exactly one character in length.</value>
+  </data>
+  <data name="InvalidFIXTimeFormat" xml:space="preserve">
+    <value>The timestamp supplied, '{0}', was not in a valid format.</value>
+  </data>
+  <data name="InvalidMonthYearValue" xml:space="preserve">
+    <value>The value supplied, '{0}', for this month-year field is invalid; valid formats are YYYYMM, YYYYMMDD and YYYYMMWW.</value>
+  </data>
+  <data name="InvalidNullOrEmptyStringValue" xml:space="preserve">
+    <value>An empty string or null value is not a valid value for this field.</value>
+  </data>
+  <data name="InvalidNumericValue" xml:space="preserve">
+    <value>The value supplied, '{0}', for this numeric field could not be converted into a number.</value>
+  </data>
+  <data name="InvalidTenorValue" xml:space="preserve">
+    <value>The value supplied, '{0}', for this tenor field is invalid; valid formats are Dn, Wn, Mn and Yn, where n is any non-zero positive integer.</value>
+  </data>
+  <data name="InvalidValueEnumParseFailure" xml:space="preserve">
+    <value>The value '{0}' cannot be converted to a value of the enumerated type {1} as it is not a valid value for this type.</value>
+  </data>
+  <data name="MaxLengthExceeded" xml:space="preserve">
+    <value>The value supplied for this field, '{0}', is longer than the maximum length allowed ({1}).</value>
+  </data>
+  <data name="MaxValueExceeded" xml:space="preserve">
+    <value>The value supplied for this field, {0}, is greater than the maximum value allowed ({1}).</value>
+  </data>
+  <data name="MinLengthExceeded" xml:space="preserve">
+    <value>The value supplied for this field, '{0}', is shorter than the minimum length allowed ({1}).</value>
+  </data>
+  <data name="MinValueExceeded" xml:space="preserve">
+    <value>The value supplied for this field, {0}, is less than the minimum value allowed ({1}).</value>
+  </data>
+  <data name="MissingLogicalOperatorOnSetOfEdits" xml:space="preserve">
+    <value>It is not possible to evaluate the supplied set of Edits as the LogicalOperator is missing.</value>
+  </data>
+  <data name="MissingMandatoryAttribute" xml:space="preserve">
+    <value>The mandatory attribute {0} was not supplied for the element type  {1}.</value>
+  </data>
+  <data name="MissingOperatorsOnEdit" xml:space="preserve">
+    <value>Either an Operator or a LogicalOperator must be supplied in order to evaluate an Edit.</value>
+  </data>
+  <data name="NeitherEditNorEditRefSetOnObject" xml:space="preserve">
+    <value>No valid Edit or EditRef was supplied for this {0}.</value>
+  </data>
+  <data name="NonNegativeIntRequired" xml:space="preserve">
+    <value>The value supplied for this field, {0}, is invalid as this field can only contain integer values of greater than or equal to zero.</value>
+  </data>
+  <data name="NonZeroPositiveIntRequired" xml:space="preserve">
+    <value>The value supplied for this field, {0}, is invalid as this field can only contain integer values greater than zero.</value>
+  </data>
+  <data name="NoStrategyLayoutSupplied" xml:space="preserve">
+    <value>It is not possible to render this strategy as no StrategyLayout information has been supplied for this strategy.</value>
+  </data>
+  <data name="NoStrategyPanelsInStrategy" xml:space="preserve">
+    <value>It is not possible to render this strategy as no StrategyPanels are present in this strategy.</value>
+  </data>
+  <data name="NullOrEmptyStringEnumParseFailure" xml:space="preserve">
+    <value>An empty string or null value cannot be converted to a value of the enumerated type {0}.</value>
+  </data>
+  <data name="ParameterAddFailure" xml:space="preserve">
+    <value>It was not possible to add the Parameter '{0}' due to the following error:
+	{1}</value>
+  </data>
+  <data name="StrategyLoadFailure" xml:space="preserve">
+    <value>It was not possible to load the Strategy '{0}' due to the following error:
+	{1}</value>
+  </data>
+  <data name="UnrecognisedEnumIdValue" xml:space="preserve">
+    <value>No match was found for the value '{0}' in the EnumPairs/ListItems for this parameter.</value>
+  </data>
+  <data name="UnrecognisedTypeError" xml:space="preserve">
+    <value>The type '{0}' specified in the attribute {1} for the element {2} was not recognised as a valid FIXatdl type.</value>
+  </data>
+  <data name="UnsupportedComparisonOperation" xml:space="preserve">
+    <value>The value supplied, '{0}', cannot be compared with '{1}' because this type of comparison is not supported.</value>
+  </data>
+  <data name="PropertyNotFoundOnObject" xml:space="preserve">
+    <value>The property {0} is not a valid property for objects of type {1}.</value>
+  </data>
+  <data name="UnableToInvokeMethodError" xml:space="preserve">
+    <value>It was not possible to invoke {0} due to the following error:
+	{1}</value>
+  </data>
+  <data name="UnableToParseFixMessageInvalidContent" xml:space="preserve">
+    <value>It was not possible to parse the supplied message due to unexpected token in message '{0}'.</value>
+  </data>
+  <data name="UnableToParseFixMessageInvalidFormat" xml:space="preserve">
+    <value>It was not possible to parse the supplied FIX message tag ({0}={1}); reason: {2}</value>
+  </data>
+  <data name="UnableToParseFixMessageEmpty" xml:space="preserve">
+    <value>It was not possible to parse the supplied FIX message as it was empty.</value>
+  </data>
+  <data name="UnresolvedParameterRefError" xml:space="preserve">
+    <value>The parameter '{0}' was not found in the parameters for this strategy.</value>
+  </data>
+  <data name="EnumRefNotSetOnBooleanControl" xml:space="preserve">
+    <value>Both checkedEnumRef and uncheckedEnumRef must be set on CheckBox_t and RadioButton_t when populating non-Boolean parameter.</value>
+  </data>
+  <data name="IllegalUseOfNullError" xml:space="preserve">
+    <value>A null reference was passed to this method in error; a valid reference is required.</value>
+  </data>
+  <data name="NonOptionalParameterNotSupplied" xml:space="preserve">
+    <value>A valid value must be supplied for the parameter '{0}'; this parameter is not optional.</value>
+  </data>
+  <data name="StrategiesLoadFailure" xml:space="preserve">
+    <value>It was not possible to load the supplied FIXatdl content as 'Strategies' is not the root element.</value>
+  </data>
+  <data name="InvalidDateOrTimeValue" xml:space="preserve">
+    <value>The value supplied, '{0}', for this date or time field could not be interpreted as a valid date or time.</value>
+  </data>
+  <data name="UnsupportedParameterValueConversion" xml:space="preserve">
+    <value>The conversion of the parameter value '{0}' to the type {1} is not supported.</value>
+  </data>
+  <data name="UnsupportedControlValueConversion" xml:space="preserve">
+    <value>The conversion of the value '{0}' to the type {1} is not supported.  This relates to the {2} control.</value>
+  </data>
+  <data name="UnsuccessfulSetParameterOperation" xml:space="preserve">
+    <value>Attempt to set parameter {0} from control {1} failed with error: {2}</value>
+  </data>
+  <data name="DataConversionError1" xml:space="preserve">
+    <value>The value '{0}' could not be converted to a valid value of type {1}.</value>
+  </data>
+  <data name="InvalidParameterSetValue" xml:space="preserve">
+    <value>Unable to set parameter {0} to value {1} failed with error: {2}</value>
+  </data>
+  <data name="InvalidExchangeCode" xml:space="preserve">
+    <value>Exchange codes must conform to the ISO 10383 standard, i.e., be 4 characters in length</value>
+  </data>
+  <data name="InvalidGetParameterValue" xml:space="preserve">
+    <value>Parameter {0} may not be set to value {1}; reason: {2}</value>
+  </data>
+  <data name="DataConversionFailure" xml:space="preserve">
+    <value>This value cannot be converted into a valid {0}.</value>
+  </data>
+  <data name="NoStrategySelectedError" xml:space="preserve">
+    <value>The current operation cannot be completed as no strategy has been selected.</value>
+  </data>
+  <data name="InvalidDateOrTimeValueUnknown" xml:space="preserve">
+    <value>The value supplied for this date or time field could not be interpreted as a valid date or time.</value>
+  </data>
+  <data name="NonOptionalParameterNotSupplied2" xml:space="preserve">
+    <value>This field is not optional; a valid value must be supplied.</value>
+  </data>
+  <data name="InvalidControlValueError" xml:space="preserve">
+    <value>The value supplied for this field is not a valid value.</value>
+  </data>
+  <data name="OneOrMoreInvalidControlValues" xml:space="preserve">
+    <value>One or more controls have invalid values.</value>
+  </data>
+</root>
