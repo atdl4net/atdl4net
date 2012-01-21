@@ -51,8 +51,8 @@ namespace Atdl4net.Wpf
     {
         private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Wpf");
 
-        // Used for debugging purposes
-        private string _xaml;
+        private string _xaml;  // Used for debugging purposes
+        private bool _inputValuesSet = false;
 
         #region Dependency Properties
 
@@ -278,7 +278,12 @@ namespace Atdl4net.Wpf
         public void RefreshOutputValues()
         {
             if (Strategy == null)
-                throw new NullReferenceException(ErrorMessages.NoStrategySelectedError);
+                throw ThrowHelper.New<NullReferenceException>(this, ErrorMessages.NoStrategySelectedError);
+
+            // NB Not localizable as this is a developer-level rather than end-user error
+            if (!_inputValuesSet)
+                throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.UnableToInvokeMethodError, 
+                    "RefreshOutputValues", "The InputFixValues property must be set prior to attempting to retrieve the output FIX values");
 
             // Step 1: Ensure all controls have internally valid values (NB this is NOT checking the parameter validity)
             if (!ViewModel.Controls.AreAllValid)
@@ -341,6 +346,8 @@ namespace Atdl4net.Wpf
         {
             try
             {
+                _inputValuesSet = false;
+
                 if (Atdl4netConfiguration.Settings.Wpf.ResetStrategyOnAssignmentToControl)
                 {
                     Strategy.Reset();
@@ -358,15 +365,17 @@ namespace Atdl4net.Wpf
 
         private static void OnInputFixValuesChanged(DependencyObject source, DependencyPropertyChangedEventArgs e)
         {
-            (source as AtdlControl).OnInitialFixValuesChanged();
+            (source as AtdlControl).OnInputFixValuesChanged();
         }
 
-        private void OnInitialFixValuesChanged()
+        private void OnInputFixValuesChanged()
         {
             try
             {
                 if (Strategy == null)
                     return;
+
+                _inputValuesSet = true;
 
                 FixFieldValueProvider fieldValueProvider = new FixFieldValueProvider(this, Strategy.Parameters);
 
