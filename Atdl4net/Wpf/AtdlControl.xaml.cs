@@ -129,18 +129,12 @@ namespace Atdl4net.Wpf
         /// <summary>
         /// Gets the collection of child controls for this control.
         /// </summary>
-        public UIElementCollection Children
-        {
-            get { return controlRoot.Children; }
-        }
+        public UIElementCollection Children { get { return controlRoot.Children; } }
 
         /// <summary>
         /// Gets the XAML for the currently selected strategy.  (Intended for debugging purposes only.)
         /// </summary>
-        public string CurrentXaml
-        {
-            get { return _xaml; }
-        }
+        public string CurrentXaml { get { return _xaml; } }
 
         /// <summary>
         /// Gets/sets the name of the .NET assembly to be used to provide custom rendering of controls.
@@ -227,14 +221,7 @@ namespace Atdl4net.Wpf
         /// </summary>
         public StrategyViewModel ViewModel
         {
-            get
-            {
-                if (Application.Current == null)
-                    return null;
-
-                return Application.Current.Resources[StrategyViewModel.DataContextKey] as StrategyViewModel;
-            }
-
+            get { return Application.Current != null ? Application.Current.Resources[StrategyViewModel.DataContextKey] as StrategyViewModel : null; }
             private set { Application.Current.Resources[StrategyViewModel.DataContextKey] = value; }
         }
 
@@ -266,8 +253,6 @@ namespace Atdl4net.Wpf
 
             if (ViewModel != null)
                 ViewModel.EvaluateAffectedStrategyEdits(this, fixTag);
-
-            
         }
 
         /// <summary>
@@ -282,7 +267,7 @@ namespace Atdl4net.Wpf
 
             // NB Not localizable as this is a developer-level rather than end-user error
             if (!_inputValuesSet)
-                throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.UnableToInvokeMethodError, 
+                throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.UnableToInvokeMethodError,
                     "RefreshOutputValues", "The InputFixValues property must be set prior to attempting to retrieve the output FIX values");
 
             // Step 1: Ensure all controls have internally valid values (NB this is NOT checking the parameter validity)
@@ -346,13 +331,13 @@ namespace Atdl4net.Wpf
         {
             try
             {
+                // Remove any residual FIX input values
+                InputFixValues = null;
+
                 _inputValuesSet = false;
 
                 if (Atdl4netConfiguration.Settings.Wpf.ResetStrategyOnAssignmentToControl)
-                {
                     Strategy.Reset();
-                    Strategy.UpdateControlValuesFromParameters(FixFieldValueProvider.Empty);
-                }
 
                 if (newValue != null)
                     Render();
@@ -372,7 +357,7 @@ namespace Atdl4net.Wpf
         {
             try
             {
-                if (Strategy == null)
+                if (Strategy == null || InputFixValues == null)
                     return;
 
                 _inputValuesSet = true;
@@ -385,11 +370,13 @@ namespace Atdl4net.Wpf
                 // ... then load all the parameter values from the supplied FIX fields...
                 Strategy.LoadParameterValues(fieldValueProvider, true);
 
-                // ... and finally refresh the state of the controls from their parameters
+                // ... then refresh the values of the controls from their parameters...
                 Strategy.UpdateControlValuesFromParameters(fieldValueProvider);
 
-                // Only refresh the state when SetInputValues is being called initially, not on subsequent calls
-                if (ViewModel != null)
+                // ... and finally update all the state rules
+                Strategy.RunAllStateRules();
+
+                if (ViewModel !=null)
                     ViewModel.RefreshViewState(DataEntryMode == DataEntryMode.Create);
             }
             catch (Exception ex)

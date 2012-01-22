@@ -245,6 +245,14 @@ namespace Atdl4net.Model.Elements
         }
 
         /// <summary>
+        /// Evaluates this Edit based on the current field values.
+        /// </summary>
+        public void Evaluate()
+        {
+            Evaluate(FixFieldValueProvider.Empty);
+        }
+
+        /// <summary>
         /// Evaluates this Edit based on the current field values and any supplied FIX field values.
         /// </summary>
         /// <param name="additionalValues">Any additional FIX field values that may be required in the Edit evaluation.</param>

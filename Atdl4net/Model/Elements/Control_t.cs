@@ -38,7 +38,7 @@ namespace Atdl4net.Model.Elements
     public abstract class Control_t : IParentable<StrategyPanel_t>, IValueProvider, IParameterConvertible
     {
         private StrategyPanel_t _owner;
-        private StateRuleCollection _stateRules;
+        private readonly StateRuleCollection _stateRules;
 
         /// <summary>
         /// Initializes a new <see cref="Control_t"/> instance with the specified identifier as id.
@@ -47,6 +47,7 @@ namespace Atdl4net.Model.Elements
         protected Control_t(string id)
         {
             Id = id;
+            _stateRules = new StateRuleCollection(this);
         }
 
         #region Control_t Attributes
@@ -91,6 +92,16 @@ namespace Atdl4net.Model.Elements
         #endregion
 
         /// <summary>
+        /// Indicates whether this control can be toggled (i.e., is a checkbox or radiobutton).
+        /// </summary>
+        public bool IsToggleable { get { return this is BinaryControlBase; } }
+
+        /// <summary>
+        /// Gets the StrategyPanel that this control belongs to.
+        /// </summary>
+        public StrategyPanel_t OwningStrategyPanel { get { return _owner; } }
+
+        /// <summary>
         /// Sets the value of this control; either with a value of the appropriate type, or using the FIXatdl '{NULL}' 
         /// value.  This method is either called indirectly from the user interface, or by a StateRule.
         /// </summary>
@@ -116,24 +127,14 @@ namespace Atdl4net.Model.Elements
         /// <summary>
         /// Gets the collection of <see cref="StateRule_t"/>s for this control.
         /// </summary>
-        public StateRuleCollection StateRules
-        {
-            get
-            {
-                // Perform lazy initialisation as we can't use 'this' in constructor.
-                if (_stateRules == null)
-                    _stateRules = new StateRuleCollection(this);
-
-                return _stateRules;
-            }
-        }
+        public StateRuleCollection StateRules { get { return _stateRules; } }
 
         /// <summary>
         /// Adds support for the visitor pattern, enabling the appropriate Visit() method to be called on the visitor
         /// depending on its concrete type.
         /// </summary>
         /// <param name="visitor">Visitor.</param>
-        public void DoVisit(IControlVisitor visitor)
+        internal void DoVisit(IControlVisitor visitor)
         {
             ModelUtils.VisitHelper(typeof(IControlVisitor), visitor, this);
         }

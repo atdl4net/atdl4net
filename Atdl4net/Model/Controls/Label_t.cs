@@ -41,5 +41,15 @@ namespace Atdl4net.Model.Controls
         {
             _log.Debug(m => m("New Label_t created as control {0}", id));
         }
+
+        /// <summary>
+        /// Loads this control with any supplied InitValue. If InitValue is not supplied, then control value will
+        /// be set to the Label value, if that is set, or if neither are set to an empty value.
+        /// </summary>
+        protected override void LoadDefaultFromInitValue()
+        {
+            // InitValue takes precedence over Label
+            SetValue(InitValue != null ? InitValue : Label);
+        }
     }
 }
