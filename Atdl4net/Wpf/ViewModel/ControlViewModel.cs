@@ -188,16 +188,12 @@ namespace Atdl4net.Wpf.ViewModel
         /// <summary>
         /// Gets the tooltip for this control.
         /// </summary>
-        public string ToolTip
-        {
-            get
-            {
-                if (_validationState.CurrentState)
-                    return UnderlyingControl.ToolTip;
-                else
-                    return _validationState.ErrorText;
-            }
-        }
+        public string ToolTip { get { return _validationState.CurrentState ? UnderlyingControl.ToolTip : _validationState.ErrorText; } }
+
+        /// <summary>
+        /// Gets the validation state for this control view model.
+        /// </summary>
+        public ControlValidationState ValidationState { get { return _validationState; } }
 
         /// <summary>
         /// Gets/sets the user interface value for the <see cref="Control_t"/> that this ControlViewModel is responsible for.
