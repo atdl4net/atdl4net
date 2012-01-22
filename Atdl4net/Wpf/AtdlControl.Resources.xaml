@@ -13,6 +13,7 @@
             </DataTrigger>
             <DataTrigger Binding="{Binding Path=IsValid}" Value="False">
                 <Setter Property="BorderBrush" Value="Red"/>
+                <Setter Property="Foreground" Value="Red"/>
             </DataTrigger>
         </Style.Triggers>
     </Style>
@@ -24,6 +25,7 @@
             <DataTrigger Binding="{Binding Path=IsValid}" Value="False">
                 <Setter Property="BorderBrush" Value="Red"/>
                 <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Foreground" Value="Red"/>
             </DataTrigger>
         </Style.Triggers>
     </Style>
@@ -32,6 +34,7 @@
         <Style.Triggers>
             <DataTrigger Binding="{Binding Path=IsValid}" Value="False">
                 <Setter Property="BorderBrush" Value="Red"/>
+                <Setter Property="Foreground" Value="Red"/>
             </DataTrigger>
             <DataTrigger Binding="{Binding Path=IsValid}" Value="True">
                 <Setter Property="BorderBrush" Value="LightSlateGray"/>
@@ -44,6 +47,7 @@
                 <Setter Property="Background"  Value="MistyRose"/>
             </DataTrigger>
             <DataTrigger Binding="{Binding Path=IsValid}" Value="False">
+                <Setter Property="Foreground" Value="Red"/>
                 <Setter Property="BorderBrush" Value="Red"/>
                 <Setter Property="BorderThickness" Value="1"/>
             </DataTrigger>
@@ -53,6 +57,7 @@
         <Setter Property="BorderThickness" Value="1"/>
         <Style.Triggers>
             <DataTrigger Binding="{Binding Path=IsValid}" Value="False">
+                <Setter Property="Foreground" Value="Red"/>
                 <Setter Property="BorderBrush" Value="Red"/>
             </DataTrigger>
             <DataTrigger Binding="{Binding Path=IsValid}" Value="True">
@@ -65,6 +70,7 @@
         <Style.Triggers>
             <DataTrigger Binding="{Binding Path=IsValid}" Value="False">
                 <Setter Property="BorderBrush" Value="Red"/>
+                <Setter Property="Foreground" Value="Red"/>
             </DataTrigger>
             <DataTrigger Binding="{Binding Path=IsValid}" Value="True">
                 <Setter Property="BorderBrush" Value="LightSlateGray"/>
@@ -82,6 +88,7 @@
         <Style.Triggers>
             <DataTrigger Binding="{Binding Path=IsValid}" Value="False">
                 <Setter Property="BorderBrush" Value="Red"/>
+                <Setter Property="Foreground" Value="Red"/>
             </DataTrigger>
         </Style.Triggers>
     </Style>
@@ -150,6 +157,7 @@
             <DataTrigger Binding="{Binding Path=IsValid}" Value="False">
                 <Setter Property="BorderBrush" Value="Red"/>
                 <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Foreground" Value="Red"/>
             </DataTrigger>
         </Style.Triggers>
     </Style>
@@ -187,6 +195,7 @@
             <DataTrigger Binding="{Binding Path=IsValid}" Value="False">
                 <Setter Property="BorderBrush" Value="Red"/>
                 <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Foreground" Value="Red"/>
             </DataTrigger>
         </Style.Triggers>
     </Style>
