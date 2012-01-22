@@ -32,6 +32,7 @@ namespace Atdl4net.Wpf.ViewModel
     {
         private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Wpf.ViewModel");
 
+        private bool hasRun = false;
         private object _previousValue;
         private readonly StateRule_t _underlyingStateRule;
         private readonly ControlViewModel _owningControlViewModel;
@@ -39,7 +40,6 @@ namespace Atdl4net.Wpf.ViewModel
 
         public StateRuleViewModel(ControlViewModel owningControl, StateRule_t stateRule)
         {
-
             _owningControlViewModel = owningControl;
             _underlyingStateRule = stateRule;
 
@@ -77,6 +77,12 @@ namespace Atdl4net.Wpf.ViewModel
         /// </remarks>
         public void RefreshState()
         {
+            // Ignore all false states until we've seen a positive state
+            if (!_edit.CurrentState && !hasRun)
+                return;
+
+            hasRun = true;
+
             _log.Debug(m => m("Refreshing state for StateRule_t {0}", _underlyingStateRule.ToString()));
 
             if (_underlyingStateRule.Visible != null)

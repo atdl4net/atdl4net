@@ -18,6 +18,7 @@
 //      http://www.gnu.org/licenses/.
 //
 #endregion
+
 using System.Collections.Generic;
 using System.Linq;
 using Atdl4net.Fix;
@@ -110,10 +111,7 @@ namespace Atdl4net.Model.Elements
         /// <summary>
         /// Gets the collection of Parameters for this Strategy.
         /// </summary>
-        public ParameterCollection Parameters
-        {
-            get { return _parameters; }
-        }
+        public ParameterCollection Parameters { get { return _parameters; } }
 
         /// <summary>
         /// Gets/sets a string that identifies the firm providing the algorithm.
@@ -225,6 +223,14 @@ namespace Atdl4net.Model.Elements
         }
 
         /// <summary>
+        /// Evaluates all state rules for all strategies.
+        /// </summary>
+        public void RunAllStateRules()
+        {
+            Controls.RunStateRules();
+        }
+
+        /// <summary>
         /// Evaluate all the <see cref="StrategyEdit_t">StrategyEdit</see>s for this strategy.
         /// </summary>
         /// <param name="inputValueProvider">Provider that providers access to any additional FIX field values that may 
@@ -257,6 +263,8 @@ namespace Atdl4net.Model.Elements
         {
             Parameters.ResetAll();
             Controls.ResetAll();
+
+            UpdateControlValuesFromParameters(FixFieldValueProvider.Empty);
         }
 
 

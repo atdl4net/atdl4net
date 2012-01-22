@@ -26,8 +26,10 @@ using System.Collections.Specialized;
 using System.Linq;
 using Atdl4net.Diagnostics.Exceptions;
 using Atdl4net.Fix;
+using Atdl4net.Model.Controls;
 using Atdl4net.Model.Elements;
 using Atdl4net.Model.Elements.Support;
+using Atdl4net.Model.Enumerations;
 using Atdl4net.Resources;
 using Atdl4net.Utility;
 using Atdl4net.Validation;
@@ -117,7 +119,6 @@ namespace Atdl4net.Model.Collections
 
             try
             {
-                // Two passes necessary - first one to set up all the values...
                 foreach (Control_t thisControl in this)
                 {
                     control = thisControl;
@@ -129,10 +130,6 @@ namespace Atdl4net.Model.Collections
             {
                 throw ThrowHelper.Rethrow(this, ex, ErrorMessages.InitControlValueError, control != null ? control.Id : "(unknown)");
             }
-
-            // ... and the second to update all the StateRules based on the state of all values.
-            foreach (Control_t thisControl in this)
-                thisControl.StateRules.EvaluateAll();
         }
 
         /// <summary>
@@ -198,9 +195,17 @@ namespace Atdl4net.Model.Collections
                     _log.Debug(m => m("Updating control {0} value from parameter {1}", control.Id, parameter.Name));
 
                     control.SetValueFromParameter(parameter);
+
+                    UpdateRelatedHelperControls(control);
                 }
             }
+        }
 
+        /// <summary>
+        /// Evaluates all the state rules for each control.
+        /// </summary>
+        public void RunStateRules()
+        {
             foreach (Control_t control in this)
                 control.StateRules.EvaluateAll();
         }
@@ -221,6 +226,66 @@ namespace Atdl4net.Model.Collections
         {
             foreach (Control_t control in this)
                 control.StateRules.ResolveAll(_owner);
+        }
+
+        // This is a bit of a hack to address a design deficiency in FIXatdl 1.1, whereby when doing order amendments
+        // the state of any helper controls is not directly available from the input FIX fields.
+        // To simplify matters, we only apply this algorithm in the scenario when the StateRule's immediate Edit_t
+        // has a toggleable control as its source and the operator is 'EQ' (this is the same as atdl4j as at the
+        // time of writing).
+        private void UpdateRelatedHelperControls(Control_t control)
+        {
+            foreach (StateRule_t stateRule in control.StateRules)
+            {
+                Edit_t<Control_t> edit = stateRule.Edit;
+
+                if (stateRule.Value == Atdl.NullValue && edit.Operator == Operator_t.Equal)
+                {
+                    string sourceControlId = edit.Field;
+
+                    if (IsValidControlId(sourceControlId))
+                    {
+                        Control_t sourceControl = this[sourceControlId];
+
+                        bool result;
+
+                        if (sourceControl.IsToggleable && bool.TryParse(edit.Value, out result))
+                        {
+                            // If the control is a radio button, then we can only set directly, un-set
+                            // has be done by setting its companion control
+                            if (sourceControl is CheckBox_t || !result)
+                                sourceControl.SetValue(!result);
+                            else
+                                SetCompanionRadioButton(sourceControl as RadioButton_t);
+                        }
+                    }
+                }
+            }
+        }
+
+        private bool IsValidControlId(string value)
+        {
+            return (from c in this where c.Id == value select c).Count() != 0;
+        }
+
+        // This method looks for all the radio buttons in the same group as the supplied radio button
+        // and if there are only two
+        private void SetCompanionRadioButton(RadioButton_t radioButton)
+        {
+            IEnumerable<RadioButton_t> radioButtons;
+
+            // Approach 1 - use the radio button group name
+            if (radioButton.RadioGroup != null)
+                radioButtons = (from c in _controls.Values where c.Id != radioButton.Id &&
+                                     c is RadioButton_t && (c as RadioButton_t).RadioGroup == radioButton.RadioGroup
+                                     select c as RadioButton_t);
+            else
+            // Approach 2 - look for radio buttons on the same panel
+                radioButtons = (from c in radioButton.OwningStrategyPanel.Controls where c.Id != radioButton.Id &&
+                                     c is RadioButton_t select c as RadioButton_t);
+
+            if (radioButtons.Count() == 1)
+                radioButtons.First().SetValue(true);
         }
 
         #region IParentable<Strategy_t> Members

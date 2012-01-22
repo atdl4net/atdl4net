@@ -30,8 +30,19 @@ namespace Atdl4net.Model.Elements
     {
         private Control_t _owner;
 
+        /// <summary>
+        /// Enabled state for this state rule.
+        /// </summary>
         public bool? Enabled { get; set; }
+
+        /// <summary>
+        /// Value attribute for this state rule.
+        /// </summary>
         public string Value { get; set; }
+
+        /// <summary>
+        /// Visible state for this state rule.
+        /// </summary>
         public bool? Visible { get; set; }
 
         /// <summary>

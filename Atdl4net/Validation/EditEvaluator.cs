@@ -93,7 +93,7 @@ namespace Atdl4net.Validation
 
         /// <summary>
         /// Evaluates based on the current field values and any additional FIX field values that this EditEvaluator
-        /// references.
+        /// references.  Used for evaluating Edits in the context of StrategyEdits.
         /// </summary>
         /// <param name="additionalValues">Any additional FIX field values that may be required in the Edit evaluation.</param>
         public void Evaluate(FixFieldValueProvider additionalValues)
@@ -104,6 +104,23 @@ namespace Atdl4net.Validation
                 _edit.Evaluate(additionalValues);
             else if (_editRef != null)
                 _editRef.Evaluate(additionalValues);
+            else
+                throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.NeitherEditNorEditRefSetOnObject, this.GetType().Name);
+
+            _log.Debug(m => m("EditEvaluator evaluated to state {0}", CurrentState.ToString().ToLower()));
+        }
+
+        /// <summary>
+        /// Evaluates based on the current field values.  Used for evaluating Edits in the context of StateRules.
+        /// </summary>
+        public void Evaluate()
+        {
+            _log.Debug(m => m("EditEvaluator evaluating state of Edit_t/EditRef_t; current state is {0}", CurrentState.ToString().ToLower()));
+
+            if (_edit != null)
+                _edit.Evaluate();
+            else if (_editRef != null)
+                _editRef.Evaluate();
             else
                 throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.NeitherEditNorEditRefSetOnObject, this.GetType().Name);
 

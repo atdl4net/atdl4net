@@ -63,6 +63,14 @@ namespace Atdl4net.Model.Elements
         }
 
         /// <summary>
+        /// Evaluates this EditRef based on the current field values.
+        /// </summary>
+        public void Evaluate()
+        {
+            _referencedEdit.Evaluate(FixFieldValueProvider.Empty);
+        }
+
+        /// <summary>
         /// Evaluates this EditRef based on the current field values and any additional FIX field values that this
         /// EditRef references.
         /// </summary>

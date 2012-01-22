@@ -53,7 +53,7 @@ namespace Atdl4net.Model.Collections
                 _log.Debug(m => m("Evaluating all {0} StateRule_t instances for control Id {1}", Items.Count,  _owner.Id));
 
             foreach (StateRule_t rule in this.Items)
-                rule.Evaluate(FixFieldValueProvider.Empty);
+                rule.Evaluate();
         }
 
         /// <summary>
