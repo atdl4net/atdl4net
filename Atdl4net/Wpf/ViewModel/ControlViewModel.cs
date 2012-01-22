@@ -329,9 +329,6 @@ namespace Atdl4net.Wpf.ViewModel
             if (reevaluateStateRules)
                 _stateRules.RefreshState();
 
-            //if (_referencedParameter != null && _referencedParameter.IsSet)
-            //    NotifyValueChanged(null, UnderlyingControl.GetCurrentValue());
-            //else
             RefreshUiState(true);
         }
 

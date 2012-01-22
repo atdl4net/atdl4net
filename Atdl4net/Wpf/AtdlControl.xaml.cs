@@ -377,7 +377,7 @@ namespace Atdl4net.Wpf
                 Strategy.RunAllStateRules();
 
                 if (ViewModel !=null)
-                    ViewModel.RefreshViewState(DataEntryMode == DataEntryMode.Create);
+                    ViewModel.RefreshViewState(false);
             }
             catch (Exception ex)
             {
