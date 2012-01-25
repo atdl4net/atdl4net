@@ -392,7 +392,8 @@ namespace Atdl4net.Wpf
 
         private void OnDataEntryModeChanged()
         {
-            ViewModel.UpdateDataEntryMode(DataEntryMode);
+            if (ViewModel != null)
+                ViewModel.UpdateDataEntryMode(DataEntryMode);
         }
 
         #endregion
