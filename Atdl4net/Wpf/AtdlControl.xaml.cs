@@ -112,6 +112,11 @@ namespace Atdl4net.Wpf
         /// </summary>
         public event EventHandler<ValidationStateChangedEventArgs> ValidationStateChanged;
 
+        /// <summary>
+        /// Raised whenever the selected strategy has changed. 
+        /// </summary>
+        public event EventHandler<StrategyChangedEventArgs> StrategyChanged;
+
         #endregion
 
         /// <summary>
@@ -227,6 +232,8 @@ namespace Atdl4net.Wpf
 
         #endregion
 
+        #region Public Methods
+
         /// <summary>
         /// Refreshes the rendering of the currently selected strategy.
         /// </summary>
@@ -318,6 +325,8 @@ namespace Atdl4net.Wpf
             OutputFixValues = fixTagValues;
         }
 
+        #endregion
+
         #region Dependency Property Change Event Handlers
 
         private static void OnStrategyPropertyChanged(DependencyObject source, DependencyPropertyChangedEventArgs e)
@@ -327,7 +336,7 @@ namespace Atdl4net.Wpf
 
         /// <remarks>This method does not throw exceptions as this causes issues with WPF data binding.  Instead it
         /// invokes the ExceptionOccurred event handler (if registered).</remarks>
-        private void OnStrategyPropertyChanged(Strategy_t newValue)
+        private void OnStrategyPropertyChanged(Strategy_t newStrategy)
         {
             try
             {
@@ -336,11 +345,15 @@ namespace Atdl4net.Wpf
 
                 _inputValuesSet = false;
 
-                if (Atdl4netConfiguration.Settings.Wpf.ResetStrategyOnAssignmentToControl)
-                    Strategy.Reset();
+                if (newStrategy != null)
+                {
+                    if (Atdl4netConfiguration.Settings.Wpf.ResetStrategyOnAssignmentToControl)
+                        newStrategy.Reset();
 
-                if (newValue != null)
                     Render();
+
+                    NotifyStrategyChanged(newStrategy.Name);
+                }
             }
             catch (Exception ex)
             {
@@ -399,6 +412,14 @@ namespace Atdl4net.Wpf
         #endregion
 
         #region General Private Methods
+
+        private void NotifyStrategyChanged(string strategyName)
+        {
+            EventHandler<StrategyChangedEventArgs> strategyChanged = StrategyChanged;
+
+            if (strategyChanged != null)
+                strategyChanged(this, new StrategyChangedEventArgs(strategyName));
+        }
 
         private void NotifyPropertyChanged(string name)
         {
