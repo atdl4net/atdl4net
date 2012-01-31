@@ -103,6 +103,7 @@
     <Compile Include="Model\Controls\Support\InitializableControl.cs" />
     <Compile Include="Notification\INotifyValueChangeCompleted.cs" />
     <Compile Include="Notification\StateChangedEventArgs.cs" />
+    <Compile Include="Notification\StrategyChangedEventArgs.cs" />
     <Compile Include="Notification\StrategyLoadedEventArgs.cs" />
     <Compile Include="Notification\ValidationStateChangedEventArgs.cs" />
     <Compile Include="Notification\ValueChangeCompletedEventArgs.cs" />
