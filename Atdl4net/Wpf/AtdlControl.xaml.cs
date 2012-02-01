@@ -82,7 +82,7 @@ namespace Atdl4net.Wpf
         /// </summary>
         public static readonly DependencyProperty InputFixValuesProperty =
             DependencyProperty.Register("InputFixValues", typeof(FixTagValuesCollection), typeof(AtdlControl),
-                new FrameworkPropertyMetadata(FixTagValuesCollection.Empty, OnInputFixValuesChanged));
+                new FrameworkPropertyMetadata(OnInputFixValuesChanged));
 
         /// <summary>
         /// Dependency property that provides storage for the output FIX values for the currently selected strategy for this control.
@@ -340,13 +340,10 @@ namespace Atdl4net.Wpf
         {
             try
             {
-                // Remove any residual FIX input values
-                InputFixValues = null;
-
-                _inputValuesSet = false;
-
                 if (newStrategy != null)
                 {
+                    _inputValuesSet = false;
+
                     if (Atdl4netConfiguration.Settings.Wpf.ResetStrategyOnAssignmentToControl)
                         newStrategy.Reset();
 
@@ -363,16 +360,17 @@ namespace Atdl4net.Wpf
 
         private static void OnInputFixValuesChanged(DependencyObject source, DependencyPropertyChangedEventArgs e)
         {
-            (source as AtdlControl).OnInputFixValuesChanged();
+            if (e.NewValue != null)
+                (source as AtdlControl).OnInputFixValuesChanged();
         }
 
         private void OnInputFixValuesChanged()
         {
+            if (Strategy == null)
+                return;
+
             try
             {
-                if (Strategy == null || InputFixValues == null)
-                    return;
-
                 _inputValuesSet = true;
 
                 FixFieldValueProvider fieldValueProvider = new FixFieldValueProvider(this, Strategy.Parameters);

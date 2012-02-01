@@ -240,6 +240,10 @@ namespace Atdl4net.ExampleApplication.Models
         {
             try
             {
+                _initialFixValues = null;
+
+                NotifyPropertyChanged("InitialFixValues");
+
                 if (string.IsNullOrEmpty(InitialValuesString))
                     _initialFixValues = FixTagValuesCollection.Empty;
                 else

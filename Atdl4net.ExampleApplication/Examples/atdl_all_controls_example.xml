@@ -188,7 +188,7 @@
 			<Region name="AsiaPacificJapan" inclusion="Include"/>
 			<Region name="EuropeMiddleEastAfrica" inclusion="Include"/>
 		</Regions>
-		<Parameter fixTag="8001" name="MinCrossQty" use="required" xsi:type="Qty_t"/>
+		<Parameter fixTag="8002" name="MinCrossQty" use="required" xsi:type="Qty_t"/>
 		<lay:StrategyLayout>
 			<lay:StrategyPanel collapsible="false" orientation="HORIZONTAL">
 				<lay:StrategyPanel collapsible="false" orientation="VERTICAL">

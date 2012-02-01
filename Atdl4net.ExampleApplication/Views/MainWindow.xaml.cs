@@ -32,6 +32,9 @@ namespace Atdl4net.ExampleApplication.Views
     {
         public MainWindow()
         {
+            // Uncomment the following line to enable WPF tracing
+            // PresentationTraceSources.Refresh();
+
             InitializeComponent();
 
             AtdlControl1.ExceptionOccurred += new EventHandler<UnhandledExceptionEventArgs>(AtdlControl1_ExceptionOccurred);
