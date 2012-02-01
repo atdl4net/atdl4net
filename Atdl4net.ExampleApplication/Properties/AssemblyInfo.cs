@@ -1,6 +1,20 @@
-﻿using System.Reflection;
-using System.Resources;
-using System.Runtime.CompilerServices;
+﻿#region Atdl4net Sample Code - License and Use
+//
+//   This sample code is provided as part of Atdl4net, with the intention of making it easier to get started.
+//
+//   Whilst Atdl4net is itself made available under either a commercial or an open-source (LGPL) license, the
+//   samples provided with Atdl4net are made available for use freely by anyone that obtains a copy of
+//   Atdl4net, without restriction.
+//
+//   For the avoidance of doubt, you are at liberty to remove this statement from any sample code that you
+//   adapt for your use, but in any case the following statement still applies:
+//
+//   The samples for Atdl4net are distributed in the hope that they will be useful, but WITHOUT ANY WARRANTY; 
+//   without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+//
+#endregion
+
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
 
@@ -8,13 +22,10 @@ using System.Windows;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Atdl4net.ExampleApplication")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyDescription("WPF Example Application for Atdl4net")]
+[assembly: AssemblyCompany("Cornerstone Technology Limited")]
 [assembly: AssemblyProduct("Atdl4net.ExampleApplication")]
-[assembly: AssemblyCopyright("Copyright ©  2011")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
+[assembly: AssemblyCopyright("Copyright © 2010-2012, Cornerstone Technology Limited")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
@@ -51,5 +62,5 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.1.0.1080")]
+[assembly: AssemblyFileVersion("1.1.0.1080")]

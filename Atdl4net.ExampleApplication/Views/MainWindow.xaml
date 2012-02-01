@@ -144,7 +144,5 @@
             <Button Grid.Column="1" Width="80" Margin="3" Command="{Binding GetOutputValuesCommand}">Get Output</Button>
         </Grid>
 
-
-
     </Grid>
 </Window>
