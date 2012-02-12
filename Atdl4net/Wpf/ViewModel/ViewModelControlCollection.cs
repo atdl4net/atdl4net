@@ -112,15 +112,14 @@ namespace Atdl4net.Wpf.ViewModel
         public ViewModelStrategyEditCollection StrategyEdits { get { return _strategyEdits; } }
 
         /// <summary>
-        /// Refreshes the state of the view and optionally re-evaluates all the state rules for the selected strategy.
+        /// Refreshes the state of the view (without re-evaluating) all the state rules for the selected strategy.
         /// </summary>
-        /// <param name="reevaluateStateRules">Set to true to force the re-evaluation of all the selected strategy's state rules.</param>
-        public void RefreshState(bool reevaluateStateRules)
+        public void RefreshState()
         {
             _log.Debug("Refreshing state for all controls");
 
             foreach (ControlViewModel controlViewModel in Items)
-                controlViewModel.RefreshState(reevaluateStateRules);
+                controlViewModel.RefreshState();
         }
 
         /// <summary>

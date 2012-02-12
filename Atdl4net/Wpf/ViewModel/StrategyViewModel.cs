@@ -128,12 +128,12 @@ namespace Atdl4net.Wpf.ViewModel
         }
 
         /// <summary>
-        /// Refreshes the state of the view and optionally re-evaluates all the state rules for the selected strategy.
+        /// Refreshes the state of the view for all the state rules for the selected strategy.  Note that this method does
+        /// not cause the state rules to be re-evaluated.
         /// </summary>
-        /// <param name="reevaluateStateRules">Set to true to force the re-evaluation of all the selected strategy's state rules.</param>
-        public void RefreshViewState(bool reevaluateStateRules)
+        public void RefreshViewState()
         {
-            Controls.RefreshState(reevaluateStateRules);
+            Controls.RefreshState();
         }
 
         #region IDisposable Members and support

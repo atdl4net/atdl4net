@@ -388,7 +388,7 @@ namespace Atdl4net.Wpf
                 Strategy.RunAllStateRules();
 
                 if (ViewModel !=null)
-                    ViewModel.RefreshViewState(false);
+                    ViewModel.RefreshViewState();
             }
             catch (Exception ex)
             {

@@ -315,15 +315,14 @@ namespace Atdl4net.Wpf.ViewModel
 
         /// <summary>
         /// Refreshes the state of all StateRules for this ControlViewModel's underlying <see cref="Control_t"/> and
-        /// all control values (in terms of data binding).
+        /// all control values (in terms of data binding).  Note that this method does not cause the StateRules to
+        /// be re-evaluated.
         /// </summary>
-        /// <param name="reevaluateStateRules">Set to true to force the control's state rules to be re-evaluated; to false otherwise.</param>
-        public virtual void RefreshState(bool reevaluateStateRules)
+        public virtual void RefreshState()
         {
             _log.Debug(m => m("Refreshing state for control with ID {0}", Id));
 
-            if (reevaluateStateRules)
-                _stateRules.RefreshState();
+            _stateRules.RefreshState();
 
             RefreshUiState(true);
         }
