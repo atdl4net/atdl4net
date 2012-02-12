@@ -208,6 +208,7 @@ namespace Atdl4net.Wpf.View
         {
             _attributeInformation = new AttributeInformation[Enum.GetValues(typeof(WpfXmlWriterAttribute)).Length];
 
+            _attributeInformation[(int)WpfXmlWriterAttribute.AutomationProperties_AutomationId] = new AttributeInformation("AutomationProperties.AutomationId");
             _attributeInformation[(int)WpfXmlWriterAttribute.BorderThickness] = new AttributeInformation("BorderThickness");
             _attributeInformation[(int)WpfXmlWriterAttribute.BorderVisibility] = new AttributeInformation("BorderVisibility");
             _attributeInformation[(int)WpfXmlWriterAttribute.CollapseButtonVisibility] = new AttributeInformation("CollapseButtonVisibility");

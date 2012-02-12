@@ -46,6 +46,7 @@ namespace Atdl4net.Wpf.View.DefaultRendering
                 writer.WriteAttribute(WpfXmlWriterAttribute.Content, string.Format("{{Binding Path=Controls[{0}].UiValue}}", id));
                 writer.WriteAttribute(WpfXmlWriterAttribute.IsEnabled, string.Format("{{Binding Path=Controls[{0}].Enabled}}", id));
                 writer.WriteAttribute(WpfXmlWriterAttribute.Visibility, string.Format("{{Binding Path=Controls[{0}].Visibility}}", id));
+                writer.WriteAttribute(WpfXmlWriterAttribute.AutomationProperties_AutomationId, id);
             }
         }
     }

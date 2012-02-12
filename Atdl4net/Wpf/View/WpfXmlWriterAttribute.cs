@@ -26,6 +26,9 @@ namespace Atdl4net.Wpf.View
     /// </summary>
     public enum WpfXmlWriterAttribute
     {
+        /// <summary>AutomationProperties.AutomationId</summary>
+        AutomationProperties_AutomationId,
+
         /// <summary>BorderThickness</summary>
         BorderThickness,
 
