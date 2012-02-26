@@ -487,6 +487,7 @@
     <Compile Include="Model\Types\Support\NonNegativeIntegerTypeBase.cs" />
     <Compile Include="Model\Types\Support\NonZeroPositiveIntegerTypeBase.cs" />
     <Compile Include="Model\Types\Support\Tenor.cs" />
+    <Compile Include="Model\Types\Support\UTCDataTimeTypeBase.cs" />
     <Compile Include="Notification\INotifyStateChanged.cs" />
     <Compile Include="Notification\INotifyStrategyLoaded.cs" />
     <Compile Include="Notification\INotifyValueChangeCompleted.cs" />
