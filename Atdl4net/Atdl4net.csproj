@@ -101,6 +101,7 @@
     <Compile Include="Configuration\Atdl4netConfiguration.cs" />
     <Compile Include="Fix\FixFieldValueProvider.cs" />
     <Compile Include="Model\Controls\Support\InitializableControl.cs" />
+    <Compile Include="Model\Types\Support\UTCDataTimeTypeBase.cs" />
     <Compile Include="Notification\INotifyValueChangeCompleted.cs" />
     <Compile Include="Notification\StateChangedEventArgs.cs" />
     <Compile Include="Notification\StrategyChangedEventArgs.cs" />

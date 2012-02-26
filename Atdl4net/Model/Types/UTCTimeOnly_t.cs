@@ -34,7 +34,7 @@ namespace Atdl4net.Model.Types
     /// HH = 00-23, MM = 00-60 (60 only if UTC leap second), SS = 00-59. (without milliseconds)
     /// HH = 00-23, MM = 00-59, SS = 00-60 (60 only if UTC leap second), sss=000-999 (indicating milliseconds).'
     /// </summary>
-    public class UTCTimeOnly_t : DateTimeTypeBase
+    public class UTCTimeOnly_t : UTCDateTimeTypeBase
     {
         private static readonly string[] _formatStrings = new string[] { FixDateTimeFormat.FixTimeOnly, FixDateTimeFormat.FixTimeOnlyMs };
 

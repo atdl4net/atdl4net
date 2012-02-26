@@ -39,7 +39,7 @@ namespace Atdl4net.Model.Types
     /// utilized these dates. During a leap second insertion, a UTCTimestamp field may read "19981231-23:59:59", "19981231-23:59:60", 
     /// "19990101-00:00:00". (see http://tycho.usno.navy.mil/leapsec.html)'
     /// </summary>
-    public class UTCTimestamp_t : DateTimeTypeBase
+    public class UTCTimestamp_t : UTCDateTimeTypeBase
     {
         /// <summary>Gets or sets the local market timezone.<br/>
         /// Describes the time zone without indicating whether daylight savings is in effect. Valid values are taken from 
