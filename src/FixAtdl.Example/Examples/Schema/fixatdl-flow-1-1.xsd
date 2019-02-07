@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	- - - - - - - - - - - - - - - - - - - - - - - - - -
+    FIXatdl Sample document instance for FIXatdl Schema Version 1.1
+    (C) 2010 FIX Protocol Limited. All use of the FIXatdl Schema is subject to
+    the disclaimer which is printed on one of the initial pages of the written specification
+    for the FIXatdl Schema and is included in the zip file which you downloaded to
+    obtain the Schema.
+    Comments and errors should be posted on the FIX protocol web-site
+    http://www.fixprotocol.org
+	- - - - - - - - - - - - - - - - - - - - - - - - - -
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:flow="http://www.fixprotocol.org/FIXatdl-1-1/Flow" xmlns:val="http://www.fixprotocol.org/FIXatdl-1-1/Validation" xmlns:core="http://www.fixprotocol.org/FIXatdl-1-1/Core" targetNamespace="http://www.fixprotocol.org/FIXatdl-1-1/Flow" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.1">
+	<xs:annotation>
+		<xs:documentation>
+      This value is the internal build number of the ATDL Schema
+    </xs:documentation>
+		<xs:appinfo>
+			<BuildInfo buildNumber="2.7.2e20101221"/>
+		</xs:appinfo>
+	</xs:annotation>
+	<xs:import namespace="http://www.fixprotocol.org/FIXatdl-1-1/Validation" schemaLocation="fixatdl-validation-1-1.xsd"/>
+	<xs:import namespace="http://www.fixprotocol.org/FIXatdl-1-1/Core" schemaLocation="fixatdl-core-1-1.xsd"/>
+	<!-- Please email any suggestions or revisions to algotech@fixprotocol.org-->
+	<!-- Please note - Revision history is at the end of this xsd
+
+  Flow Sub-Schema
+  The intent of the flow sub-schema is to provide an easy, platform-neutral way to specify the interaction
+  of controls defined by the UI sub-schema.  StateRules elements define the behavior of the control, while
+  Edit elements define how the rule should be executed based on how they evaluate.-->
+	<xs:element name="StateRule" type="flow:StateRule_t"/>
+	<xs:complexType name="StateRule_t">
+		<xs:sequence>
+			<xs:element ref="core:Description" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Description of the State Rule.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:choice>
+				<xs:element ref="val:Edit"/>
+				<xs:element ref="val:EditRef"/>
+			</xs:choice>
+		</xs:sequence>
+		<xs:attribute name="enabled" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>Indicates whether or not to enable the control when the edit expression of the strategyEdit element evaluates to True.
+The desired behavior is as follows:
+when the StateRule’s edit condition is true and enabled=True then enable the control;
+when the edit condition is true and enabled=false then disable the control;
+when the edit condition is false and enable=True then disable the control;
+when the edit condition is false and enabled=false then enable the control.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="visible" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>Indicates whether or not to show the control when the boolean expression, defined by the Edit element, evaluates to True.
+The desired behavior is as follows:
+when the StateRule’s edit condition is true and visible=True then display the control;
+when the edit condition is true and visible=false then hide the control;
+when the edit condition is false and visible=True then hide the control;
+when the edit condition is false and enabled=false then display the control.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="value" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>GUI control's displayed value should be set to this value when edit condition is true. Although the type of this attribute has been listed as string, ultimately the type of this attribute must be compatible with the type of the control.
+				For example, if the control is numeric, such as a SingleSpinner, then a string containing a numeric value would an appropriate value (e.g. “15”).
+If the control contains ListItem elements then allowable values of StateRule/@value is restricted to the enumIDs of the ListItem elements.
+A special token, “{NULL}”, may be used for the value of this attribute to indicate that the control should be set to an uninitialized state. Controls that are un-initialized should have no value.
+The effect of an un-initialized control is as follows:
+When an order is to be generated, the controls which are linked to parameters will have their values retrieved. If there is no retrieved value because the control was un-initialized then the parameter should have no value and its associated FIX tag should be excluded from the message.
+This is relevant only for controls that can be in an un-initialized state such as spinners and text fields. Controls such as check boxes and radio buttons are always initialized. (They are either checked or unchecked.)
+</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+</xs:schema>
+<!-- Please email any revisions to the Steward of the Master Model & Mapping artifacts at algotech@fixprotocol.org -->
+<!-- Revision History -->
+<!-- Date Version Author Comments
+Authors - Greg Malatestinic, Rick Labs, Zoltan Feledy, Jim Arlet, Gideon Kaplan, Martin Naughton, Mike McDermott and other members of FPL Algo Trading WG.
+	-if there is anyone else then please speak up :-)
+30jan08 v2.5 by Robert Golan for uris, revision history, and version stamping.
+20May08 - <edit> elements max and min occurs is now 1
+27May08 - stateGroup and stateRule can now refer to editRef.
+30Aug08 - value attribute has been added.
+17Sep08 - stateGroup.filed changed to stateGroup.targetParameter.
+21Jan09 v2.5.3 by Greg Malatestinic
+      - removed stateGroup element
+23Jan09 v2.5.6 by Martin Naughton and Mike McDermott
+      - added a description element to stateRule
+      - added a reference to the Core schema to support the description element reference
+16Feb09 v2.5.9 by Mike McDermott
+      - added a 'flow' alias to the default namespace for consistency
+      - created a StateRule_t complex type for consistency
+27Mar09 v2.6.3 by Mike McDermott
+      - updated namespaces to conform with FIX standard for xml namespaces
+      - updated namespaces to conform with *product* version of 1.1
+      - updated element and type names to conform with FIX standard of upper camel case
+22Feb v2.7.2 by Greg Malatestinic
+	- All xsd files renamed to fixatdl-{sub-schema}-1-1.xsd. Import/@schemaLocation adjusted accordingly.
+	- Namespaces changed to http://www.fixprotocol.org/FIXatdl-1-1/{sub-schema}
+15Dec2010 v2.7.2e by Greg Malatestinic
+	- Sync'd documentation with specification document.
+-->
