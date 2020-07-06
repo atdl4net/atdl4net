@@ -2,7 +2,7 @@
 
 #### The Open Source .NET Solution for FIXatdl
 
-Atdl4net is an open source and not-for-profit C# implementation of [FIXatdl](https://www.fixtrading.org/standards/fixatdl/), the FIX Protocol Algorithmic Trading Definition Language standard developed by FIX Protocol Limited (FPL).  It is in active use in a number of buy-side trading systems.
+Atdl4net is an open source and not-for-profit C# implementation of [FIXatdl](https://www.fixtrading.org/standards/fixatdl/), the FIX Protocol Algorithmic Trading Definition Language standard developed by FIX Protocol Limited (FPL).  Despite little activity in the repository, Atdl4net is nevertheless in active use in a number of commercial buy-side trading systems.
 
 ## Features
 
