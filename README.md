@@ -42,9 +42,7 @@ Thanks to the following people who helped make Atdl4net happen:
 
 ## License
 
-Atdl4net was originally dual-licensed by its creator but commercial licensing was subsequently abandoned.
-
-The code is currently licensed under the GNU LESSER GENERAL PUBLIC LICENSE, v2.1, but plans are underway to migrate to the MIT License shortly.
+Atdl4net was originally dual-licensed by its creator but commercial licensing was subsequently abandoned.  The software is now licensed under the MIT License.
 
 FIX Protocol and FIXatdl are trademarks or service marks of FIX Protocol Limited
 
