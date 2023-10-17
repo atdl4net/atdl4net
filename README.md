@@ -16,15 +16,9 @@ Atdl4net is an open source and not-for-profit C# implementation of [FIXatdl](htt
 * Written in the C# language using standard libraries.
 * Source code can be modified to support in-house FIXatdl schema extensions
 
-## Contributing
+## Status
 
-If you wish to contribute code to atdl4j:
-
-* Fork the atdl4net project on GitHub
-* Commit your changes to your fork
-* Raise a pull request, which will be reviewed by the atdl4net core team
-
-If you are new to git source control and/or Github, please visit the [Github Help Page](https://help.github.com/)
+This software was developed by the author (Steve Wilkinson) as FIXatdl was being conceived, and was developed in parallel with the Java reference implementation (see below) in the 2010-2011 timeframe.  Since that time, the author ceased to be directly involved with the FIX Protocol and is no longer able to provide support or fixes for the software.  That said, as noted above, the software is still in active use and the recent move to the MIT License should provide the freedom for interested individuals to take the software forward if desired.
 
 ## FIX Engine Integration
 
