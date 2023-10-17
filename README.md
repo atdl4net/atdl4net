@@ -1,6 +1,6 @@
 # Atdl4net
 
-#### The Open Source .NET Solution for FIXatdl
+### The Original Open Source .NET Reference Implementation of FIXatdl v1.1
 
 Atdl4net is an open source and not-for-profit C# implementation of [FIXatdl](https://www.fixtrading.org/standards/fixatdl/), the FIX Protocol Algorithmic Trading Definition Language standard developed by FIX Protocol Limited (FPL).  Despite little activity in the repository, Atdl4net is nevertheless in active use in a number of commercial buy-side trading systems.
 
@@ -18,7 +18,11 @@ Atdl4net is an open source and not-for-profit C# implementation of [FIXatdl](htt
 
 ## Status
 
-This software was developed by the author (Steve Wilkinson) as FIXatdl was being conceived, and was developed in parallel with the Java reference implementation (see below) in the 2010-2011 timeframe.  Since that time, the author ceased to be directly involved with the FIX Protocol and is no longer able to provide support or fixes for the software.  That said, as noted above, the software is still in active use and the recent move to the MIT License should provide the freedom for interested individuals to take the software forward if desired.
+This software was developed by the author (Steve Wilkinson) as FIXatdl was being conceived, and was developed in parallel with the Java reference implementation (see below) in the 2010-2011 timeframe.  The intention was to provide a demonstration that the standard could be fully implemented in the then-current flavours of .NET (v3.5, v4.0); this work was completed in 2011 with the ratification of the FIXatdl v1.1 standard.
+
+Subsequence to the publication of the v1.1 FIXatdl standard, a v1.2 was developed but the author was unable to undertake any further work on the code base due to personal circumstances, and no other contributors came forward.  ***No support for FIXatdl v1.2 is provided or planned.***
+
+Since that time, the author ceased to be directly involved with the FIX Protocol and is no longer able to provide support or fixes for the software.  That said, as noted above, the software is still in active use and the recent move to the MIT License should provide the freedom for interested individuals to take the software forward if desired.
 
 ## FIX Engine Integration
 
