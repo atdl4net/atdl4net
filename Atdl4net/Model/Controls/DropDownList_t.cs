@@ -1,5 +1,5 @@
-﻿#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
-// This software is released under both commercial and open-source licenses.
+﻿#region Copyright (c) 2010-2011, Steve Wilkinson (author)
+// This software is released under the MIT License..
 // If you received this software under the commercial license, the terms of that license can be found in the
 // Commercial.txt file in the Licenses folder.  If you received this software under the open-source license,
 // the following applies:

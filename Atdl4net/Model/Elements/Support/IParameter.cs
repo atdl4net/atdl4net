@@ -1,21 +1,6 @@
-#region Copyright (c) 2010-2012, Cornerstone Technology Limited. http://atdl4net.org
+#region Copyright (c) 2010-2011, Steve Wilkinson (author)
 //
-//   This software is released under both commercial and open-source licenses.
-//
-//   If you received this software under the commercial license, the terms of that license can be found in the
-//   Commercial.txt file in the Licenses folder.  If you received this software under the open-source license,
-//   the following applies:
-//
-//      This file is part of Atdl4net.
-//
-//      Atdl4net is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public 
-//      License as published by the Free Software Foundation, either version 2.1 of the License, or (at your option) any later version.
-// 
-//      Atdl4net is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
-//      of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
-//
-//      You should have received a copy of the GNU Lesser General Public License along with Atdl4net.  If not, see
-//      http://www.gnu.org/licenses/.
+//   This software is released under the MIT License..
 //
 #endregion
 
@@ -66,7 +51,7 @@ namespace Atdl4net.Model.Elements.Support
         /// <value>The FIX tag to use.</value>
         FixTag? FixTag { get; set; }
 
-        /// <summary>Indicates whether this parameter’s value can be modified by an Order Cancel/Replace Request message.
+        /// <summary>Indicates whether this parameterï¿½s value can be modified by an Order Cancel/Replace Request message.
         /// The default value for this field is true.
         /// </summary>
         bool? MutableOnCxlRpl { get; set; }
@@ -79,7 +64,7 @@ namespace Atdl4net.Model.Elements.Support
 
         /// <summary>Indicates how to interpret those tags that were populated in an original order but are not populated in
         /// a subsequent cancel/replace of the order message. If this value is true then revert to the value of the original 
-        /// order, otherwise a null value or the parameter’s default value (Control/@initValue) is to be used or if none is
+        /// order, otherwise a null value or the parameterï¿½s default value (Control/@initValue) is to be used or if none is
         /// specified, the parameter is to be omitted.  The default value for this field is false.<br/>
         /// </summary>
         /// <remarks>Although revertOnCxlRpl and mutableOnCxlRpl might appear to be mutually exclusive, this is not strictly
